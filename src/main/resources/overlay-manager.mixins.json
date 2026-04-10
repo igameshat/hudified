@@ -1,0 +1,32 @@
+{
+	"required": true,
+	"package": "com.swaphat.client.overlaymanager.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"overlay.FireOverlayMixin",
+		"overlay.PumpkinOverlayMixin",
+		"overlay.SpyglassOverlayMixin",
+		"overlay.PortalOverlayMixin",
+		"overlay.FreezingOverlayMixin",
+		"overlay.VignetteOverlayMixin",
+		"overlay.DarknessOverlayMixin",
+
+		"fog.FogDisableMixin",
+
+		"patches.PortalGuiMixin",
+		"patches.GameRendererPortalMixin",
+		"patches.BlindnessMovementMixin",
+
+		"patches.totem.TotemOverlayMixin",
+		"patches.totem.TotemParticleMixin",
+
+		"Gui.ScoreboardMixin"
+	],
+	"BROKEN-NEEDS-FIXIND": ["BossBar resize and y offset", "subtitles"],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
