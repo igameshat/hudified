@@ -14,6 +14,7 @@ public class ConfigInstance {
     public static BossBar BossBar = new BossBar();
     public static Scoreboard Scoreboard = new Scoreboard();
     public static Totem Totem = new Totem();
+    public static Environment Environment = new Environment();
 
     // all opacity has to be between 0 and 255
     public static class PumpkinOverlay {
@@ -75,6 +76,17 @@ public class ConfigInstance {
         public boolean enabled = true;
         public boolean showTotemAnimation = true;
         public boolean showParticles = true;
+    }
+
+    public static class Environment {
+        public boolean fullbright      = false;
+        public boolean disableFog      = false;
+        public float   fogMultiplier   = 1.0f;
+        public boolean clearLava       = false;
+        public boolean clearWater      = false;
+        public float   rainOpacity     = 1.0f;
+        public boolean noRainParticles = false;
+        public boolean noSnow          = false;
     }
 }
 

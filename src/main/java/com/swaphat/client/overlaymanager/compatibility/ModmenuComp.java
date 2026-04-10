@@ -1,12 +1,12 @@
 package com.swaphat.client.overlaymanager.compatibility;
 
-import com.swaphat.client.overlaymanager.gui.widgets.screen;
+import com.swaphat.client.overlaymanager.gui.MainConfigScreen;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 
 public class ModmenuComp implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return screen::new;
+        return MainConfigScreen::new;
     }
 }

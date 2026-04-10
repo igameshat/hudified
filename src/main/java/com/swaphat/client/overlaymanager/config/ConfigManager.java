@@ -24,6 +24,7 @@ public class ConfigManager {
         public ConfigInstance.BossBar BossBar;
         public ConfigInstance.Scoreboard Scoreboard;
         public ConfigInstance.Totem Totem;
+        public ConfigInstance.Environment Environment;
     }
 
     public static void load() {
@@ -66,6 +67,9 @@ public class ConfigManager {
 
                     if (data.Totem != null)
                         ConfigInstance.Totem = data.Totem;
+
+                    if (data.Environment != null)
+                        ConfigInstance.Environment = data.Environment;
                 }
             } catch (Exception e) {
                 System.err.println("Failed to load config!");
@@ -93,6 +97,7 @@ public class ConfigManager {
             data.BossBar = ConfigInstance.BossBar;
             data.Scoreboard = ConfigInstance.Scoreboard;
             data.Totem = ConfigInstance.Totem;
+            data.Environment = ConfigInstance.Environment;
 
             GSON.toJson(data, writer);
 

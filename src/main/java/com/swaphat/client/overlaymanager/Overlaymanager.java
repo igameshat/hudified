@@ -1,7 +1,8 @@
 package com.swaphat.client.overlaymanager;
 
 import com.swaphat.client.overlaymanager.config.ConfigManager;
-import com.swaphat.client.overlaymanager.gui.widgets.screen;
+import com.swaphat.client.overlaymanager.gui.MainConfigScreen;
+import com.swaphat.client.overlaymanager.gui.TweakManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -24,7 +25,7 @@ public class Overlaymanager implements ClientModInitializer {
 						// Use execute() to ensure the screen opens on the main render thread
 						// and after the chat screen has begun closing.
 						Minecraft.getInstance().execute(() -> {
-							Minecraft.getInstance().setScreen(new screen(Minecraft.getInstance().screen));
+							Minecraft.getInstance().setScreen(new MainConfigScreen(Minecraft.getInstance().screen));
 						});
 
 						LOGGER.info("Command /hi executed - Opening Screen");

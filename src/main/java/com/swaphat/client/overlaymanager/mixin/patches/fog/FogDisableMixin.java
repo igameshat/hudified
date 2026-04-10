@@ -1,4 +1,4 @@
-package com.swaphat.client.overlaymanager.mixin.fog;
+package com.swaphat.client.overlaymanager.mixin.patches.fog;
 
 import com.swaphat.client.overlaymanager.config.ConfigInstance;
 import net.minecraft.client.renderer.fog.FogRenderer;

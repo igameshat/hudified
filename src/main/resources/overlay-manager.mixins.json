@@ -11,16 +11,21 @@
 		"overlay.VignetteOverlayMixin",
 		"overlay.DarknessOverlayMixin",
 
-		"fog.FogDisableMixin",
-
 		"patches.PortalGuiMixin",
 		"patches.GameRendererPortalMixin",
 		"patches.BlindnessMovementMixin",
 
+		"patches.fog.FogRendererMixin",
+		"patches.fog.FogDisableMixin",
+
 		"patches.totem.TotemOverlayMixin",
 		"patches.totem.TotemParticleMixin",
 
-		"Gui.ScoreboardMixin"
+		"Gui.ScoreboardMixin",
+
+		"features.LightTextureMixin",
+		"features.WeatherEffectRendererMixin"
+
 	],
 	"BROKEN-NEEDS-FIXIND": ["BossBar resize and y offset", "subtitles"],
 	"injectors": {
