@@ -34,17 +34,38 @@ public class ConfigManager {
                 if (data != null) {
                     ConfigInstance.OverlayEnabled = data.OverlayEnabled;
 
-                    ConfigInstance.PumpkinOverlay = data.PumpkinOverlay;
-                    ConfigInstance.FireOverlay = data.FireOverlay;
-                    ConfigInstance.SpyglassOverlay = data.SpyglassOverlay;
-                    ConfigInstance.PortalOverlay = data.PortalOverlay;
-                    ConfigInstance.FreezeOverlay = data.FreezeOverlay;
-                    ConfigInstance.BlindnessOverlay = data.BlindnessOverlay;
-                    ConfigInstance.DarknessOverlay = data.DarknessOverlay;
-                    ConfigInstance.Vignette = data.Vignette;
-                    ConfigInstance.BossBar = data.BossBar;
-                    ConfigInstance.Scoreboard = data.Scoreboard;
-                    ConfigInstance.Totem = data.Totem;
+                    if (data.PumpkinOverlay != null)
+                        ConfigInstance.PumpkinOverlay = data.PumpkinOverlay;
+
+                    if (data.FireOverlay != null)
+                        ConfigInstance.FireOverlay = data.FireOverlay;
+
+                    if (data.SpyglassOverlay != null)
+                        ConfigInstance.SpyglassOverlay = data.SpyglassOverlay;
+
+                    if (data.PortalOverlay != null)
+                        ConfigInstance.PortalOverlay = data.PortalOverlay;
+
+                    if (data.FreezeOverlay != null)
+                        ConfigInstance.FreezeOverlay = data.FreezeOverlay;
+
+                    if (data.BlindnessOverlay != null)
+                        ConfigInstance.BlindnessOverlay = data.BlindnessOverlay;
+
+                    if (data.DarknessOverlay != null)
+                        ConfigInstance.DarknessOverlay = data.DarknessOverlay;
+
+                    if (data.Vignette != null)
+                        ConfigInstance.Vignette = data.Vignette;
+
+                    if (data.BossBar != null)
+                        ConfigInstance.BossBar = data.BossBar;
+
+                    if (data.Scoreboard != null)
+                        ConfigInstance.Scoreboard = data.Scoreboard;
+
+                    if (data.Totem != null)
+                        ConfigInstance.Totem = data.Totem;
                 }
             } catch (Exception e) {
                 System.err.println("Failed to load config!");
@@ -52,7 +73,7 @@ public class ConfigManager {
             }
         }
 
-        save();
+        save(); // keep this
     }
 
     public static void save() {
