@@ -11,7 +11,6 @@ public class MainConfigScreen extends Screen {
 
     private final Screen previousScreen;
 
-    // ── Theme Color (Vibrant Purple) ─────────────────────────────────────────
     private static final int COLOR_PURPLE = 0xFF9C27B0;
 
     public MainConfigScreen(Screen previousScreen) {
@@ -25,9 +24,8 @@ public class MainConfigScreen extends Screen {
         int btnH = 20;
 
         int startX = this.width / 2 - btnW / 2;
-        int startY = this.height / 2 - 45; // Adjusted for 3 buttons
+        int startY = this.height / 2 - 45;
 
-        // ── Button 1: TweakManager (Blue) ────────────────────────────────────
         this.addRenderableWidget(Button.builder(
                         Component.literal("TweakManager"),
                         btn -> this.minecraft.setScreen(new TweakManager(this)))
@@ -35,7 +33,6 @@ public class MainConfigScreen extends Screen {
                 .size(btnW, btnH)
                 .build());
 
-        // ── Button 2: Visibility Tweaks (Red) ────────────────────────────────
         this.addRenderableWidget(Button.builder(
                         Component.literal("Visibility Tweaks"),
                         btn -> this.minecraft.setScreen(new VisibilityConfigScreen(this)))
@@ -43,7 +40,6 @@ public class MainConfigScreen extends Screen {
                 .size(btnW, btnH)
                 .build());
 
-        // ── Button 3: Automation Rules (Green) ───────────────────────────────
         this.addRenderableWidget(Button.builder(
                         Component.literal("Automation Rules"),
                         btn -> this.minecraft.setScreen(new AutomationConfigScreen(this)))
@@ -51,7 +47,7 @@ public class MainConfigScreen extends Screen {
                 .size(btnW, btnH)
                 .build());
 
-        // ── Back / Done Button ───────────────────────────────────────────────
+
         this.addRenderableWidget(Button.builder(
                         Component.literal("Done"),
                         btn -> this.minecraft.setScreen(previousScreen))
@@ -62,21 +58,15 @@ public class MainConfigScreen extends Screen {
 
     @Override
     public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        this.renderBackground(graphics, mouseX, mouseY, delta);
-
-        // ── Draw Centered Panel Box ──────────────────────────────────────────
         int panelW = 240;
         int panelH = 175;
         int panelX = this.width / 2 - panelW / 2;
         int panelY = this.height / 2 - panelH / 2 - 5;
 
-        // Dark transparent background
         graphics.fill(panelX, panelY, panelX + panelW, panelY + panelH, 0xBB1A1A1A);
 
-        // Purple Outline
         drawBox(graphics, panelX, panelY, panelX + panelW, panelY + panelH, COLOR_PURPLE, 0x00000000);
 
-        // ── Titles & Text ────────────────────────────────────────────────────
         graphics.drawCenteredString(this.font, Component.literal("Mod Configuration Hub"),
                 this.width / 2, panelY + 12, COLOR_PURPLE);
 
@@ -85,10 +75,6 @@ public class MainConfigScreen extends Screen {
 
         super.render(graphics, mouseX, mouseY, delta);
     }
-
-    // ════════════════════════════════════════════════════════════════════════
-    // Input Handling (Ensuring 1.21.x compatibility)
-    // ════════════════════════════════════════════════════════════════════════
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
@@ -100,9 +86,6 @@ public class MainConfigScreen extends Screen {
         return super.mouseDragged(event, dragX, dragY);
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // Helpers
-    // ════════════════════════════════════════════════════════════════════════
 
     private void drawBox(GuiGraphics g, int x1, int y1, int x2, int y2, int outline, int fill) {
         int left   = Math.min(x1, x2);

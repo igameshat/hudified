@@ -156,10 +156,9 @@ public class AutomationConfigScreen extends Screen {
             buildUnifiedList();
         }
 
-        this.renderBackground(g, mx, my, delta);
         g.drawCenteredString(this.font, "Automation Rules", this.width / 2, 8, THEME_GREEN);
         g.drawCenteredString(this.font, "Right-click setting to clear override.", this.width / 2, 18, 0xFFAAAAAA);
-        super.render(g, mx, my, delta);
+
 
         int panelX = this.width / 2 - 155, panelW = 310, panelTop = 105, panelBottom = this.height - 30;
 
@@ -171,6 +170,7 @@ public class AutomationConfigScreen extends Screen {
             y = section.render(g, font, panelX + 4, y, panelW - 8, mx, my, delta) + 4;
         }
         g.disableScissor();
+        super.render(g, mx, my, delta);
     }
 
     @Override

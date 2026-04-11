@@ -129,9 +129,8 @@ public class VisibilityConfigScreen extends Screen {
 
     @Override
     public void render(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        this.renderBackground(graphics, mouseX, mouseY, delta);
         graphics.drawCenteredString(this.font, Component.literal("Visibility Configuration"), this.width / 2, 2, 0xFFFFFFFF);
-        super.render(graphics, mouseX, mouseY, delta);
+
 
         int tabW = 65, tabGap = 4, totalTabW = tabW * 3 + tabGap * 2, tabStartX = this.width / 2 - totalTabW / 2, tabY = 34;
         int idx = switch (activeCategory) { case CAT_LIGHT -> 0; case CAT_FOG -> 1; case CAT_WEATHER -> 2; default -> 0; };
@@ -156,6 +155,7 @@ public class VisibilityConfigScreen extends Screen {
             int barY = PANEL_TOP + (int) (((panelBottom - PANEL_TOP) - barH) * ((float) scrollOffset / (totalHeight - (panelBottom - PANEL_TOP))));
             graphics.fill(panelX + panelW - 3, barY, panelX + panelW - 1, barY + barH, THEME_RED);
         }
+        super.render(graphics, mouseX, mouseY, delta);
     }
 
     @Override

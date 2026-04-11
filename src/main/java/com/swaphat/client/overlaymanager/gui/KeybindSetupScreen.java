@@ -22,7 +22,6 @@ public class KeybindSetupScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        this.renderBackground(graphics, mouseX, mouseY, delta);
         graphics.drawCenteredString(this.font, this.titleText, this.width / 2, this.height / 2 - 10, 0xFFFFFFFF);
         graphics.drawCenteredString(this.font, Component.literal("(Press ESC to cancel)"), this.width / 2, this.height / 2 + 10, 0xFFAAAAAA);
         super.render(graphics, mouseX, mouseY, delta);
