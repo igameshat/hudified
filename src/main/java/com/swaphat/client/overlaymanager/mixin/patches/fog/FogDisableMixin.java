@@ -22,7 +22,8 @@ public class FogDisableMixin {
     @Inject(method = "<clinit>", at = @At("TAIL"))
     private static void removeUnwantedEnvironments(CallbackInfo ci) {
         FOG_ENVIRONMENTS.removeIf(env ->
-                (env instanceof BlindnessFogEnvironment && ConfigInstance.BlindnessOverlay.enabled) || (env instanceof DarknessFogEnvironment && ConfigInstance.DarknessOverlay.enabled)
+                (env instanceof BlindnessFogEnvironment && !ConfigInstance.BlindnessOverlay.enabled) ||
+                        (env instanceof DarknessFogEnvironment && !ConfigInstance.DarknessOverlay.enabled)
         );
     }
 }

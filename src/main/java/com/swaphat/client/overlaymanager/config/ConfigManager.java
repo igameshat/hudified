@@ -25,6 +25,9 @@ public class ConfigManager {
         public ConfigInstance.Scoreboard Scoreboard;
         public ConfigInstance.Totem Totem;
         public ConfigInstance.Environment Environment;
+        public ConfigInstance.ArrowHighlight ArrowHighlight;
+        public ConfigInstance.AttackIndicator AttackIndicator;
+
     }
 
     public static void load() {
@@ -32,44 +35,22 @@ public class ConfigManager {
             try (FileReader reader = new FileReader(FILE)) {
                 ConfigMirror data = GSON.fromJson(reader, ConfigMirror.class);
 
-                if (data != null) {
-                    ConfigInstance.OverlayEnabled = data.OverlayEnabled;
+                if (data != null) {ConfigInstance.OverlayEnabled = data.OverlayEnabled;
 
-                    if (data.PumpkinOverlay != null)
-                        ConfigInstance.PumpkinOverlay = data.PumpkinOverlay;
-
-                    if (data.FireOverlay != null)
-                        ConfigInstance.FireOverlay = data.FireOverlay;
-
-                    if (data.SpyglassOverlay != null)
-                        ConfigInstance.SpyglassOverlay = data.SpyglassOverlay;
-
-                    if (data.PortalOverlay != null)
-                        ConfigInstance.PortalOverlay = data.PortalOverlay;
-
-                    if (data.FreezeOverlay != null)
-                        ConfigInstance.FreezeOverlay = data.FreezeOverlay;
-
-                    if (data.BlindnessOverlay != null)
-                        ConfigInstance.BlindnessOverlay = data.BlindnessOverlay;
-
-                    if (data.DarknessOverlay != null)
-                        ConfigInstance.DarknessOverlay = data.DarknessOverlay;
-
-                    if (data.Vignette != null)
-                        ConfigInstance.Vignette = data.Vignette;
-
-                    if (data.BossBar != null)
-                        ConfigInstance.BossBar = data.BossBar;
-
-                    if (data.Scoreboard != null)
-                        ConfigInstance.Scoreboard = data.Scoreboard;
-
-                    if (data.Totem != null)
-                        ConfigInstance.Totem = data.Totem;
-
-                    if (data.Environment != null)
-                        ConfigInstance.Environment = data.Environment;
+                    if (data.PumpkinOverlay != null) ConfigInstance.PumpkinOverlay = data.PumpkinOverlay;
+                    if (data.FireOverlay != null) ConfigInstance.FireOverlay = data.FireOverlay;
+                    if (data.SpyglassOverlay != null) ConfigInstance.SpyglassOverlay = data.SpyglassOverlay;
+                    if (data.PortalOverlay != null) ConfigInstance.PortalOverlay = data.PortalOverlay;
+                    if (data.FreezeOverlay != null) ConfigInstance.FreezeOverlay = data.FreezeOverlay;
+                    if (data.BlindnessOverlay != null) ConfigInstance.BlindnessOverlay = data.BlindnessOverlay;
+                    if (data.DarknessOverlay != null) ConfigInstance.DarknessOverlay = data.DarknessOverlay;
+                    if (data.Vignette != null) ConfigInstance.Vignette = data.Vignette;
+                    if (data.BossBar != null) ConfigInstance.BossBar = data.BossBar;
+                    if (data.Scoreboard != null) ConfigInstance.Scoreboard = data.Scoreboard;
+                    if (data.Totem != null) ConfigInstance.Totem = data.Totem;
+                    if (data.Environment != null) ConfigInstance.Environment = data.Environment;
+                    if (data.ArrowHighlight != null) ConfigInstance.ArrowHighlight = data.ArrowHighlight;
+                    if (data.AttackIndicator != null) ConfigInstance.AttackIndicator = data.AttackIndicator;
                 }
             } catch (Exception e) {
                 System.err.println("Failed to load config!");
@@ -98,6 +79,8 @@ public class ConfigManager {
             data.Scoreboard = ConfigInstance.Scoreboard;
             data.Totem = ConfigInstance.Totem;
             data.Environment = ConfigInstance.Environment;
+            data.ArrowHighlight = ConfigInstance.ArrowHighlight;
+            data.AttackIndicator = ConfigInstance.AttackIndicator;
 
             GSON.toJson(data, writer);
 

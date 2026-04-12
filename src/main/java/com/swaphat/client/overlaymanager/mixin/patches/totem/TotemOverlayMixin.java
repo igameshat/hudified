@@ -18,7 +18,7 @@ public class TotemOverlayMixin {
 
     @Inject(method = "displayItemActivation", at = @At("TAIL"))
     private void onDisplayItemActivation(ItemStack itemStack, RandomSource randomSource, CallbackInfo ci) {
-        if (!ConfigInstance.Totem.enabled || !ConfigInstance.Totem.showTotemAnimation) {
+        if (ConfigInstance.Totem.enabled && !ConfigInstance.Totem.showTotemAnimation) {
             this.itemActivationItem = null;
             this.itemActivationTicks = 0;
         }

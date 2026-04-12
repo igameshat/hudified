@@ -10,6 +10,7 @@
 		"overlay.FreezingOverlayMixin",
 		"overlay.VignetteOverlayMixin",
 		"overlay.DarknessOverlayMixin",
+		"overlay.ArrowGlowMixin",
 
 		"patches.PortalGuiMixin",
 		"patches.GameRendererPortalMixin",
@@ -22,12 +23,16 @@
 		"patches.totem.TotemParticleMixin",
 
 		"Gui.ScoreboardMixin",
+		"Gui.BossBarMixin",
+		"Gui.AttackIndicatorMixin",
 
 		"features.LightTextureMixin",
-		"features.WeatherEffectRendererMixin"
+		"features.WeatherEffectRendererMixin",
+
+		"accessors.AbstractArrowAccessor"
 
 	],
-	"BROKEN-NEEDS-FIXIND": ["BossBar resize and y offset", "subtitles"],
+	"BROKEN-NEEDS-FIXIND": [],
 	"injectors": {
 		"defaultRequire": 1
 	},

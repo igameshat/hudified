@@ -11,14 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Gui.class)
 public class ScoreboardMixin {
-
-    /**
-     * Updated for 1.21.3: Added DeltaTracker to the signature.
-     */
     @Inject(method = "renderScoreboardSidebar", at = @At("HEAD"), cancellable = true)
     private void hideScoreboard(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        if (!ConfigInstance.Scoreboard.enabled) {
-            ci.cancel();
-        }
+        if (!ConfigInstance.Scoreboard.enabled) ci.cancel();
     }
 }

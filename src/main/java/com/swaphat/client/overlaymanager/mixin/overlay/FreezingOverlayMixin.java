@@ -19,7 +19,6 @@ public abstract class FreezingOverlayMixin {
         if (identifier.getPath().contains("powder_snow_outline")) {
 
             if (!ConfigInstance.FreezeOverlay.enabled) {
-                ci.cancel();
                 return;
             }
 

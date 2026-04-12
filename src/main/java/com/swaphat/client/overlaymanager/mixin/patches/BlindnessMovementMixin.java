@@ -20,7 +20,7 @@ public abstract class BlindnessMovementMixin {
         if ((Object) this instanceof net.minecraft.client.player.LocalPlayer) {
 
             // If the game asks if the player has Blindness, say NO.
-            if (effect.value() == MobEffects.BLINDNESS.value() && ConfigInstance.BlindnessOverlay.enableSlowdown) {
+            if (effect.value() == MobEffects.BLINDNESS.value() && !ConfigInstance.BlindnessOverlay.enabled) {
                 cir.setReturnValue(false);
             }
         }
