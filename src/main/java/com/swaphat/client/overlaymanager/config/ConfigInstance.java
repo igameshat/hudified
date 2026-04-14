@@ -20,6 +20,7 @@ public class ConfigInstance {
     public static AttackIndicator AttackIndicator = new AttackIndicator();
     public static ArrowHighlight ArrowHighlight = new ArrowHighlight();
     public static PieChart PieChart = new PieChart();
+    public static Boat Boat = new Boat();
 
     public static class PumpkinOverlay {
         public boolean enabled = true;
@@ -108,6 +109,11 @@ public class ConfigInstance {
         public int windowIndex = 0;
 
         public float scale = 1f;
+    }
+
+    public static class Boat {
+        public boolean enabled = true;
+        public boolean unlockBoatPov = true;
     }
 
     public static class Environment {

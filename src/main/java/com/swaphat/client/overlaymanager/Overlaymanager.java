@@ -27,7 +27,7 @@ public class Overlaymanager implements ClientModInitializer {
 							Minecraft.getInstance().setScreen(new screen(Minecraft.getInstance().screen));
 						});
 
-						LOGGER.info("Command /hi executed - Opening Screen");
+						LOGGER.info("hi");
 						return 1;
 					}));
 		});

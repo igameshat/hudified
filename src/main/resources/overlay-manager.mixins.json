@@ -35,7 +35,9 @@
 		"patches.pieChart.WindowModificationMixin",
 		"Gui.DebugScreenOverlayMixin",
 		"patches.pieChart.ProfilerPieChartMixin",
-		"Gui.HUDPieChartMixin"
+		"Gui.HUDPieChartMixin",
+
+		"patches.boat.UnlockBoatPovMixin"
 	],
 	"BROKEN-NEEDS-FIXIND": [],
 	"injectors": {

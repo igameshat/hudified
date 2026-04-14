@@ -23,9 +23,6 @@ public class HUDPieChartMixin {
             int y = ConfigInstance.PieChart.y;
             float scale = ConfigInstance.PieChart.scale;
 
-
-            guiGraphics.pose().popMatrix();
-
             if (x == -1) {
                 x = guiGraphics.guiWidth() - 115;
                 y = guiGraphics.guiHeight() - 5;
