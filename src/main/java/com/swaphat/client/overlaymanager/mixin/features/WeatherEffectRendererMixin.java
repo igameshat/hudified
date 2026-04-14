@@ -27,9 +27,6 @@ public abstract class WeatherEffectRendererMixin {
     @Shadow
     private void renderInstances(VertexConsumer vertexConsumer, List list, Vec3 vec3, float f, int i, float g) { }
 
-    // ── 1. Reduce Rain Opacity ───────────────────────────────────────────────
-    // We intercept the call to renderInstances. Vanilla passes f = 1.0F for rain
-    // and f = 0.8F for snow. We check for rain, and multiply the intensity (g).
     @Redirect(
             method = "render",
             at = @At(

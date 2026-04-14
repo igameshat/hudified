@@ -27,6 +27,7 @@ public class ConfigManager {
         public ConfigInstance.Environment Environment;
         public ConfigInstance.ArrowHighlight ArrowHighlight;
         public ConfigInstance.AttackIndicator AttackIndicator;
+        public ConfigInstance.PieChart PieChart;
 
     }
 
@@ -51,6 +52,7 @@ public class ConfigManager {
                     if (data.Environment != null) ConfigInstance.Environment = data.Environment;
                     if (data.ArrowHighlight != null) ConfigInstance.ArrowHighlight = data.ArrowHighlight;
                     if (data.AttackIndicator != null) ConfigInstance.AttackIndicator = data.AttackIndicator;
+                    if (data.PieChart != null) ConfigInstance.PieChart = data.PieChart;
                 }
             } catch (Exception e) {
                 System.err.println("Failed to load config!");
@@ -81,6 +83,7 @@ public class ConfigManager {
             data.Environment = ConfigInstance.Environment;
             data.ArrowHighlight = ConfigInstance.ArrowHighlight;
             data.AttackIndicator = ConfigInstance.AttackIndicator;
+            data.PieChart = ConfigInstance.PieChart;
 
             GSON.toJson(data, writer);
 

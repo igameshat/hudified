@@ -1,5 +1,7 @@
 package com.swaphat.client.overlaymanager.config;
 
+import net.minecraft.client.Minecraft;
+
 public class ConfigInstance {
     public static boolean OverlayEnabled = true;
 
@@ -17,6 +19,7 @@ public class ConfigInstance {
     public static Environment Environment = new Environment();
     public static AttackIndicator AttackIndicator = new AttackIndicator();
     public static ArrowHighlight ArrowHighlight = new ArrowHighlight();
+    public static PieChart PieChart = new PieChart();
 
     public static class PumpkinOverlay {
         public boolean enabled = true;
@@ -86,9 +89,25 @@ public class ConfigInstance {
 
     public static class ArrowHighlight {
         public boolean enabled = true;
+        public boolean xrayMode = false;
         public int red = 100;
         public int green = 100;
         public int blue = 100;
+    }
+
+    public static class PieChart {
+        public boolean enabled = true;
+
+        public int x = -1;
+        public int y = 500;
+
+        public int oldWindowWidth = -1;
+        public int oldWindowHeight = -1;
+
+        public boolean renderingPieChart = false;
+        public int windowIndex = 0;
+
+        public float scale = 1f;
     }
 
     public static class Environment {

@@ -29,8 +29,13 @@
 		"features.LightTextureMixin",
 		"features.WeatherEffectRendererMixin",
 
-		"accessors.AbstractArrowAccessor"
+		"accessors.AbstractArrowAccessor",
 
+		"patches.pieChart.MinecraftMixin",
+		"patches.pieChart.WindowModificationMixin",
+		"Gui.DebugScreenOverlayMixin",
+		"patches.pieChart.ProfilerPieChartMixin",
+		"Gui.HUDPieChartMixin"
 	],
 	"BROKEN-NEEDS-FIXIND": [],
 	"injectors": {
