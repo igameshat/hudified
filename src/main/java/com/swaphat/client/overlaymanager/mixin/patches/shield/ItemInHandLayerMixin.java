@@ -58,12 +58,13 @@ public class ItemInHandLayerMixin {
 
         ConfigInstance.ShieldSettings settings = isBlocking ? handSettings.blocking : handSettings.idle;
 
-        double x = settings.xOffset / 100.0;
-        double y = settings.yOffset / 100.0;
+        double x = settings.xOffset / 100;
+        double y = settings.yOffset / 100;
+        double z = settings.zOffset / 100;
         float s = Math.max(0.01f, settings.scale);
 
         poseStack.pushPose();
-        poseStack.translate(x, y, 0.0D);
+        poseStack.translate(x, y, z);
         poseStack.mulPose(Axis.XP.rotationDegrees(settings.rotX));
         poseStack.mulPose(Axis.YP.rotationDegrees(settings.rotY));
         poseStack.mulPose(Axis.ZP.rotationDegrees(settings.rotZ));

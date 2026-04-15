@@ -142,6 +142,7 @@ public class ConfigInstance {
     public static class ShieldSettings {
         public double xOffset = 0.0;
         public double yOffset = 0.0;
+        public double zOffset = 0.0;
         public float scale = 1.0f;
 
         public float rotX = 0.0f;
