@@ -29,6 +29,7 @@ public class ConfigManager {
         public ConfigInstance.AttackIndicator AttackIndicator;
         public ConfigInstance.PieChart PieChart;
         public ConfigInstance.Boat Boat;
+        public ConfigInstance.ShieldConfig Shields;
     }
 
     public static void load() {
@@ -54,6 +55,7 @@ public class ConfigManager {
                     if (data.AttackIndicator != null) ConfigInstance.AttackIndicator = data.AttackIndicator;
                     if (data.PieChart != null) ConfigInstance.PieChart = data.PieChart;
                     if (data.Boat != null) ConfigInstance.Boat = data.Boat;
+                    if (data.Shields != null) ConfigInstance.Shields = data.Shields;
                 }
             } catch (Exception e) {
                 System.err.println("Failed to load config!");
@@ -86,6 +88,7 @@ public class ConfigManager {
             data.AttackIndicator = ConfigInstance.AttackIndicator;
             data.PieChart = ConfigInstance.PieChart;
             data.Boat = ConfigInstance.Boat;
+            data.Shields = ConfigInstance.Shields;
 
             GSON.toJson(data, writer);
 

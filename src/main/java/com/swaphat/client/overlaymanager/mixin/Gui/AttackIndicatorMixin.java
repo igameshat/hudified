@@ -3,90 +3,105 @@ package com.swaphat.client.overlaymanager.mixin.Gui;
 import com.swaphat.client.overlaymanager.config.ConfigInstance;
 import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.OptionInstance;
-import net.minecraft.client.Options;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Gui.class)
 public class AttackIndicatorMixin {
 
-    // We use these flags to track if we successfully shifted the matrix
-    // so we don't accidentally pop an empty stack and crash the game!
     @Unique
-    private boolean overlayManager$pushedCrosshair = false;
+    private boolean overlayManager$appliedScaling = false;
 
-    @Unique
-    private boolean overlayManager$pushedHotbar = false;
-
-    // 1. DISABLE LOGIC (Using the exact vanilla Codec structure you decompiled)
-    @Redirect(
-            method = {"renderCrosshair", "renderItemHotbar"},
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Options;attackIndicator()Lnet/minecraft/client/OptionInstance;")
-    )
-    private OptionInstance<AttackIndicatorStatus> hideIndicator(Options instance) {
+    // 1. DYNAMIC TOGGLE
+    // Instead of Redirecting the OptionInstance (which is hard in 1.21.4),
+    // we simply check our config and cancel the render if disabled.
+    @Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
+    private void checkCrosshairEnabled(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (!ConfigInstance.AttackIndicator.enabled) {
-            return new OptionInstance<>(
-                    "options.attackIndicator",
-                    OptionInstance.noTooltip(),
-                    (component, value) -> value.caption(),
-                    new OptionInstance.Enum<>(
-                            java.util.Arrays.asList(AttackIndicatorStatus.values()),
-                            AttackIndicatorStatus.LEGACY_CODEC
-                    ),
-                    AttackIndicatorStatus.OFF,
-                    (value) -> {}
-            );
+            // If the user turned it off in our mod, we check vanilla settings.
+            // If vanilla is set to CROSSHAIR, we cancel so it doesn't draw.
+            if (Minecraft.getInstance().options.attackIndicator().get() == AttackIndicatorStatus.CROSSHAIR) {
+                ci.cancel();
+            }
         }
-        return instance.attackIndicator();
     }
 
-    // 2. MOVE CROSSHAIR INDICATOR
-    // We inject right when it calculates attack strength (which happens immediately before drawing)
+    @Inject(method = "renderItemHotbar", at = @At("HEAD"), cancellable = true)
+    private void checkHotbarEnabled(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        if (!ConfigInstance.AttackIndicator.enabled) {
+            if (Minecraft.getInstance().options.attackIndicator().get() == AttackIndicatorStatus.HOTBAR) {
+                ci.cancel();
+            }
+        }
+    }
+
+    // 2. MOVE & SCALE CROSSHAIR
     @Inject(
             method = "renderCrosshair",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getAttackStrengthScale(F)F")
     )
     private void moveCrosshairStart(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (ConfigInstance.AttackIndicator.enabled) {
+            float scale = ConfigInstance.AttackIndicator.scale;
+            int xOff = ConfigInstance.AttackIndicator.hotbarXOffset;
+            int yOff = ConfigInstance.AttackIndicator.hotbarYOffset;
+
             guiGraphics.pose().pushMatrix();
-            guiGraphics.pose().translate(ConfigInstance.AttackIndicator.hotbarXOffset, ConfigInstance.AttackIndicator.hotbarYOffset);
-            this.overlayManager$pushedCrosshair = true;
+
+            int centerX = guiGraphics.guiWidth() / 2;
+            int centerY = guiGraphics.guiHeight() / 2;
+
+            // Pivot point scaling logic
+            guiGraphics.pose().translate(centerX + xOff, centerY + yOff);
+            guiGraphics.pose().scale(scale, scale);
+            guiGraphics.pose().translate(-centerX, -centerY);
+
+            this.overlayManager$appliedScaling = true;
         }
     }
-
-    // We clean up at the very end of the method
     @Inject(method = "renderCrosshair", at = @At("RETURN"))
     private void moveCrosshairEnd(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        if (this.overlayManager$pushedCrosshair) {
+        if (this.overlayManager$appliedScaling) {
             guiGraphics.pose().popMatrix();
-            this.overlayManager$pushedCrosshair = false;
+            this.overlayManager$appliedScaling = false;
         }
     }
 
+    // 3. MOVE & SCALE HOTBAR INDICATOR
     @Inject(
             method = "renderItemHotbar",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getAttackStrengthScale(F)F")
     )
     private void moveHotbarStart(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (ConfigInstance.AttackIndicator.enabled) {
+            float scale = ConfigInstance.AttackIndicator.scale;
+            int xOff = ConfigInstance.AttackIndicator.hotbarXOffset;
+            int yOff = ConfigInstance.AttackIndicator.hotbarYOffset;
+
             guiGraphics.pose().pushMatrix();
-            guiGraphics.pose().translate(ConfigInstance.AttackIndicator.hotbarXOffset, ConfigInstance.AttackIndicator.hotbarYOffset);
-            this.overlayManager$pushedHotbar = true;
+
+            int centerX = (guiGraphics.guiWidth() / 2) + 91;
+            int centerY = guiGraphics.guiHeight() - 20;
+
+            guiGraphics.pose().translate(centerX + xOff, centerY + yOff);
+            guiGraphics.pose().scale(scale, scale);
+            guiGraphics.pose().translate(-centerX, -centerY);
+
+            this.overlayManager$appliedScaling = true;
         }
     }
 
     @Inject(method = "renderItemHotbar", at = @At("RETURN"))
     private void moveHotbarEnd(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        if (this.overlayManager$pushedHotbar) {
+        if (this.overlayManager$appliedScaling) {
             guiGraphics.pose().popMatrix();
-            this.overlayManager$pushedHotbar = false;
+            this.overlayManager$appliedScaling = false;
         }
     }
 }

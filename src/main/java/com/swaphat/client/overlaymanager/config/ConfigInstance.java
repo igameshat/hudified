@@ -21,6 +21,7 @@ public class ConfigInstance {
     public static ArrowHighlight ArrowHighlight = new ArrowHighlight();
     public static PieChart PieChart = new PieChart();
     public static Boat Boat = new Boat();
+    public static ShieldConfig Shields = new ShieldConfig();
 
     public static class PumpkinOverlay {
         public boolean enabled = true;
@@ -67,7 +68,7 @@ public class ConfigInstance {
 
     public static class BossBar {
         public boolean enabled = true;
-        public int bossBarYOffset = 0;
+        public int bossBarYOffset = 10;
         public int bossBarXOffset = 0;
         public float scale = 1f;
     }
@@ -86,6 +87,7 @@ public class ConfigInstance {
         public boolean enabled = false;
         public int hotbarXOffset = 0;
         public int hotbarYOffset = 0;
+        public float scale = 1f;
     }
 
     public static class ArrowHighlight {
@@ -114,6 +116,37 @@ public class ConfigInstance {
     public static class Boat {
         public boolean enabled = true;
         public boolean unlockBoatPov = true;
+    }
+
+    public static class ShieldConfig {
+        public boolean enabled = true;
+
+        // First Person
+        public HandSettings firstPersonMain = new HandSettings();
+        public HandSettings firstPersonOff = new HandSettings();
+
+        // Third Person / F5
+        public HandSettings thirdPersonMain = new HandSettings();
+        public HandSettings thirdPersonOff = new HandSettings();
+
+        // Other Players
+        public HandSettings otherPlayersMain = new HandSettings();
+        public HandSettings otherPlayersOff = new HandSettings();
+    }
+
+    public static class HandSettings {
+        public ShieldSettings idle = new ShieldSettings();
+        public ShieldSettings blocking = new ShieldSettings();
+    }
+
+    public static class ShieldSettings {
+        public double xOffset = 0.0;
+        public double yOffset = 0.0;
+        public float scale = 1.0f;
+
+        public float rotX = 0.0f;
+        public float rotY = 0.0f;
+        public float rotZ = 0.0f;
     }
 
     public static class Environment {

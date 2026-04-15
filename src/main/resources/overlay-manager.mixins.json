@@ -37,7 +37,10 @@
 		"patches.pieChart.ProfilerPieChartMixin",
 		"Gui.HUDPieChartMixin",
 
-		"patches.boat.UnlockBoatPovMixin"
+		"patches.boat.UnlockBoatPovMixin",
+
+		"patches.shield.ItemInHandLayerMixin",
+		"patches.shield.ItemInHandRendererMixin"
 	],
 	"BROKEN-NEEDS-FIXIND": [],
 	"injectors": {
