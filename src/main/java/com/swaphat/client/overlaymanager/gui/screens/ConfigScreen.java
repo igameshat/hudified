@@ -24,6 +24,7 @@ public class ConfigScreen extends Screen {
         // Idle Settings
         widget.addIntField(prefix + " Idl X", (int)settings.idle.xOffset, v -> settings.idle.xOffset = v);
         widget.addIntField(prefix + " Idl Y", (int)settings.idle.yOffset, v -> settings.idle.yOffset = v);
+        widget.addIntField(prefix + " Idl Z", (int)settings.idle.zOffset, v -> settings.idle.zOffset = v);
         widget.addSlider(prefix + " Idl Scl", settings.idle.scale, v -> settings.idle.scale = v.floatValue());
         widget.addIntField(prefix + " Idl RotX", (int)settings.idle.rotX, v -> settings.idle.rotX = v);
         widget.addIntField(prefix + " Idl RotY", (int)settings.idle.rotY, v -> settings.idle.rotY = v);
@@ -32,6 +33,7 @@ public class ConfigScreen extends Screen {
         // Blocking Settings
         widget.addIntField(prefix + " Blk X", (int)settings.blocking.xOffset, v -> settings.blocking.xOffset = v);
         widget.addIntField(prefix + " Blk Y", (int)settings.blocking.yOffset, v -> settings.blocking.yOffset = v);
+        widget.addIntField(prefix + " Blk Z", (int)settings.blocking.zOffset, v -> settings.blocking.zOffset = v);
         widget.addSlider(prefix + " Blk Scl", settings.blocking.scale, v -> settings.blocking.scale = v.floatValue());
         widget.addIntField(prefix + " Blk RotX", (int)settings.blocking.rotX, v -> settings.blocking.rotX = v);
         widget.addIntField(prefix + " Blk RotY", (int)settings.blocking.rotY, v -> settings.blocking.rotY = v);
