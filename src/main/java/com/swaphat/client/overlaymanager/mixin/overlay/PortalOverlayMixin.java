@@ -29,19 +29,19 @@ public abstract class PortalOverlayMixin {
         LocalPlayer player = (LocalPlayer) (Object) this;
 
         if (!ConfigInstance.PortalOverlay.enabled) {
-            player.portalEffectIntensity = 0.0F;
+            player.portalEffectIntensity = 0;
             return;
         }
 
         float vanillaDelta = player.portalEffectIntensity - player.oPortalEffectIntensity;
         float speedMultiplier = ConfigInstance.PortalOverlay.speed;
-        float maxOpacity = ConfigInstance.PortalOverlay.opacity / 255.0F;
+        float maxOpacity = ConfigInstance.PortalOverlay.opacity / 255;
 
         player.portalEffectIntensity = player.oPortalEffectIntensity + (vanillaDelta * speedMultiplier);
 
         if (player.portalEffectIntensity > maxOpacity) player.portalEffectIntensity = maxOpacity;
 
-        if (player.portalEffectIntensity < 0.0F) player.portalEffectIntensity = 0.0F;
+        if (player.portalEffectIntensity < 0) player.portalEffectIntensity = 0;
 
     }
 }

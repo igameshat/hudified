@@ -18,10 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ItemInHandRenderer.class)
 public class ItemInHandRendererMixin {
 
-    @Inject(
-            method = "renderItem",
-            at = @At("HEAD")
-    )
+    @Inject(method = "renderItem", at = @At("HEAD"))
     private void overlayManager$firstPersonBefore(LivingEntity entity, ItemStack stack, ItemDisplayContext displayContext, PoseStack poseStack, SubmitNodeCollector collector, int seed, CallbackInfo ci) {
         if (!ConfigInstance.Shields.enabled || stack == null || !(stack.getItem() instanceof ShieldItem)) return;
 
@@ -32,35 +29,33 @@ public class ItemInHandRendererMixin {
             boolean isOffHand = displayContext == ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
 
             if (isMainHand || isOffHand) {
-                // Check if the player is actively blocking with THIS specific shield stack
                 boolean isBlocking = mc.player.isUsingItem() && mc.player.getUseItem() == stack;
 
                 ConfigInstance.HandSettings handSettings = isMainHand ?
                         ConfigInstance.Shields.firstPersonMain :
                         ConfigInstance.Shields.firstPersonOff;
 
-                // Route to Idle or Blocking config
                 ConfigInstance.ShieldSettings settings = isBlocking ? handSettings.blocking : handSettings.idle;
 
                 double x = settings.xOffset / 100;
                 double y = settings.yOffset / 100;
                 double z = settings.zOffset / 100;
-                float s = Math.max(0.01f, settings.scale);
+
+                float sX = Math.max(.01f, settings.scaleX);
+                float sY = Math.max(.01f, settings.scaleY);
+                float sZ = Math.max(.01f, settings.scaleZ);
 
                 poseStack.pushPose();
                 poseStack.translate(x, y, z);
                 poseStack.mulPose(Axis.XP.rotationDegrees(settings.rotX));
                 poseStack.mulPose(Axis.YP.rotationDegrees(settings.rotY));
                 poseStack.mulPose(Axis.ZP.rotationDegrees(settings.rotZ));
-                poseStack.scale(s, s, s);
+                poseStack.scale(sX, sY, sZ);
             }
         }
     }
 
-    @Inject(
-            method = "renderItem",
-            at = @At("RETURN")
-    )
+    @Inject(method = "renderItem", at = @At("RETURN"))
     private void overlayManager$firstPersonAfter(LivingEntity entity, ItemStack stack, ItemDisplayContext displayContext, PoseStack poseStack, SubmitNodeCollector collector, int seed, CallbackInfo ci) {
         if (!ConfigInstance.Shields.enabled || stack == null || !(stack.getItem() instanceof ShieldItem)) return;
 

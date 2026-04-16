@@ -21,8 +21,6 @@ public class VignetteOverlayMixin {
             ordinal = 0
     )
     private float applyVignetteOpacity(float f) {
-        // Multiply vanilla's brightness factor by our scale (0.0 to 1.0)
-        // Clamp it to ensure it stays in a valid range (0.0 - 1.0)
         return Mth.clamp(f * (ConfigInstance.Vignette.enabled ? ConfigInstance.Vignette.opacity/255 : 1), 0.0F, 1.0F);
     }
 }

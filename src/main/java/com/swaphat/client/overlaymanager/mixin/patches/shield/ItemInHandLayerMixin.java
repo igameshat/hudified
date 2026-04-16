@@ -21,10 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ItemInHandLayer.class)
 public class ItemInHandLayerMixin {
 
-    @Inject(
-            method = "submitArmWithItem",
-            at = @At("HEAD")
-    )
+    @Inject(method = "submitArmWithItem", at = @At("HEAD"))
     private void overlayManager$thirdPersonBefore(ArmedEntityRenderState state, ItemStackRenderState itemState, ItemStack stack, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
         if (!ConfigInstance.Shields.enabled || stack == null || !(stack.getItem() instanceof ShieldItem)) return;
 
@@ -38,7 +35,6 @@ public class ItemInHandLayerMixin {
             int entityId = state.getClass().getField("id").getInt(state);
             isSelf = (entityId == mc.player.getId());
 
-            // Check if this specific entity is blocking
             Entity entity = mc.level.getEntity(entityId);
             if (entity instanceof LivingEntity living) {
                 if (living.isUsingItem() && living.getUseItem() == stack) {
@@ -61,20 +57,20 @@ public class ItemInHandLayerMixin {
         double x = settings.xOffset / 100;
         double y = settings.yOffset / 100;
         double z = settings.zOffset / 100;
-        float s = Math.max(0.01f, settings.scale);
+
+        float sX = Math.max(.01f, settings.scaleX);
+        float sY = Math.max(.01f, settings.scaleY);
+        float sZ = Math.max(.01f, settings.scaleZ);
 
         poseStack.pushPose();
         poseStack.translate(x, y, z);
         poseStack.mulPose(Axis.XP.rotationDegrees(settings.rotX));
         poseStack.mulPose(Axis.YP.rotationDegrees(settings.rotY));
         poseStack.mulPose(Axis.ZP.rotationDegrees(settings.rotZ));
-        poseStack.scale(s, s, s);
+        poseStack.scale(sX, sY, sZ);
     }
 
-    @Inject(
-            method = "submitArmWithItem",
-            at = @At("RETURN")
-    )
+    @Inject(method = "submitArmWithItem", at = @At("RETURN"))
     private void overlayManager$thirdPersonAfter(ArmedEntityRenderState state, ItemStackRenderState itemState, ItemStack stack, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
         if (ConfigInstance.Shields.enabled && stack != null && stack.getItem() instanceof ShieldItem) {
             poseStack.popPose();

@@ -11,6 +11,7 @@ import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
@@ -22,154 +23,155 @@ public class DropDownWidget extends AbstractWidget {
     private final List<AbstractWidget> children = new ArrayList<>();
     private boolean dropped = false;
     private AbstractWidget focusedChild;
-
-    // -1 is the Header, 0+ are the children
     private int selectionIndex = -1;
+
+    public boolean isNested = false;
+
+    public static boolean drawBackground = true;
 
     public DropDownWidget(int x, int y, int width, String title) {
         super(x, y, width, 20, Component.literal(title));
     }
 
-    /**
-     * Handles opening/closing the menu safely.
-     * Prevents NullPointerExceptions by not passing fake events.
-     */
     private void toggle() {
         this.dropped = !this.dropped;
-
-        // If we close the menu, unfocus any children and reset selection to header
         if (!this.dropped) {
             if (selectionIndex >= 0 && selectionIndex < children.size()) {
                 children.get(selectionIndex).setFocused(false);
             }
             this.selectionIndex = -1;
         } else {
-            // If we open via keyboard, default to the first child
             this.selectionIndex = 0;
-            if (!children.isEmpty()) {
-                children.getFirst().setFocused(true);
+            if (!children.isEmpty()) children.getFirst().setFocused(true);
+        }
+    }
+
+    public int getExpandedHeight() {
+        if (!this.dropped) return this.height;
+        int total = this.height;
+        for (AbstractWidget child : this.children) {
+            if (child instanceof DropDownWidget nested) {
+                total += nested.getExpandedHeight() + 2;
+            } else {
+                total += child.getHeight() + 2;
             }
         }
+        return total + 2;
     }
 
     @Override
     protected void renderWidget(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-        // Render keyboard focus highlight for the header
         if (this.selectionIndex == -1) {
             this.renderHighlight(guiGraphics, this.getX(), this.getY(), this.width, this.height);
         }
 
-        String prefix = this.dropped ? "v " : "> ";
+        String prefix = this.dropped ? (this.isNested ? "[-] " : "v ") : (this.isNested ? "[+] " : "> ");
         guiGraphics.drawString(Minecraft.getInstance().font, prefix + this.getMessage().getString(), this.getX() + 5, this.getY() + 6, 0xffffffff, false);
 
         if (this.dropped) {
+            int startY = this.getY() + this.height;
+            int currentY = startY + 2;
+            int indent = this.isNested ? 10 : 2;
+
+            if (!this.isNested && drawBackground) {
+                guiGraphics.fill(this.getX(), startY, this.getX() + this.width, startY + (this.getExpandedHeight() - this.height), 0x99000000);
+            }
+
+            if (this.isNested && drawBackground) {
+                guiGraphics.fill(this.getX() + 2, startY, this.getX() + 3, startY + (this.getExpandedHeight() - this.height) - 2, 0xFF555555);
+            }
+
             for (int i = 0; i < this.children.size(); i++) {
                 AbstractWidget child = this.children.get(i);
+                child.setX(this.getX() + indent);
+                child.setY(currentY);
 
-                // Render keyboard focus highlight for children
                 if (this.selectionIndex == i) {
                     this.renderHighlight(guiGraphics, child.getX(), child.getY(), child.getWidth(), child.getHeight());
                 }
 
                 child.render(guiGraphics, mouseX, mouseY, delta);
+
+                if (child instanceof DropDownWidget nested) {
+                    currentY += nested.getExpandedHeight() + 2;
+                } else {
+                    currentY += child.getHeight() + 2;
+                }
             }
         }
     }
 
     private void renderHighlight(GuiGraphics guiGraphics, int x, int y, int w, int h) {
-        // A subtle white overlay to show which element is selected via keyboard
-        guiGraphics.fill(x, y, x + w, y + h, 0x40ffffff);
+        if (drawBackground) {
+            guiGraphics.fill(x, y, x + w, y + h, 0x40ffffff);
+        }
     }
 
-    @Override
-    public boolean keyPressed(@NonNull KeyEvent keyEvent) {
-        if (!this.active || !this.visible) return false;
-
-        // 1. Navigation: UP / DOWN
-        if (keyEvent.isDown() || keyEvent.isUp()) {
-            // Unfocus the current child before moving focus
-            if (selectionIndex >= 0 && selectionIndex < children.size()) {
-                children.get(selectionIndex).setFocused(false);
-            }
-
-            if (keyEvent.isDown()) {
-                if (!this.dropped) {
-                    this.toggle(); // Auto-open on down press
-                } else {
-                    this.selectionIndex = Math.min(this.selectionIndex + 1, this.children.size() - 1);
-                }
-            } else {
-                this.selectionIndex = Math.max(this.selectionIndex - 1, -1);
-            }
-
-            // Apply focus to the new selection (crucial for slider logic)
-            if (selectionIndex >= 0 && selectionIndex < children.size()) {
-                children.get(selectionIndex).setFocused(true);
-            }
-            return true;
-        }
-
-        // 2. Routing: Pass key events to the focused child
-        // This allows sliders to handle their own Left/Right arrow logic natively
-        if (this.dropped && selectionIndex >= 0) {
-            if (children.get(selectionIndex).keyPressed(keyEvent)) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (!this.dropped) return false;
+        for (AbstractWidget child : this.children) {
+            if (child.isMouseOver(mouseX, mouseY) && child.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
                 return true;
             }
         }
-
-        // 3. Selection: ENTER / SPACE on Header
-        if (selectionIndex == -1 && keyEvent.isSelection()) {
-            this.toggle();
-            return true;
-        }
-
-        return super.keyPressed(keyEvent);
+        return false;
     }
 
-    @Override
-    public boolean isMouseOver(double mouseX, double mouseY) {
-        if (super.isMouseOver(mouseX, mouseY)) return true;
-        if (this.dropped) {
-            for (AbstractWidget child : this.children) {
-                if (child.isMouseOver(mouseX, mouseY)) return true;
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        if (!this.dropped) return false;
+        for (AbstractWidget child : this.children) {
+            if (child.isMouseOver(mouseX, mouseY) && mouseScrolled(mouseX, mouseY, amount)) {
+                return true;
             }
         }
         return false;
     }
 
     @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        if (super.isMouseOver(mouseX, mouseY)) return true;
+        if (this.dropped) {
+            int startY = this.getY() + this.height;
+            return mouseX >= this.getX() && mouseX <= this.getX() + this.width &&
+                    mouseY >= startY && mouseY <= startY + (this.getExpandedHeight() - this.height);
+        }
+        return false;
+    }
+
+    @Override
     public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
-        // Sync keyboard selection with mouse click
-        if (super.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y())) {
+        double mouseX = mouseButtonEvent.x();
+        double mouseY = mouseButtonEvent.y();
+
+        if (mouseX >= this.getX() && mouseX <= this.getX() + this.width &&
+                mouseY >= this.getY() && mouseY <= this.getY() + this.height) {
             this.selectionIndex = -1;
+            this.toggle();
+            return true;
         }
 
         if (this.dropped) {
             for (int i = 0; i < this.children.size(); i++) {
                 AbstractWidget child = this.children.get(i);
-                if (child.mouseClicked(mouseButtonEvent, bl)) {
-                    // Unfocus previous selection
-                    if (selectionIndex >= 0 && selectionIndex < children.size()) {
-                        children.get(selectionIndex).setFocused(false);
+                if (child.isMouseOver(mouseX, mouseY)) {
+                    if (child.mouseClicked(mouseButtonEvent, bl)) {
+                        if (selectionIndex >= 0 && selectionIndex < children.size()) children.get(selectionIndex).setFocused(false);
+                        this.focusedChild = child;
+                        this.selectionIndex = i;
+                        child.setFocused(true);
+                        return true;
                     }
-
-                    this.focusedChild = child;
-                    this.selectionIndex = i;
-                    child.setFocused(true);
-                    return true;
                 }
             }
         }
 
         this.focusedChild = null;
-        return super.mouseClicked(mouseButtonEvent, bl);
+        return false;
     }
 
     @Override
     public boolean mouseDragged(@NonNull MouseButtonEvent mouseButtonEvent, double dragX, double dragY) {
-        if (this.dropped && this.focusedChild != null) {
-            return this.focusedChild.mouseDragged(mouseButtonEvent, dragX, dragY);
-        }
+        if (this.dropped && this.focusedChild != null) return this.focusedChild.mouseDragged(mouseButtonEvent, dragX, dragY);
         return super.mouseDragged(mouseButtonEvent, dragX, dragY);
     }
 
@@ -184,18 +186,32 @@ public class DropDownWidget extends AbstractWidget {
     }
 
     @Override
-    public void onClick(@NonNull MouseButtonEvent mouseButtonEvent, boolean bl) {
-        this.toggle();
+    public boolean keyPressed(@NonNull KeyEvent keyEvent) {
+        if (!this.active || !this.visible) return false;
+        if (keyEvent.isDown() || keyEvent.isUp()) {
+            if (selectionIndex >= 0 && selectionIndex < children.size()) children.get(selectionIndex).setFocused(false);
+            if (keyEvent.isDown()) {
+                if (!this.dropped) this.toggle();
+                else this.selectionIndex = Math.min(this.selectionIndex + 1, this.children.size() - 1);
+            } else {
+                this.selectionIndex = Math.max(this.selectionIndex - 1, -1);
+            }
+            if (selectionIndex >= 0 && selectionIndex < children.size()) children.get(selectionIndex).setFocused(true);
+            return true;
+        }
+        if (this.dropped && selectionIndex >= 0) {
+            if (children.get(selectionIndex).keyPressed(keyEvent)) return true;
+        }
+        if (selectionIndex == -1 && keyEvent.isSelection()) {
+            this.toggle();
+            return true;
+        }
+        return super.keyPressed(keyEvent);
     }
 
     @Override
     public boolean charTyped(@NonNull CharacterEvent characterEvent) {
-        // If the menu isn't open, we don't swallow characters
-        if (!this.dropped || selectionIndex < 0) {
-            return false;
-        }
-
-        // Pass to the selected child (the wrapper)
+        if (!this.dropped || selectionIndex < 0) return false;
         return children.get(selectionIndex).charTyped(characterEvent);
     }
 
@@ -203,37 +219,62 @@ public class DropDownWidget extends AbstractWidget {
     // ADDER METHODS
     // =========================================================
 
-    public DropDownWidget addToggleButton(String label, Supplier<Boolean> getter, Consumer<Boolean> setter) {
-        int nextY = this.getY() + this.height + 2 + (this.children.size() * 22);
+    public DropDownWidget addSubMenu(DropDownWidget menu) {
+        menu.isNested = true;
+        this.children.add(menu);
+        return this;
+    }
 
+    public DropDownWidget addToggleButton(String label, Supplier<Boolean> getter, Consumer<Boolean> setter) {
         Button btn = Button.builder(Component.literal(label + ": " + (getter.get() ? "ON" : "OFF")), b -> {
             setter.accept(!getter.get());
             b.setMessage(Component.literal(label + ": " + (getter.get() ? "ON" : "OFF")));
-        }).bounds(this.getX() + 2, nextY, this.width - 4, 20).build();
-
+        }).bounds(0, 0, this.width - 15, 20).build();
         this.children.add(btn);
         return this;
     }
 
     public DropDownWidget addButton(String text, Button.OnPress action) {
-        int nextY = this.getY() + this.height + 2 + (this.children.size() * 22);
-
-        Button btn = Button.builder(Component.literal(text), action)
-                .bounds(this.getX() + 2, nextY, this.width - 4, 20).build();
-
+        Button btn = Button.builder(Component.literal(text), action).bounds(0, 0, this.width - 15, 20).build();
         this.children.add(btn);
         return this;
     }
 
     public DropDownWidget addSlider(String label, double defaultValue, Consumer<Double> onValueChange) {
-        int nextY = this.getY() + this.height + 2 + (this.children.size() * 22);
+        // Default max limits based on your original percentage/flat value logic
+        int defaultMax = (label.contains("Scale") || label.contains("Speed") || label.contains("Multiplier") || label.contains("Offset")) ? 100 : 255;
+        return addSlider(label, defaultValue, defaultMax, onValueChange);
+    }
 
-        AbstractSliderButton slider = new AbstractSliderButton(this.getX() + 2, nextY, this.width - 4, 20, Component.literal(label), defaultValue) {
+    public DropDownWidget addSlider(String label, double defaultValue, int maxLimit, Consumer<Double> onValueChange) {
+        boolean isPercentage = label.contains("Scale") || label.contains("Speed") || label.contains("Multiplier") || label.contains("Offset");
+
+        // We extend AbstractSliderButton directly to inherit 'value' and 'updateMessage()'
+        AbstractSliderButton dualWidget = new AbstractSliderButton(0, 0, this.width - 15, 20, Component.literal(label), defaultValue) {
+            private boolean isEditingText = false;
+            private long lastClickTime = 0;
+            private final EditBox editBox = new EditBox(Minecraft.getInstance().font, 0, 0, width - 60, height, Component.literal(label));
+
+            { // Instance Initializer for the EditBox
+                editBox.setFilter(text -> text.isEmpty() || text.matches("^-?\\d*$"));
+                editBox.setResponder(text -> {
+                    if (!text.isEmpty() && !text.equals("-")) {
+                        try {
+                            int parsed = Integer.parseInt(text);
+                            int clamped = Mth.clamp(parsed, 0, maxLimit);
+
+                            // Direct access to 'value' since we extend AbstractSliderButton
+                            this.value = (double) clamped / maxLimit;
+                            this.applyValue();
+                        } catch (NumberFormatException ignored) {}
+                    }
+                });
+            }
+
             @Override
             protected void updateMessage() {
-                int displayValue = (int) (this.value * 255);
-                if (label.contains("Scale") || label.contains("Speed") || label.contains("Multiplier") || label.contains("Offset")) {
-                    displayValue = (int) (this.value * 100);
+                int displayValue = (int) (this.value * maxLimit);
+                if (isPercentage) {
                     this.setMessage(Component.literal(label + ": " + displayValue + "%"));
                 } else {
                     this.setMessage(Component.literal(label + ": " + displayValue));
@@ -244,69 +285,155 @@ public class DropDownWidget extends AbstractWidget {
             protected void applyValue() {
                 onValueChange.accept(this.value);
             }
-        };
 
-
-
-        this.children.add(slider);
-        return this;
-    }
-
-    public DropDownWidget addIntField(String label, int currentValue, Consumer<Integer> setter) {
-        int nextY = this.getY() + this.height + 2 + (this.children.size() * 22);
-
-        EditBox editBox = new EditBox(Minecraft.getInstance().font, this.getX() + 60, nextY, this.width - 65, 20, Component.literal(label));
-        editBox.setValue(String.valueOf(currentValue));
-        editBox.setFilter(text -> text.isEmpty() || text.matches("^-?\\d*$"));
-
-        editBox.setResponder(text -> {
-            if (!text.isEmpty() && !text.equals("-")) {
-                try {
-                    setter.accept(Integer.parseInt(text));
-                } catch (NumberFormatException ignored) {}
+            private void toggleMode() {
+                isEditingText = !isEditingText;
+                if (isEditingText) {
+                    // Switch to EditBox: set text to the current calculated integer value
+                    int displayValue = (int) (this.value * maxLimit);
+                    editBox.setValue(String.valueOf(displayValue));
+                    editBox.setFocused(true);
+                } else {
+                    // Switch back to Slider: unfocus box and force text update
+                    editBox.setFocused(false);
+                    this.updateMessage();
+                }
             }
-        });
 
-        AbstractWidget wrapper = new AbstractWidget(this.getX(), nextY, this.width, 20, Component.literal(label)) {
             @Override
-            protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-                guiGraphics.drawString(Minecraft.getInstance().font, label + ":", this.getX() + 5, this.getY() + 6, 0xffffffff, false);
-                editBox.render(guiGraphics, mouseX, mouseY, delta);
+            public void renderWidget(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+                if (isEditingText) {
+                    // Render the Text Box if editing
+                    editBox.setX(this.getX() + 60);
+                    editBox.setY(this.getY());
+                    guiGraphics.drawString(Minecraft.getInstance().font, label + ":", this.getX() + 5, this.getY() + 6, 0xffffffff, false);
+                    editBox.render(guiGraphics, mouseX, mouseY, delta);
+                } else {
+                    // Render the normal Vanilla Slider
+                    super.renderWidget(guiGraphics, mouseX, mouseY, delta);
+                }
+            }
+
+            @Override
+            public boolean mouseClicked(@NonNull MouseButtonEvent mouseButtonEvent, boolean bl) {
+                long currentTime = System.currentTimeMillis();
+                boolean isDoubleClick = (currentTime - lastClickTime) < 300; // 300ms window
+                lastClickTime = currentTime;
+
+                if (isDoubleClick && this.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y())) {
+                    toggleMode();
+                    return true;
+                }
+
+                // Route clicks based on current mode
+                return isEditingText ? editBox.mouseClicked(mouseButtonEvent, bl) : super.mouseClicked(mouseButtonEvent, bl);
+            }
+
+            @Override
+            public boolean mouseReleased(@NonNull MouseButtonEvent mouseButtonEvent) {
+                return isEditingText ? editBox.mouseReleased(mouseButtonEvent) : super.mouseReleased(mouseButtonEvent);
+            }
+
+            @Override
+            public boolean mouseDragged(@NonNull MouseButtonEvent mouseButtonEvent, double dragX, double dragY) {
+                return isEditingText ? editBox.mouseDragged(mouseButtonEvent, dragX, dragY) : super.mouseDragged(mouseButtonEvent, dragX, dragY);
+            }
+
+            public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+                return isEditingText ? false : doScroll(mouseX, mouseY, scrollY);
+            }
+
+            public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+                return isEditingText ? false : doScroll(mouseX, mouseY, amount);
+            }
+
+            private boolean doScroll(double mouseX, double mouseY, double amount) {
+                if (this.isMouseOver(mouseX, mouseY)) {
+                    this.value = Mth.clamp(this.value + (amount > 0 ? 0.05 : -0.05), 0.0, 1.0);
+                    this.applyValue();
+                    this.updateMessage();
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean keyPressed(@NonNull KeyEvent keyEvent) {
+                if (isEditingText) {
+                    // Lock in the value when pressing Enter
+                    if (keyEvent.isSelection()) {
+                        toggleMode();
+                        return true;
+                    }
+                    return editBox.keyPressed(keyEvent);
+                }
+                return super.keyPressed(keyEvent);
+            }
+
+            @Override
+            public boolean charTyped(@NonNull CharacterEvent characterEvent) {
+                return isEditingText ? editBox.charTyped(characterEvent) : super.charTyped(characterEvent);
             }
 
             @Override
             public void setFocused(boolean focused) {
                 super.setFocused(focused);
-                editBox.setFocused(focused);
+                if (isEditingText) editBox.setFocused(focused);
             }
-
-            @Override
-            public boolean mouseClicked(@NonNull MouseButtonEvent mouseButtonEvent, boolean bln) {
-                // STRICT MAPPING
-                return editBox.mouseClicked(mouseButtonEvent, bln);
-            }
-
-            @Override
-            public boolean keyPressed(@NonNull KeyEvent keyEvent) {
-                // STRICT MAPPING
-                return editBox.keyPressed(keyEvent);
-            }
-
-            @Override
-            public boolean charTyped(@NonNull CharacterEvent characterEvent) {
-                // STRICT MAPPING
-                return editBox.charTyped(characterEvent);
-            }
-
-            @Override
-            protected void updateWidgetNarration(@NonNull NarrationElementOutput narrationElementOutput) {}
         };
 
+        this.children.add(dualWidget);
+        return this;
+    }
+
+    public DropDownWidget addIntField(String label, int currentValue, Consumer<Integer> setter) {
+        EditBox editBox = new EditBox(Minecraft.getInstance().font, 0, 0, this.width - 70, 20, Component.literal(label));
+        editBox.setValue(String.valueOf(currentValue));
+        editBox.setFilter(text -> text.isEmpty() || text.matches("^-?\\d*$"));
+
+        editBox.setResponder(text -> {
+            if (!text.isEmpty() && !text.equals("-")) {
+                try { setter.accept(Integer.parseInt(text)); } catch (NumberFormatException ignored) {}
+            }
+        });
+
+        AbstractWidget wrapper = new AbstractWidget(0, 0, this.width - 15, 20, Component.literal(label)) {
+            @Override
+            protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+                editBox.setX(this.getX() + 60);
+                editBox.setY(this.getY());
+                guiGraphics.drawString(Minecraft.getInstance().font, label + ":", this.getX() + 5, this.getY() + 6, 0xffffffff, false);
+                editBox.render(guiGraphics, mouseX, mouseY, delta);
+            }
+
+            public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+                return doScroll(mouseX, mouseY, scrollY);
+            }
+            public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+                return doScroll(mouseX, mouseY, amount);
+            }
+            private boolean doScroll(double mouseX, double mouseY, double amount) {
+                if (this.isMouseOver(mouseX, mouseY)) {
+                    try {
+                        int current = editBox.getValue().isEmpty() ? 0 : Integer.parseInt(editBox.getValue());
+                        current += (amount > 0 ? 1 : -1);
+                        editBox.setValue(String.valueOf(current));
+                        setter.accept(current);
+                        return true;
+                    } catch (NumberFormatException ignored) {}
+                }
+                return false;
+            }
+
+            @Override public void setFocused(boolean focused) { super.setFocused(focused); editBox.setFocused(focused); }
+            @Override public boolean mouseClicked(@NonNull MouseButtonEvent mouseButtonEvent, boolean bln) { return editBox.mouseClicked(mouseButtonEvent, bln); }
+            @Override public boolean keyPressed(@NonNull KeyEvent keyEvent) { return editBox.keyPressed(keyEvent); }
+            @Override public boolean charTyped(@NonNull CharacterEvent characterEvent) { return editBox.charTyped(characterEvent); }
+            @Override protected void updateWidgetNarration(@NonNull NarrationElementOutput n) {}
+        };
         this.children.add(wrapper);
         return this;
     }
 
-    @Override
-    protected void updateWidgetNarration(@NonNull NarrationElementOutput narrationElementOutput) {
-    }
+    @Override protected void updateWidgetNarration(@NonNull NarrationElementOutput n) {}
 }

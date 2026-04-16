@@ -101,8 +101,7 @@ public class ConfigManager {
     public static class ConfigHelper {
         public static float pixelsToFloat(float pixels) {
             float screenHeight = (float) net.minecraft.client.Minecraft.getInstance().getWindow().getGuiScaledHeight();
-            if (screenHeight <= 0) return 0.0f;
-            return pixels / screenHeight;
+            return screenHeight <= 0 ? 0 : pixels / screenHeight;
         }
     }
 }

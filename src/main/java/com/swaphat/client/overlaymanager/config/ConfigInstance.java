@@ -36,13 +36,13 @@ public class ConfigInstance {
 
     public static class SpyglassOverlay {
         public boolean enabled = true;
-        public float scale = 1f;
+        public float scale = 1;
     }
 
     public static class PortalOverlay {
         public boolean enabled = true;
         public float opacity = 255;
-        public float speed = 1f;
+        public float speed = 1;
         public boolean allowGuisInPortal = false;
         public boolean allowCameraShake = true;
     }
@@ -50,7 +50,7 @@ public class ConfigInstance {
     public static class FreezeOverlay {
         public boolean enabled = false;
         public int opacity = 255;
-        public float scale = 1f;
+        public float scale = 1;
     }
 
     public static class BlindnessOverlay {
@@ -68,9 +68,9 @@ public class ConfigInstance {
 
     public static class BossBar {
         public boolean enabled = true;
-        public int bossBarYOffset = 10;
+        public int bossBarYOffset = 12;
         public int bossBarXOffset = 0;
-        public float scale = 1f;
+        public float scale = 1;
     }
 
     public static class Scoreboard {
@@ -87,7 +87,7 @@ public class ConfigInstance {
         public boolean enabled = false;
         public int hotbarXOffset = 0;
         public int hotbarYOffset = 0;
-        public float scale = 1f;
+        public float scale = 1;
     }
 
     public static class ArrowHighlight {
@@ -110,7 +110,7 @@ public class ConfigInstance {
         public boolean renderingPieChart = false;
         public int windowIndex = 0;
 
-        public float scale = 1f;
+        public float scale = 1;
     }
 
     public static class Boat {
@@ -120,6 +120,8 @@ public class ConfigInstance {
 
     public static class ShieldConfig {
         public boolean enabled = true;
+        public boolean renderingCustomShield = false;
+        public float currentShieldAlpha = 1;
 
         // First Person
         public HandSettings firstPersonMain = new HandSettings();
@@ -140,23 +142,26 @@ public class ConfigInstance {
     }
 
     public static class ShieldSettings {
-        public double xOffset = 0.0;
-        public double yOffset = 0.0;
-        public double zOffset = 0.0;
-        public float scale = 1.0f;
+        public double xOffset = 0;
+        public double yOffset = 0;
+        public double zOffset = 0;
 
-        public float rotX = 0.0f;
-        public float rotY = 0.0f;
-        public float rotZ = 0.0f;
+        public float scaleX = 1;
+        public float scaleY = 1;
+        public float scaleZ = 1;
+
+        public float rotX = 0;
+        public float rotY = 0;
+        public float rotZ = 0;
     }
 
     public static class Environment {
         public boolean fullbright = false;
         public boolean disableFog = false;
-        public float fogMultiplier = 1.0f;
+        public float fogMultiplier = 1;
         public boolean clearLava = false;
         public boolean clearWater = false;
-        public float rainOpacity = 1.0f;
+        public float rainOpacity = 1;
         public boolean noRainParticles = false;
         public boolean noSnow = false;
     }

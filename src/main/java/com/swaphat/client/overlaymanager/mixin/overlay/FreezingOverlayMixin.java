@@ -24,7 +24,7 @@ public abstract class FreezingOverlayMixin {
 
             ci.cancel();
 
-            float opacityMultiplier = ConfigInstance.FreezeOverlay.opacity / 255.0F;
+            float opacityMultiplier = (float) ConfigInstance.FreezeOverlay.opacity / 255;
             int color = ARGB.white(f * opacityMultiplier);
 
             int screenWidth = guiGraphics.guiWidth();
@@ -37,22 +37,22 @@ public abstract class FreezingOverlayMixin {
             // Texture Constants
             // We are sampling 128px chunks from a 256px total file
             int totalTex = 256;
-            float halfTex = 128.0F;
+            float halfTex = 128;
 
             // 1. TOP-LEFT: Samples (0,0) to (128,128)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, identifier,
                     0, 0,
-                    0.0F, 0.0F, drawSize, drawSize, 128, 128, totalTex, totalTex, color);
+                    0, 0, drawSize, drawSize, 128, 128, totalTex, totalTex, color);
 
             // 2. TOP-RIGHT: Samples (128,0) to (256,128)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, identifier,
                     screenWidth - drawSize, 0,
-                    halfTex, 0.0F, drawSize, drawSize, 128, 128, totalTex, totalTex, color);
+                    halfTex, 0, drawSize, drawSize, 128, 128, totalTex, totalTex, color);
 
             // 3. BOTTOM-LEFT: Samples (0,128) to (128,256)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, identifier,
                     0, screenHeight - drawSize,
-                    0.0F, halfTex, drawSize, drawSize, 128, 128, totalTex, totalTex, color);
+                    0, halfTex, drawSize, drawSize, 128, 128, totalTex, totalTex, color);
 
             // 4. BOTTOM-RIGHT: Samples (128,128) to (256,256)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, identifier,
