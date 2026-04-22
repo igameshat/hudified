@@ -14,6 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -21,8 +22,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ItemInHandLayer.class)
 public class ItemInHandLayerMixin {
 
+    @Unique
+    private boolean overlayManager$didPush = false;
+
     @Inject(method = "submitArmWithItem", at = @At("HEAD"))
     private void overlayManager$thirdPersonBefore(ArmedEntityRenderState state, ItemStackRenderState itemState, ItemStack stack, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
+        overlayManager$didPush = false; // reset every call
+
         if (!ConfigInstance.Shields.enabled || stack == null || !(stack.getItem() instanceof ShieldItem)) return;
 
         Minecraft mc = Minecraft.getInstance();
@@ -41,7 +47,9 @@ public class ItemInHandLayerMixin {
                     isBlocking = true;
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+            return; // Don't push if we couldn't get the entity info
+        }
 
         boolean isMainHand = (state.mainArm == arm);
 
@@ -54,25 +62,20 @@ public class ItemInHandLayerMixin {
 
         ConfigInstance.ShieldSettings settings = isBlocking ? handSettings.blocking : handSettings.idle;
 
-        double x = settings.xOffset / 100;
-        double y = settings.yOffset / 100;
-        double z = settings.zOffset / 100;
-
-        float sX = Math.max(.01f, settings.scaleX);
-        float sY = Math.max(.01f, settings.scaleY);
-        float sZ = Math.max(.01f, settings.scaleZ);
-
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        overlayManager$didPush = true; // Only set AFTER successful push
+
+        poseStack.translate(settings.xOffset / 100.0, settings.yOffset / 100.0, settings.zOffset / 100.0);
         poseStack.mulPose(Axis.XP.rotationDegrees(settings.rotX));
         poseStack.mulPose(Axis.YP.rotationDegrees(settings.rotY));
         poseStack.mulPose(Axis.ZP.rotationDegrees(settings.rotZ));
-        poseStack.scale(sX, sY, sZ);
+        poseStack.scale(Math.max(.01f, settings.scaleX), Math.max(.01f, settings.scaleY), Math.max(.01f, settings.scaleZ));
     }
 
     @Inject(method = "submitArmWithItem", at = @At("RETURN"))
     private void overlayManager$thirdPersonAfter(ArmedEntityRenderState state, ItemStackRenderState itemState, ItemStack stack, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
-        if (ConfigInstance.Shields.enabled && stack != null && stack.getItem() instanceof ShieldItem) {
+        if (overlayManager$didPush) {
+            overlayManager$didPush = false;
             poseStack.popPose();
         }
     }

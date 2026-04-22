@@ -14,9 +14,9 @@ public class DarknessOverlayMixin {
     @Inject(method = "renderTextureOverlay", at = @At("HEAD"), cancellable = true)
     private void stopBlackOverlays(GuiGraphics guiGraphics, Identifier identifier, float f, CallbackInfo ci) {
         String path = identifier.getPath();
-        if (path.contains("blindness") && !ConfigInstance.BlindnessOverlay.enabled) {
+        if (path.contains("blindness") && !ConfigInstance.BlindnessOverlay.enabled && ConfigInstance.OverlayEnabled) {
             ci.cancel();
-        } else if (path.contains("darkness") && !ConfigInstance.DarknessOverlay.enabled) {
+        } else if (path.contains("darkness") && !ConfigInstance.DarknessOverlay.enabled && ConfigInstance.OverlayEnabled) {
             ci.cancel();
         }
     }

@@ -1,5 +1,6 @@
 package com.swaphat.client.overlaymanager.mixin.patches;
 
+import com.swaphat.client.overlaymanager.config.ConfigInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -21,9 +22,11 @@ public abstract class PortalGuiMixin {
     @Inject(method = {"renderPortalOverlay"}, at = @At("HEAD"), cancellable = true)
     private void bypassVanillaEasing(GuiGraphics guiGraphics, float f, CallbackInfo ci) {
         // Cancel the vanilla math
-        ci.cancel();
+        if(ConfigInstance.PortalOverlay.enabled && !ConfigInstance.OverlayEnabled) {
+            ci.cancel();
+            return;
+        }
 
-        // Feed your modified float directly into the renderer
         int i = ARGB.white(f);
         TextureAtlasSprite textureAtlasSprite = this.minecraft.getBlockRenderer().getBlockModelShaper().getParticleIcon(Blocks.NETHER_PORTAL.defaultBlockState());
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, textureAtlasSprite, 0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), i);

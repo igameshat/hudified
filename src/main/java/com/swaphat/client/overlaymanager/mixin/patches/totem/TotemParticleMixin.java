@@ -32,12 +32,10 @@ public class TotemParticleMixin {
         boolean isTotem = (particleOptions.getType() == ParticleTypes.TOTEM_OF_UNDYING);
 
         if (isTotem) {
-            // If feature is disabled OR showParticles is false, we just "do nothing" (don't call the original method)
-            if (ConfigInstance.Totem.enabled && ConfigInstance.Totem.showParticles) {
+            if (ConfigInstance.Totem.enabled && ConfigInstance.Totem.showParticles && ConfigInstance.OverlayEnabled) {
                 particleEngine.createTrackingEmitter(entity, particleOptions, lifetime);
             }
         } else {
-            // If it's NOT a totem particle (like an explosion or splash), let it through normally
             particleEngine.createTrackingEmitter(entity, particleOptions, lifetime);
         }
     }

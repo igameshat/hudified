@@ -17,7 +17,7 @@ public class HUDPieChartMixin {
     private void renderPieOnHUD(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         Minecraft mc = Minecraft.getInstance();
 
-        if (ConfigInstance.PieChart.enabled && !mc.getDebugOverlay().showDebugScreen()) {
+        if (ConfigInstance.PieChart.enabled && !mc.getDebugOverlay().showDebugScreen() && ConfigInstance.OverlayEnabled) {
 
             int x = ConfigInstance.PieChart.x;
             int y = ConfigInstance.PieChart.y;

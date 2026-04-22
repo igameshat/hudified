@@ -21,7 +21,7 @@ public class FireOverlayMixin {
 
         float opacity = ConfigInstance.FireOverlay.opacity;
 
-        if (!ConfigInstance.FireOverlay.enabled || opacity <= 0) {
+        if (!ConfigInstance.FireOverlay.enabled && opacity <= 0 && !ConfigInstance.OverlayEnabled) {
             ci.cancel();
             return;
         }
@@ -29,7 +29,7 @@ public class FireOverlayMixin {
         poseStack.pushPose();
 
         float pixelOffset = -ConfigManager.ConfigHelper.pixelsToFloat(ConfigInstance.FireOverlay.offsetPixels);
-        poseStack.translate(0.0f, pixelOffset, 0.0f);
+        poseStack.translate(0, pixelOffset, 0);
     }
 
     @Inject(method = "renderFire", at = @At("RETURN"))
@@ -37,13 +37,13 @@ public class FireOverlayMixin {
         float opacity = ConfigInstance.FireOverlay.opacity;
 
         // Only reverse our changes if we actually pushed them in HEAD
-        if (ConfigInstance.FireOverlay.enabled && opacity > 0) {
+        if (ConfigInstance.FireOverlay.enabled && opacity > 0 && ConfigInstance.OverlayEnabled) {
             poseStack.popPose();
         }
     }
 
-    @ModifyConstant(method = "renderFire", constant = @Constant(floatValue = 0.9F))
+    @ModifyConstant(method = "renderFire", constant = @Constant(floatValue = .9F))
     private static float modifyFireAlpha(float originalAlpha) {
-        return ConfigInstance.FireOverlay.opacity / 255.0F;
+        return ConfigInstance.FireOverlay.opacity / 255;
     }
 }

@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MinecraftMixin {
     @Inject(method = "finishProfilers(ZLnet/minecraft/util/profiling/SingleTickProfiler;)V", at = @At("HEAD"))
     private void drawProfilerResultsHead(boolean showChart, SingleTickProfiler singleTickProfiler, CallbackInfo info) {
+        if (!ConfigInstance.OverlayEnabled) return;
         PieChartLogic.updateValues();
         ConfigInstance.PieChart.renderingPieChart = true;
         ConfigInstance.PieChart.windowIndex = 0;
@@ -20,6 +21,7 @@ public class MinecraftMixin {
 
     @Inject(method = "finishProfilers(ZLnet/minecraft/util/profiling/SingleTickProfiler;)V", at = @At("TAIL"))
     private void drawProfilerResultsTail(boolean showChart, SingleTickProfiler singleTickProfiler, CallbackInfo info) {
+        if (!ConfigInstance.OverlayEnabled) return;
         ConfigInstance.PieChart.renderingPieChart = false;
     }
 }

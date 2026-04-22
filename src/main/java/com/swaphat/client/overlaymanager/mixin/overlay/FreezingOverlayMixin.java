@@ -18,7 +18,7 @@ public abstract class FreezingOverlayMixin {
     private void renderCornerSnappedFreeze(GuiGraphics guiGraphics, Identifier identifier, float f, CallbackInfo ci) {
         if (identifier.getPath().contains("powder_snow_outline")) {
 
-            if (!ConfigInstance.FreezeOverlay.enabled) {
+            if (!ConfigInstance.FreezeOverlay.enabled && ConfigInstance.OverlayEnabled) {
                 return;
             }
 
@@ -30,9 +30,8 @@ public abstract class FreezingOverlayMixin {
             int screenWidth = guiGraphics.guiWidth();
             int screenHeight = guiGraphics.guiHeight();
 
-            // Scale determines how big the corner pieces are on your screen
-            float scale = ConfigInstance.FreezeOverlay.scale;
-            int drawSize = (int) (128 * scale);
+            int drawSizeX = (int) (128 * ConfigInstance.FreezeOverlay.Xscale);
+            int drawSizeY = (int) (128 * ConfigInstance.FreezeOverlay.Yscale);
 
             // Texture Constants
             // We are sampling 128px chunks from a 256px total file
@@ -42,22 +41,22 @@ public abstract class FreezingOverlayMixin {
             // 1. TOP-LEFT: Samples (0,0) to (128,128)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, identifier,
                     0, 0,
-                    0, 0, drawSize, drawSize, 128, 128, totalTex, totalTex, color);
+                    0, 0, drawSizeX, drawSizeY, 128, 128, totalTex, totalTex, color);
 
             // 2. TOP-RIGHT: Samples (128,0) to (256,128)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, identifier,
-                    screenWidth - drawSize, 0,
-                    halfTex, 0, drawSize, drawSize, 128, 128, totalTex, totalTex, color);
+                    screenWidth - drawSizeX, 0,
+                    halfTex, 0, drawSizeX, drawSizeY, 128, 128, totalTex, totalTex, color);
 
             // 3. BOTTOM-LEFT: Samples (0,128) to (128,256)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, identifier,
-                    0, screenHeight - drawSize,
-                    0, halfTex, drawSize, drawSize, 128, 128, totalTex, totalTex, color);
+                    0, screenHeight - drawSizeY,
+                    0, halfTex, drawSizeX, drawSizeY, 128, 128, totalTex, totalTex, color);
 
             // 4. BOTTOM-RIGHT: Samples (128,128) to (256,256)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, identifier,
-                    screenWidth - drawSize, screenHeight - drawSize,
-                    halfTex, halfTex, drawSize, drawSize, 128, 128, totalTex, totalTex, color);
+                    screenWidth - drawSizeX, screenHeight - drawSizeY,
+                    halfTex, halfTex, drawSizeX, drawSizeY, 128, 128, totalTex, totalTex, color);
         }
     }
 }

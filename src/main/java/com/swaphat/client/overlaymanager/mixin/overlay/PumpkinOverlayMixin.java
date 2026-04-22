@@ -22,7 +22,7 @@ public class PumpkinOverlayMixin {
 
         // Still keep the "Performance Switch" to kill the render if opacity is 0
         if (shaderLocation.getPath().equals("textures/misc/pumpkinblur.png")) {
-            if (!ConfigInstance.PumpkinOverlay.enabled || ConfigInstance.PumpkinOverlay.opacity <= 0) {
+            if (!ConfigInstance.PumpkinOverlay.enabled || ConfigInstance.PumpkinOverlay.opacity <= 0 && !ConfigInstance.OverlayEnabled) {
                 ci.cancel();
             }
         }
@@ -35,7 +35,7 @@ public class PumpkinOverlayMixin {
             ordinal = 0 // Targets the first float argument (which is 'alpha')
     )
     private float injectCustomAlpha(float originalAlpha) {
-        if (lastShaderLocation != null && lastShaderLocation.getPath().equals("textures/misc/pumpkinblur.png")) {
+        if (lastShaderLocation != null && lastShaderLocation.getPath().equals("textures/misc/pumpkinblur.png") && ConfigInstance.OverlayEnabled) {
             // Override the alpha with our config value
             return ConfigInstance.PumpkinOverlay.opacity / 255.0F;
         }

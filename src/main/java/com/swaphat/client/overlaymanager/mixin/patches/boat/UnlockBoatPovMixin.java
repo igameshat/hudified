@@ -1,27 +1,26 @@
 package com.swaphat.client.overlaymanager.mixin.patches.boat;
 
 import com.swaphat.client.overlaymanager.config.ConfigInstance;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AbstractBoat.class)
 public class UnlockBoatPovMixin {
-    @Redirect(
-            method = "clampRotation",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;clamp(FFF)F")
-    )
-    private float modifyClamp(float value, float min, float max, Entity passenger) {
-        if (ConfigInstance.Boat.unlockBoatPov && ConfigInstance.Boat.enabled) return Mth.clamp(value, min, max);
-        if (passenger instanceof Player) {
-            if (Mth.clamp(value, min, max) != value)
-                passenger.setYBodyRot(passenger.getViewYRot(1f) - Mth.clamp(value, min, max));
-            return value;
+
+    @Inject(method = "clampRotation", at = @At("HEAD"), cancellable = true)
+    private void overlayManager$unlockPov(Entity passenger, CallbackInfo ci) {
+        // Changed to && so it respects the user's specific toggle choices
+        if (ConfigInstance.OverlayEnabled && ConfigInstance.Boat.enabled && ConfigInstance.Boat.unlockBoatPov) {
+
+            // If the entity in the boat is a player, cancel the clamp completely
+            if (passenger instanceof Player) {
+                ci.cancel();
+            }
         }
-        return Mth.clamp(value, min, max);
     }
 }

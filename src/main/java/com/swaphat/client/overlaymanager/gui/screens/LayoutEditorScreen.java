@@ -35,7 +35,6 @@ public class LayoutEditorScreen extends Screen {
 
     @Override
     public void render(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-        this.renderTransparentBackground(guiGraphics);
         String elementName = mode == EditMode.PIE_CHART ? "Pie Chart" : "Boss Bar";
         guiGraphics.drawCenteredString(this.font, "Click and Drag to reposition the " + elementName, this.width / 2, 20, 0xFFFFFF);
 

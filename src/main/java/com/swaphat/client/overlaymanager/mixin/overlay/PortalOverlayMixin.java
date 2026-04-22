@@ -21,14 +21,14 @@ public abstract class PortalOverlayMixin {
     )
     private boolean allowScreensInPortal(Screen instance, Operation<Boolean> original) {
 
-        return ConfigInstance.PortalOverlay.allowGuisInPortal || original.call(instance);
+        return (ConfigInstance.PortalOverlay.allowGuisInPortal && ConfigInstance.OverlayEnabled) || original.call(instance);
     }
 
     @Inject(method = {"handlePortalTransitionEffect"}, at = @At("TAIL"))
     private void adjustPortalSpeedAndOpacity(CallbackInfo ci) {
         LocalPlayer player = (LocalPlayer) (Object) this;
 
-        if (!ConfigInstance.PortalOverlay.enabled) {
+        if (!ConfigInstance.PortalOverlay.enabled || !ConfigInstance.OverlayEnabled) {
             player.portalEffectIntensity = 0;
             return;
         }

@@ -12,6 +12,9 @@ public class WindowModificationMixin {
 
     @Inject(method = "onResize(JII)V", at = @At("HEAD"))
     private void handleResize(long window, int width, int height, CallbackInfo ci) {
+        if (!ConfigInstance.PieChart.enabled && !ConfigInstance.OverlayEnabled) {
+            return;
+        }
         if (ConfigInstance.PieChart.oldWindowWidth == -1) {
             ConfigInstance.PieChart.oldWindowWidth = width;
             ConfigInstance.PieChart.oldWindowHeight = height;

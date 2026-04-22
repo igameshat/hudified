@@ -17,10 +17,6 @@ public class DebugScreenOverlayMixin {
     private void renderPieOnHUD(CallbackInfoReturnable<Boolean> info) {
         Minecraft minecraft = Minecraft.getInstance();
 
-        if (minecraft != null) {
-            info.setReturnValue(ConfigInstance.PieChart.enabled && !minecraft.options.hideGui);
-        } else {
-            info.setReturnValue(false);
-        }
+        info.setReturnValue(ConfigInstance.PieChart.enabled && !minecraft.options.hideGui && ConfigInstance.OverlayEnabled);
     }
 }

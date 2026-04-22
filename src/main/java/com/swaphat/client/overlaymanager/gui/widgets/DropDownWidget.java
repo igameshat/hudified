@@ -117,10 +117,10 @@ public class DropDownWidget extends AbstractWidget {
         return false;
     }
 
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY) {
         if (!this.dropped) return false;
         for (AbstractWidget child : this.children) {
-            if (child.isMouseOver(mouseX, mouseY) && mouseScrolled(mouseX, mouseY, amount)) {
+            if (child.isMouseOver(mouseX, mouseY) && mouseScrolled(mouseX, mouseY)) {
                 return true;
             }
         }
@@ -219,82 +219,128 @@ public class DropDownWidget extends AbstractWidget {
     // ADDER METHODS
     // =========================================================
 
-    public DropDownWidget addSubMenu(DropDownWidget menu) {
+    public void addSubMenu(DropDownWidget menu) {
         menu.isNested = true;
         this.children.add(menu);
-        return this;
     }
 
-    public DropDownWidget addToggleButton(String label, Supplier<Boolean> getter, Consumer<Boolean> setter) {
-        Button btn = Button.builder(Component.literal(label + ": " + (getter.get() ? "ON" : "OFF")), b -> {
-            setter.accept(!getter.get());
-            b.setMessage(Component.literal(label + ": " + (getter.get() ? "ON" : "OFF")));
-        }).bounds(0, 0, this.width - 15, 20).build();
-        this.children.add(btn);
-        return this;
+    public void addToggleButton(String label, Supplier<Boolean> getter, Consumer<Boolean> setter) {
+        AbstractWidget wrapper = new AbstractWidget(0, 0, this.width - 15, 20, Component.empty()) {
+            private final Button btn = Button.builder(Component.literal(getter.get() ? "ON" : "OFF"), b -> {
+                setter.accept(!getter.get());
+                b.setMessage(Component.literal(getter.get() ? "ON" : "OFF"));
+            }).bounds(0, 0, (width - 15) / 2, 20).build();
+
+            @Override
+            protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+                // Text Left
+                guiGraphics.drawString(Minecraft.getInstance().font, label, this.getX() + 5, this.getY() + 6, 0xffffffff, false);
+
+                // Button Right
+                btn.setX(this.getX() + this.width - btn.getWidth());
+                btn.setY(this.getY());
+                btn.render(guiGraphics, mouseX, mouseY, delta);
+            }
+
+            @Override public boolean mouseClicked(@NonNull MouseButtonEvent e, boolean b) { return btn.mouseClicked(e, b); }
+            @Override public boolean mouseReleased(@NonNull MouseButtonEvent e) { return btn.mouseReleased(e); }
+            @Override public boolean mouseDragged(@NonNull MouseButtonEvent e, double dx, double dy) { return btn.mouseDragged(e, dx, dy); }
+            @Override protected void updateWidgetNarration(@NonNull NarrationElementOutput n) {}
+            @Override public void setFocused(boolean focused) { super.setFocused(focused); btn.setFocused(focused); }
+        };
+
+        this.children.add(wrapper);
     }
 
-    public DropDownWidget addButton(String text, Button.OnPress action) {
-        Button btn = Button.builder(Component.literal(text), action).bounds(0, 0, this.width - 15, 20).build();
-        this.children.add(btn);
-        return this;
+    public void addButton(String text, Button.OnPress action) {
+        AbstractWidget wrapper = new AbstractWidget(0, 0, this.width - 15, 20, Component.empty()) {
+            private final Button btn = Button.builder(Component.literal("Click"), action)
+                    .bounds(0, 0, (width - 15) / 2, 20).build();
+
+            @Override
+            protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+                // Text left
+                guiGraphics.drawString(Minecraft.getInstance().font, text, this.getX() + 5, this.getY() + 6, 0xffffffff, false);
+
+                // Button right
+                btn.setX(this.getX() + this.width - btn.getWidth());
+                btn.setY(this.getY());
+                btn.render(guiGraphics, mouseX, mouseY, delta);
+            }
+            @Override public boolean mouseClicked(@NonNull MouseButtonEvent e, boolean b) { return btn.mouseClicked(e, b); }
+            @Override public boolean mouseReleased(@NonNull MouseButtonEvent e) { return btn.mouseReleased(e); }
+            @Override public boolean mouseDragged(@NonNull MouseButtonEvent e, double dx, double dy) { return btn.mouseDragged(e, dx, dy); }
+            @Override protected void updateWidgetNarration(@NonNull NarrationElementOutput n) {}
+            @Override public void setFocused(boolean focused) { super.setFocused(focused); btn.setFocused(focused); }
+        };
+        this.children.add(wrapper);
     }
 
-    public DropDownWidget addSlider(String label, double defaultValue, Consumer<Double> onValueChange) {
-        // Default max limits based on your original percentage/flat value logic
-        int defaultMax = (label.contains("Scale") || label.contains("Speed") || label.contains("Multiplier") || label.contains("Offset")) ? 100 : 255;
-        return addSlider(label, defaultValue, defaultMax, onValueChange);
-    }
-
-    public DropDownWidget addSlider(String label, double defaultValue, int maxLimit, Consumer<Double> onValueChange) {
+    public void addSlider(String label, double defaultValue, Consumer<Double> onValueChange) {
         boolean isPercentage = label.contains("Scale") || label.contains("Speed") || label.contains("Multiplier") || label.contains("Offset");
+        int defaultMax = isPercentage ? 100 : 255;
+        addSlider(label, defaultValue, defaultMax, isPercentage, onValueChange);
+    }
 
-        // We extend AbstractSliderButton directly to inherit 'value' and 'updateMessage()'
-        AbstractSliderButton dualWidget = new AbstractSliderButton(0, 0, this.width - 15, 20, Component.literal(label), defaultValue) {
+    // New explicit slider method (Upgraded Mapping & Dragging Fix)
+    public void addSlider(String label, double currentValue, int maxLimit, boolean showAsPercentage, Consumer<Double> onValueChange) {
+
+        double displayVal = showAsPercentage ? (currentValue * 100.0) : currentValue;
+        double initialHandlePos = Mth.clamp(displayVal / maxLimit, 0.0, 1.0);
+
+        AbstractSliderButton dualWidget = new AbstractSliderButton(0, 0, this.width - 15, 20, Component.empty(), initialHandlePos) {
             private boolean isEditingText = false;
             private long lastClickTime = 0;
-            private final EditBox editBox = new EditBox(Minecraft.getInstance().font, 0, 0, width - 60, height, Component.literal(label));
+            private boolean isShifted = false; // <--- THE FIX FLAG
+            private final EditBox editBox = new EditBox(Minecraft.getInstance().font, 0, 0, (width - 15) / 2, height, Component.empty());
 
-            { // Instance Initializer for the EditBox
-                editBox.setFilter(text -> text.isEmpty() || text.matches("^-?\\d*$"));
+            {
+                editBox.setMaxLength(String.valueOf(maxLimit).length() + 1);
+
+                editBox.setFilter(text -> {
+                    if (text.isEmpty() || text.equals("-")) return true;
+                    if (!text.matches("^-?\\d*$")) return false;
+                    try {
+                        return Integer.parseInt(text) <= maxLimit;
+                    } catch (NumberFormatException e) {
+                        return false;
+                    }
+                });
+
                 editBox.setResponder(text -> {
                     if (!text.isEmpty() && !text.equals("-")) {
                         try {
                             int parsed = Integer.parseInt(text);
                             int clamped = Mth.clamp(parsed, 0, maxLimit);
-
-                            // Direct access to 'value' since we extend AbstractSliderButton
                             this.value = (double) clamped / maxLimit;
                             this.applyValue();
                         } catch (NumberFormatException ignored) {}
                     }
                 });
+
+                this.updateMessage();
             }
 
             @Override
             protected void updateMessage() {
-                int displayValue = (int) (this.value * maxLimit);
-                if (isPercentage) {
-                    this.setMessage(Component.literal(label + ": " + displayValue + "%"));
-                } else {
-                    this.setMessage(Component.literal(label + ": " + displayValue));
-                }
+                long currentDisplayVal = Math.round(this.value * maxLimit);
+                this.setMessage(Component.literal(currentDisplayVal + (showAsPercentage ? "%" : "")));
             }
 
             @Override
             protected void applyValue() {
-                onValueChange.accept(this.value);
+                double currentDisplayVal = this.value * maxLimit;
+                double realValue = showAsPercentage ? (currentDisplayVal / 100.0) : currentDisplayVal;
+                onValueChange.accept(realValue);
             }
 
             private void toggleMode() {
                 isEditingText = !isEditingText;
                 if (isEditingText) {
-                    // Switch to EditBox: set text to the current calculated integer value
-                    int displayValue = (int) (this.value * maxLimit);
-                    editBox.setValue(String.valueOf(displayValue));
+                    long currentDisplayVal = Math.round(this.value * maxLimit);
+                    editBox.setValue(String.valueOf(currentDisplayVal));
                     editBox.setFocused(true);
                 } else {
-                    // Switch back to Slider: unfocus box and force text update
                     editBox.setFocused(false);
                     this.updateMessage();
                 }
@@ -302,53 +348,109 @@ public class DropDownWidget extends AbstractWidget {
 
             @Override
             public void renderWidget(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+                guiGraphics.drawString(Minecraft.getInstance().font, label, this.getX() + 5, this.getY() + 6, 0xffffffff, false);
+
+                int visualX = this.getX() + this.width - ((this.width) / 2);
+                int visualW = (this.width) / 2;
+
                 if (isEditingText) {
-                    // Render the Text Box if editing
-                    editBox.setX(this.getX() + 60);
+                    editBox.setX(visualX);
                     editBox.setY(this.getY());
-                    guiGraphics.drawString(Minecraft.getInstance().font, label + ":", this.getX() + 5, this.getY() + 6, 0xffffffff, false);
                     editBox.render(guiGraphics, mouseX, mouseY, delta);
                 } else {
-                    // Render the normal Vanilla Slider
+                    int originalX = this.getX();
+                    int originalW = this.width;
+
+                    this.setX(visualX);
+                    this.setWidth(visualW);
+                    this.isShifted = true; // Tell isMouseOver the bounds are currently shifted
+
                     super.renderWidget(guiGraphics, mouseX, mouseY, delta);
+
+                    this.isShifted = false; // Reset it back
+                    this.setX(originalX);
+                    this.setWidth(originalW);
                 }
+            }
+
+            @Override
+            public boolean isMouseOver(double mX, double mY) {
+                // If we are currently wrapped in a super call, just use normal bounds checking!
+                if (isShifted) {
+                    return mX >= this.getX() && mX <= this.getX() + this.width && mY >= this.getY() && mY <= this.getY() + this.height;
+                }
+
+                // Otherwise calculate the virtual half-bounds
+                int visualX = this.getX() + this.width - ((this.width) / 2);
+                return mX >= visualX && mX <= visualX + ((double) (this.width) / 2) && mY >= this.getY() && mY <= this.getY() + this.height;
             }
 
             @Override
             public boolean mouseClicked(@NonNull MouseButtonEvent mouseButtonEvent, boolean bl) {
+                // Check if they clicked the unshifted visual slider
+                if (!this.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y())) return false;
+
                 long currentTime = System.currentTimeMillis();
-                boolean isDoubleClick = (currentTime - lastClickTime) < 300; // 300ms window
+                boolean isDoubleClick = (currentTime - lastClickTime) < 300;
                 lastClickTime = currentTime;
 
-                if (isDoubleClick && this.isMouseOver(mouseButtonEvent.x(), mouseButtonEvent.y())) {
+                if (isDoubleClick) {
                     toggleMode();
                     return true;
                 }
 
-                // Route clicks based on current mode
-                return isEditingText ? editBox.mouseClicked(mouseButtonEvent, bl) : super.mouseClicked(mouseButtonEvent, bl);
-            }
+                int originalX = this.getX();
+                int originalW = this.width;
+                this.setX(this.getX() + this.width - ((this.width) / 2));
+                this.setWidth((this.width) / 2);
+                this.isShifted = true; // PREVENT DOUBLE SHIFT
 
-            @Override
-            public boolean mouseReleased(@NonNull MouseButtonEvent mouseButtonEvent) {
-                return isEditingText ? editBox.mouseReleased(mouseButtonEvent) : super.mouseReleased(mouseButtonEvent);
+                boolean result = isEditingText ? editBox.mouseClicked(mouseButtonEvent, bl) : super.mouseClicked(mouseButtonEvent, bl);
+
+                this.isShifted = false; // RESET
+                this.setX(originalX);
+                this.setWidth(originalW);
+                return result;
             }
 
             @Override
             public boolean mouseDragged(@NonNull MouseButtonEvent mouseButtonEvent, double dragX, double dragY) {
-                return isEditingText ? editBox.mouseDragged(mouseButtonEvent, dragX, dragY) : super.mouseDragged(mouseButtonEvent, dragX, dragY);
+                int originalX = this.getX();
+                int originalW = this.width;
+                this.setX(this.getX() + this.width - ((this.width) / 2));
+                this.setWidth((this.width) / 2);
+                this.isShifted = true; // PREVENT DOUBLE SHIFT
+
+                boolean result = isEditingText ? editBox.mouseDragged(mouseButtonEvent, dragX, dragY) : super.mouseDragged(mouseButtonEvent, dragX, dragY);
+
+                this.isShifted = false; // RESET
+                this.setX(originalX);
+                this.setWidth(originalW);
+                return result;
             }
 
-            public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-                return isEditingText ? false : doScroll(mouseX, mouseY, scrollY);
+            @Override
+            public boolean mouseReleased(@NonNull MouseButtonEvent mouseButtonEvent) {
+                int originalX = this.getX();
+                int originalW = this.width;
+                this.setX(this.getX() + this.width - ((this.width) / 2));
+                this.setWidth((this.width) / 2);
+                this.isShifted = true;
+
+                boolean result = isEditingText ? editBox.mouseReleased(mouseButtonEvent) : super.mouseReleased(mouseButtonEvent);
+
+                this.isShifted = false;
+                this.setX(originalX);
+                this.setWidth(originalW);
+                return result;
             }
 
-            public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-                return isEditingText ? false : doScroll(mouseX, mouseY, amount);
+            public boolean mouseScrolled(double mX, double mY, double scrollX, double scrollY) {
+                return !isEditingText && doScroll(mX, mY, scrollY);
             }
 
-            private boolean doScroll(double mouseX, double mouseY, double amount) {
-                if (this.isMouseOver(mouseX, mouseY)) {
+            private boolean doScroll(double mX, double mY, double amount) {
+                if (this.isMouseOver(mX, mY)) {
                     this.value = Mth.clamp(this.value + (amount > 0 ? 0.05 : -0.05), 0.0, 1.0);
                     this.applyValue();
                     this.updateMessage();
@@ -360,7 +462,6 @@ public class DropDownWidget extends AbstractWidget {
             @Override
             public boolean keyPressed(@NonNull KeyEvent keyEvent) {
                 if (isEditingText) {
-                    // Lock in the value when pressing Enter
                     if (keyEvent.isSelection()) {
                         toggleMode();
                         return true;
@@ -383,11 +484,11 @@ public class DropDownWidget extends AbstractWidget {
         };
 
         this.children.add(dualWidget);
-        return this;
     }
 
-    public DropDownWidget addIntField(String label, int currentValue, Consumer<Integer> setter) {
-        EditBox editBox = new EditBox(Minecraft.getInstance().font, 0, 0, this.width - 70, 20, Component.literal(label));
+
+    public void addIntField(String label, int currentValue, Consumer<Integer> setter) {
+        EditBox editBox = new EditBox(Minecraft.getInstance().font, 0, 0, (this.width - 15) / 2, 20, Component.empty());
         editBox.setValue(String.valueOf(currentValue));
         editBox.setFilter(text -> text.isEmpty() || text.matches("^-?\\d*$"));
 
@@ -400,10 +501,19 @@ public class DropDownWidget extends AbstractWidget {
         AbstractWidget wrapper = new AbstractWidget(0, 0, this.width - 15, 20, Component.literal(label)) {
             @Override
             protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-                editBox.setX(this.getX() + 60);
+                // Text Left
+                guiGraphics.drawString(Minecraft.getInstance().font, label, this.getX() + 5, this.getY() + 6, 0xffffffff, false);
+
+                // Box Right
+                editBox.setX(this.getX() + this.width - editBox.getWidth());
                 editBox.setY(this.getY());
-                guiGraphics.drawString(Minecraft.getInstance().font, label + ":", this.getX() + 5, this.getY() + 6, 0xffffffff, false);
                 editBox.render(guiGraphics, mouseX, mouseY, delta);
+            }
+
+            @Override
+            public boolean isMouseOver(double mX, double mY) {
+                return mX >= editBox.getX() && mX <= editBox.getX() + editBox.getWidth() &&
+                        mY >= editBox.getY() && mY <= editBox.getY() + editBox.getHeight();
             }
 
             public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
@@ -426,13 +536,12 @@ public class DropDownWidget extends AbstractWidget {
             }
 
             @Override public void setFocused(boolean focused) { super.setFocused(focused); editBox.setFocused(focused); }
-            @Override public boolean mouseClicked(@NonNull MouseButtonEvent mouseButtonEvent, boolean bln) { return editBox.mouseClicked(mouseButtonEvent, bln); }
+            @Override public boolean mouseClicked(@NonNull MouseButtonEvent e, boolean bln) { return isMouseOver(e.x(), e.y()) && editBox.mouseClicked(e, bln); }
             @Override public boolean keyPressed(@NonNull KeyEvent keyEvent) { return editBox.keyPressed(keyEvent); }
             @Override public boolean charTyped(@NonNull CharacterEvent characterEvent) { return editBox.charTyped(characterEvent); }
             @Override protected void updateWidgetNarration(@NonNull NarrationElementOutput n) {}
         };
         this.children.add(wrapper);
-        return this;
     }
 
     @Override protected void updateWidgetNarration(@NonNull NarrationElementOutput n) {}

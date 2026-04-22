@@ -13,6 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ScoreboardMixin {
     @Inject(method = "renderScoreboardSidebar", at = @At("HEAD"), cancellable = true)
     private void hideScoreboard(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        if (!ConfigInstance.Scoreboard.enabled) ci.cancel();
+        if (!ConfigInstance.Scoreboard.enabled && !ConfigInstance.OverlayEnabled) ci.cancel();
     }
 }

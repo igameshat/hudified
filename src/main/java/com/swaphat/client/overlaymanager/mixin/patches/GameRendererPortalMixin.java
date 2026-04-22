@@ -16,7 +16,7 @@ public abstract class GameRendererPortalMixin {
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/player/LocalPlayer;portalEffectIntensity:F")
     )
     private float stopCameraShake(LocalPlayer instance) {
-        return !ConfigInstance.PortalOverlay.allowCameraShake ? 0 : instance.portalEffectIntensity;
+        return (!ConfigInstance.PortalOverlay.allowCameraShake && !ConfigInstance.OverlayEnabled) ? 0 : instance.portalEffectIntensity;
     }
 
     // 2. Intercept the previous tick intensity (used by vanilla for smooth math)
@@ -25,6 +25,6 @@ public abstract class GameRendererPortalMixin {
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/player/LocalPlayer;oPortalEffectIntensity:F")
     )
     private float stopOldCameraShake(LocalPlayer instance) {
-        return !ConfigInstance.PortalOverlay.allowCameraShake ? 0 : instance.portalEffectIntensity;
+        return (!ConfigInstance.PortalOverlay.allowCameraShake && !ConfigInstance.OverlayEnabled) ? 0 : instance.portalEffectIntensity;
     }
 }

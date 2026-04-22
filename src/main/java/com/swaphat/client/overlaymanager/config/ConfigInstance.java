@@ -25,13 +25,13 @@ public class ConfigInstance {
 
     public static class PumpkinOverlay {
         public boolean enabled = true;
-        public float opacity = 255;
+        public float opacity = 1;
     }
 
     public static class FireOverlay {
         public boolean enabled = true;
-        public float offsetPixels = 0f;
-        public float opacity = 255;
+        public float offsetPixels = 0;
+        public float opacity = 1;
     }
 
     public static class SpyglassOverlay {
@@ -41,7 +41,7 @@ public class ConfigInstance {
 
     public static class PortalOverlay {
         public boolean enabled = true;
-        public float opacity = 255;
+        public float opacity = 1;
         public float speed = 1;
         public boolean allowGuisInPortal = false;
         public boolean allowCameraShake = true;
@@ -49,8 +49,9 @@ public class ConfigInstance {
 
     public static class FreezeOverlay {
         public boolean enabled = false;
-        public int opacity = 255;
-        public float scale = 1;
+        public int opacity = 1;
+        public float Xscale = 5;
+        public float Yscale = 2.6432338f;
     }
 
     public static class BlindnessOverlay {
@@ -63,7 +64,7 @@ public class ConfigInstance {
 
     public static class Vignette {
         public boolean enabled = true;
-        public float opacity = 255;
+        public float opacity = 1;
     }
 
     public static class BossBar {
@@ -92,10 +93,10 @@ public class ConfigInstance {
 
     public static class ArrowHighlight {
         public boolean enabled = true;
-        public boolean xrayMode = false;
-        public int red = 100;
-        public int green = 100;
-        public int blue = 100;
+        public int red = 0;
+        public int green = 158;
+        public int blue = 166;
+        public float opacity = 1;
     }
 
     public static class PieChart {
@@ -120,18 +121,18 @@ public class ConfigInstance {
 
     public static class ShieldConfig {
         public boolean enabled = true;
-        public boolean renderingCustomShield = false;
-        public float currentShieldAlpha = 1;
+        public boolean advancedOptions = false;
+        public static boolean MrOrdenadorPresets = false;
 
-        // First Person
+        public HandSettings backupFirstPersonMain = new HandSettings();
+        public HandSettings backupFirstPersonOff = new HandSettings();
+
         public HandSettings firstPersonMain = new HandSettings();
         public HandSettings firstPersonOff = new HandSettings();
 
-        // Third Person / F5
         public HandSettings thirdPersonMain = new HandSettings();
         public HandSettings thirdPersonOff = new HandSettings();
 
-        // Other Players
         public HandSettings otherPlayersMain = new HandSettings();
         public HandSettings otherPlayersOff = new HandSettings();
     }

@@ -26,7 +26,7 @@
 		"Gui.BossBarMixin",
 		"Gui.AttackIndicatorMixin",
 
-		"features.LightTextureMixin",
+		"features.FullbrightMixin",
 		"features.WeatherEffectRendererMixin",
 
 		"accessors.AbstractArrowAccessor",

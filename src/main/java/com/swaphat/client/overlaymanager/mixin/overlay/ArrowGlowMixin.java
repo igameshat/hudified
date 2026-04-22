@@ -14,25 +14,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Entity.class)
 public abstract class ArrowGlowMixin {
 
-    // 1. Force the arrow to glow ONLY if it is in the air AND visible
     @Inject(method = "isCurrentlyGlowing", at = @At("HEAD"), cancellable = true)
     private void forceArrowGlow(CallbackInfoReturnable<Boolean> cir) {
-        if (ConfigInstance.ArrowHighlight.enabled) {
+        if (ConfigInstance.ArrowHighlight.enabled && ConfigInstance.OverlayEnabled) {
 
             if ((Object) this instanceof AbstractArrow arrow) {
-                // Ensure the arrow has not hit the ground
                 if (!((AbstractArrowAccessor) arrow).overlayManager$isInGround()) {
-
-                    boolean canSee = true;
-                    // If X-Ray is OFF, we mandate a Line of Sight check
-                    if (!ConfigInstance.ArrowHighlight.xrayMode) {
-                        LocalPlayer player = Minecraft.getInstance().player;
-                        if (player != null && !player.hasLineOfSight(arrow)) {
-                            canSee = false;
-                        }
-                    }
-
-                    if (canSee) {
+                    LocalPlayer player = Minecraft.getInstance().player;
+                    if (player != null && player.hasLineOfSight(arrow)) {
                         cir.setReturnValue(true);
                     }
                 }
@@ -40,24 +29,14 @@ public abstract class ArrowGlowMixin {
         }
     }
 
-    // 2. Change the color ONLY if it is in the air AND visible
     @Inject(method = "getTeamColor", at = @At("HEAD"), cancellable = true)
     private void changeArrowGlowColor(CallbackInfoReturnable<Integer> cir) {
-        if (ConfigInstance.ArrowHighlight.enabled) {
-
+        if (ConfigInstance.ArrowHighlight.enabled && ConfigInstance.OverlayEnabled) {
             if ((Object) this instanceof AbstractArrow arrow) {
-
                 if (!((AbstractArrowAccessor) arrow).overlayManager$isInGround()) {
+                    LocalPlayer player = Minecraft.getInstance().player;
 
-                    boolean canSee = true;
-                    if (!ConfigInstance.ArrowHighlight.xrayMode) {
-                        LocalPlayer player = Minecraft.getInstance().player;
-                        if (player != null && !player.hasLineOfSight(arrow)) {
-                            canSee = false;
-                        }
-                    }
-
-                    if (canSee) {
+                    if (player != null && player.hasLineOfSight(arrow)) {
                         int r = ConfigInstance.ArrowHighlight.red;
                         int g = ConfigInstance.ArrowHighlight.green;
                         int b = ConfigInstance.ArrowHighlight.blue;

@@ -15,7 +15,7 @@ public class BossBarMixin {
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void overlayManager$onRenderHead(GuiGraphics guiGraphics, CallbackInfo ci) {
         // 1. Handle Toggles
-        if (!ConfigInstance.OverlayEnabled || !ConfigInstance.BossBar.enabled) {
+        if (!ConfigInstance.BossBar.enabled && !ConfigInstance.OverlayEnabled) {
             ci.cancel();
             return;
         }

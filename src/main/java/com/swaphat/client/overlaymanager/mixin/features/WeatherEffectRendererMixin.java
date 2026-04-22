@@ -35,7 +35,7 @@ public abstract class WeatherEffectRendererMixin {
             )
     )
     private void redirectRenderInstances(WeatherEffectRenderer instance, VertexConsumer vertexConsumer, List list, Vec3 vec3, float f, int i, float g) {
-        if (f == 1.0F && ConfigInstance.Environment.rainOpacity != 1.0f) {
+        if (f == 1 && ConfigInstance.Environment.rainOpacity != 1 && ConfigInstance.OverlayEnabled) {
             // Multiply the overall intensity (g) by our custom opacity slider
             this.renderInstances(vertexConsumer, list, vec3, f, i, g * ConfigInstance.Environment.rainOpacity);
         } else {
@@ -48,7 +48,7 @@ public abstract class WeatherEffectRendererMixin {
     // Pretend the biome has NO precipitation if it is currently snowing.
     @Inject(method = "getPrecipitationAt", at = @At("RETURN"), cancellable = true)
     private void onGetPrecipitationAt(Level level, BlockPos blockPos, CallbackInfoReturnable<Biome.Precipitation> cir) {
-        if (cir.getReturnValue() == Biome.Precipitation.SNOW && ConfigInstance.Environment.noSnow) {
+        if (cir.getReturnValue() == Biome.Precipitation.SNOW && ConfigInstance.Environment.noSnow && ConfigInstance.OverlayEnabled) {
             cir.setReturnValue(Biome.Precipitation.NONE);
         }
     }
@@ -57,7 +57,7 @@ public abstract class WeatherEffectRendererMixin {
     // Cancels the tick event that spawns ground splashing effects and rain noise.
     @Inject(method = "tickRainParticles", at = @At("HEAD"), cancellable = true)
     private void onTickRainParticles(ClientLevel clientLevel, Camera camera, int i, ParticleStatus particleStatus, int j, CallbackInfo ci) {
-        if (ConfigInstance.Environment.noRainParticles) {
+        if (ConfigInstance.Environment.noRainParticles && ConfigInstance.OverlayEnabled) {
             ci.cancel();
         }
     }

@@ -15,11 +15,7 @@ public abstract class BlindnessMovementMixin {
 
     @Inject(method = "hasEffect", at = @At("HEAD"), cancellable = true)
     private void fakeHasEffect(Holder<MobEffect> effect, CallbackInfoReturnable<Boolean> cir) {
-        // We check if this specific entity is the local player
-        // (This prevents every mob in the game from ignoring blindness)
-        if ((Object) this instanceof net.minecraft.client.player.LocalPlayer) {
-
-            // If the game asks if the player has Blindness, say NO.
+        if (!ConfigInstance.OverlayEnabled) {
             if (effect.value() == MobEffects.BLINDNESS.value() && !ConfigInstance.BlindnessOverlay.enabled) {
                 cir.setReturnValue(false);
             }

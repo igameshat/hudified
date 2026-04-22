@@ -27,6 +27,7 @@ public class FogRendererMixin {
     )
     private void onSetupFogBufferWrite(Camera camera, int renderDistance, DeltaTracker deltaTracker, float f, ClientLevel clientLevel, CallbackInfoReturnable<Vector4f> cir, float g, Vector4f vector4f, float farPlaneDistance, FogType fogType, Entity entity, FogData fogData, float j) {
 
+        if(!ConfigInstance.OverlayEnabled) return;
         if (fogType == FogType.LAVA && ConfigInstance.Environment.clearLava) {
             fogData.environmentalStart = 0.0F;
             fogData.environmentalEnd = 50.0F;
