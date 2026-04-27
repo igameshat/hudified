@@ -73,6 +73,7 @@ public class ConfigInstance {
         public int bossBarYOffset = 12;
         public int bossBarXOffset = 0;
         public float scale = 1;
+        public boolean editLayout = false;
     }
 
     public static class Scoreboard {
@@ -113,6 +114,7 @@ public class ConfigInstance {
         public int windowIndex = 0;
 
         public float scale = 1;
+        public boolean editLayout = false;
     }
 
     public static class Boat {
@@ -122,8 +124,8 @@ public class ConfigInstance {
 
     public static class ShieldConfig {
         public boolean enabled = true;
-        public boolean advancedOptions = false;
         public static boolean MrOrdenadorPresets = false;
+        public int simpleYOffset = 0;
 
         public HandSettings backupFirstPersonMain = new HandSettings();
         public HandSettings backupFirstPersonOff = new HandSettings();
@@ -160,10 +162,8 @@ public class ConfigInstance {
     public static class ParticleConfig {
         public boolean enabled = true;
 
-        // Default chance for all particles (1.0 = 100%)
         public float globalChance = 1.0f;
 
-        // Separate controls for ambient potion swirls
         public float selfPotionChance = 0.5f;
         public float otherPotionChance = 1.0f;
 

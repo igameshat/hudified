@@ -40,11 +40,11 @@ public class ItemInHandRendererMixin {
 
         // Apply transformations
         poseStack.pushPose();
-        poseStack.translate(settings.xOffset / 100.0, settings.yOffset / 100.0, settings.zOffset / 100.0);
+        poseStack.translate(settings.xOffset / 100.0, (settings.yOffset+ConfigInstance.Shields.simpleYOffset) / 100.0, settings.zOffset / 100.0);
         poseStack.mulPose(Axis.XP.rotationDegrees(settings.rotX));
         poseStack.mulPose(Axis.YP.rotationDegrees(settings.rotY));
         poseStack.mulPose(Axis.ZP.rotationDegrees(settings.rotZ));
-        poseStack.scale(Math.max(.01f, settings.scaleX), Math.max(.01f, settings.scaleY), Math.max(.01f, settings.scaleZ));
+        poseStack.scale(Math.max(0, settings.scaleX), Math.max(0, settings.scaleY), Math.max(0, settings.scaleZ));
     }
 
     private static ConfigInstance.ShieldSettings getShieldSettings(ItemStack stack, ItemDisplayContext displayContext) {

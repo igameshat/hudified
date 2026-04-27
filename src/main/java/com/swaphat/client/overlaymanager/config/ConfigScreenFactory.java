@@ -7,20 +7,21 @@ import me.shedaniel.clothconfig2.gui.entries.SubCategoryListEntry;
 import me.shedaniel.clothconfig2.impl.builders.SubCategoryBuilder;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+
+import com.swaphat.client.overlaymanager.gui.screens.LayoutEditorScreen;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
-/**
- * Cloth Config 2 screen factory for OverlayManager.
- * 1.21.1 Fabric · Mojang mappings · cloth-config2
- */
 public class ConfigScreenFactory {
-
-    private static boolean hasBackedUpSettings = false;
-
 
     public static Screen create(Screen parent) {
         ConfigBuilder builder = ConfigBuilder.create()
@@ -35,12 +36,12 @@ public class ConfigScreenFactory {
         buildHud(builder, eb);
         buildEnvironment(builder, eb);
         buildBoat(builder, eb);
-        buildShields(builder, eb);
-        buildParticles(builder, eb); // Added Particles
+        // We now pass the 'parent' screen into buildShields so the button can reload the UI
+        buildShields(builder, eb, parent);
+        buildParticles(builder, eb);
 
         return builder.build();
     }
-
 
     private static void buildGeneral(ConfigBuilder builder, ConfigEntryBuilder eb) {
         ConfigCategory cat = builder.getOrCreateCategory(
@@ -54,7 +55,6 @@ public class ConfigScreenFactory {
                 .setSaveConsumer(v -> ConfigInstance.OverlayEnabled = v)
                 .build());
     }
-
 
     private static void buildOverlays(ConfigBuilder builder, ConfigEntryBuilder eb) {
         ConfigCategory cat = builder.getOrCreateCategory(
@@ -118,8 +118,6 @@ public class ConfigScreenFactory {
         ));
     }
 
-
-
     private static void buildHud(ConfigBuilder builder, ConfigEntryBuilder eb) {
         ConfigCategory cat = builder.getOrCreateCategory(
                 Component.translatable("config.overlaymanager.category.hud"));
@@ -139,7 +137,17 @@ public class ConfigScreenFactory {
                 eb.startIntField(Component.translatable("config.overlaymanager.bossBar.yOffset"), ConfigInstance.BossBar.bossBarYOffset)
                         .setDefaultValue(12).setSaveConsumer(v -> ConfigInstance.BossBar.bossBarYOffset = v).build(),
                 eb.startFloatField(Component.translatable("config.overlaymanager.scale"), ConfigInstance.BossBar.scale)
-                        .setDefaultValue(1f).setMin(0.1f).setMax(5f).setSaveConsumer(v -> ConfigInstance.BossBar.scale = v).build()
+                        .setDefaultValue(1f).setMin(0.1f).setMax(5f).setSaveConsumer(v -> ConfigInstance.BossBar.scale = v).build(),
+                new ButtonEntry(
+                        Component.empty(),
+                        Component.literal("Edit Boss Bar Layout"),
+                        () -> {
+                            Screen currentScreen = net.minecraft.client.Minecraft.getInstance().screen;
+                            net.minecraft.client.Minecraft.getInstance().setScreen(
+                                    new LayoutEditorScreen(currentScreen, LayoutEditorScreen.EditMode.BOSS_BAR)
+                            );
+                        }
+                )
         ));
 
         cat.addEntry(subCategory(eb, Component.translatable("config.overlaymanager.scoreboard"),
@@ -188,10 +196,19 @@ public class ConfigScreenFactory {
                 eb.startIntField(Component.translatable("config.overlaymanager.pieChart.y"), ConfigInstance.PieChart.y)
                         .setDefaultValue(500).setSaveConsumer(v -> ConfigInstance.PieChart.y = v).build(),
                 eb.startFloatField(Component.translatable("config.overlaymanager.scale"), ConfigInstance.PieChart.scale)
-                        .setDefaultValue(1f).setMin(0.1f).setMax(5f).setSaveConsumer(v -> ConfigInstance.PieChart.scale = v).build()
+                        .setDefaultValue(1f).setMin(0.1f).setMax(5f).setSaveConsumer(v -> ConfigInstance.PieChart.scale = v).build(),
+                new ButtonEntry(
+                        Component.empty(),
+                        Component.literal("Edit Pie Chart Layout"),
+                        () -> {
+                            Screen currentScreen = net.minecraft.client.Minecraft.getInstance().screen;
+                            net.minecraft.client.Minecraft.getInstance().setScreen(
+                                    new LayoutEditorScreen(currentScreen, LayoutEditorScreen.EditMode.PIE_CHART)
+                            );
+                        }
+                )
         ));
     }
-
 
     private static void buildEnvironment(ConfigBuilder builder, ConfigEntryBuilder eb) {
         ConfigCategory cat = builder.getOrCreateCategory(
@@ -229,7 +246,6 @@ public class ConfigScreenFactory {
         ConfigCategory cat = builder.getOrCreateCategory(
                 Component.translatable("config.overlaymanager.category.particles"));
 
-        // 1. Master Toggle
         cat.addEntry(eb.startBooleanToggle(
                         Component.translatable("config.overlaymanager.particles.enabled"),
                         ConfigInstance.Particle.enabled)
@@ -237,7 +253,6 @@ public class ConfigScreenFactory {
                 .setSaveConsumer(v -> ConfigInstance.Particle.enabled = v)
                 .build());
 
-        // 2. Global Chance (Converted to Int Slider 0-100 for cleaner UI)
         cat.addEntry(eb.startIntSlider(
                         Component.translatable("config.overlaymanager.particles.globalChance"),
                         Math.round(ConfigInstance.Particle.globalChance * 100), 0, 100)
@@ -247,7 +262,6 @@ public class ConfigScreenFactory {
                 .setSaveConsumer(v -> ConfigInstance.Particle.globalChance = v / 100f)
                 .build());
 
-        // 3. Potion Swirls
         cat.addEntry(eb.startIntSlider(
                         Component.translatable("config.overlaymanager.particles.selfPotionChance"),
                         Math.round(ConfigInstance.Particle.selfPotionChance * 100), 0, 100)
@@ -266,10 +280,8 @@ public class ConfigScreenFactory {
                 .setSaveConsumer(v -> ConfigInstance.Particle.otherPotionChance = v / 100f)
                 .build());
 
-        // 4. Dynamic List of ALL Registered Particles
         List<me.shedaniel.clothconfig2.api.AbstractConfigListEntry> particleSliders = new ArrayList<>();
 
-        // Grab all particle IDs and sort them alphabetically
         List<net.minecraft.resources.Identifier> keys = new ArrayList<>(
                 net.minecraft.core.registries.BuiltInRegistries.PARTICLE_TYPE.keySet()
         );
@@ -278,17 +290,14 @@ public class ConfigScreenFactory {
         for (net.minecraft.resources.Identifier loc : keys) {
             String id = loc.toString();
 
-            // Fetch current custom value, or default to -1.0
             float currentVal = ConfigInstance.Particle.customParticleChances.getOrDefault(id, -1.0f);
             int displayVal = currentVal < 0 ? -1 : Math.round(currentVal * 100);
 
             particleSliders.add(eb.startIntSlider(Component.literal(id), displayVal, -1, 100)
                     .setDefaultValue(-1)
-                    // -1 shows "Default", otherwise shows "X%"
                     .setTextGetter(val -> val == -1 ? Component.literal("Default") : Component.literal(val + "%"))
                     .setTooltip(Component.translatable("config.overlaymanager.particles.specific.tooltip"))
                     .setSaveConsumer(v -> {
-                        // If set back to Default (-1), remove from the JSON map so it doesn't bloat the file
                         if (v == -1) {
                             ConfigInstance.Particle.customParticleChances.remove(id);
                         } else {
@@ -298,7 +307,6 @@ public class ConfigScreenFactory {
                     .build());
         }
 
-        // Pack all those dynamically generated sliders into a sub-category
         cat.addEntry(eb.startSubCategory(
                         Component.translatable("config.overlaymanager.particles.specific"),
                         particleSliders)
@@ -306,8 +314,8 @@ public class ConfigScreenFactory {
                 .build());
     }
 
-
-    private static void buildShields(ConfigBuilder builder, ConfigEntryBuilder eb) {
+    // Notice the updated method signature to receive the 'parent' screen
+    private static void buildShields(ConfigBuilder builder, ConfigEntryBuilder eb, Screen parent) {
         ConfigCategory cat = builder.getOrCreateCategory(
                 Component.translatable("config.overlaymanager.category.shields"));
 
@@ -318,52 +326,33 @@ public class ConfigScreenFactory {
                 .setSaveConsumer(v -> ConfigInstance.Shields.enabled = v)
                 .build());
 
-        cat.addEntry(eb.startBooleanToggle(
-                        Component.translatable("config.overlaymanager.shields.advancedOptions"),
-                        ConfigInstance.Shields.advancedOptions)
-                .setDefaultValue(false)
-                .setTooltip(Component.translatable("config.overlaymanager.shields.advancedOptions.tooltip"))
-                .setSaveConsumer(v -> ConfigInstance.Shields.advancedOptions = v)
-                .build());
-
-        cat.addEntry(eb.startBooleanToggle(
-                        Component.translatable("config.overlaymanager.shields.mrOrdenadorPresets"),
-                        ConfigInstance.ShieldConfig.MrOrdenadorPresets)
-                .setDefaultValue(false)
-                .setTooltip(Component.translatable("config.overlaymanager.shields.mrOrdenadorPresets.tooltip"))
-                .setSaveConsumer(v -> {
-                    ConfigInstance.ShieldConfig.MrOrdenadorPresets = v;
-                    if (v) {
-                        if (!hasBackedUpSettings) {
-                            saveUserPresets();
-                            hasBackedUpSettings = true;
-                        }
-                        applyMrOrdenadorPresets();
-                    } else {
-                        restoreUserPresets();
-                    }
-                })
-                .build());
-
         cat.addEntry(eb.startIntField(
                         Component.translatable("config.overlaymanager.shields.simpleHeight"),
-                        (int) ConfigInstance.Shields.firstPersonMain.idle.yOffset)
+                        ConfigInstance.Shields.simpleYOffset)
                 .setDefaultValue(0)
                 .setTooltip(Component.translatable("config.overlaymanager.shields.simpleHeight.tooltip"))
-                .setSaveConsumer(v -> {
-                    if (ConfigInstance.ShieldConfig.MrOrdenadorPresets) {
-                        ConfigInstance.Shields.firstPersonMain.idle.yOffset     = v;
-                        ConfigInstance.Shields.firstPersonMain.blocking.yOffset = -6.0 + v;
-                        ConfigInstance.Shields.firstPersonOff.idle.yOffset      = -125.0 + v;
-                        ConfigInstance.Shields.firstPersonOff.blocking.yOffset  = 6.0 + v;
-                    } else {
-                        ConfigInstance.Shields.firstPersonMain.idle.yOffset     = v;
-                        ConfigInstance.Shields.firstPersonOff.idle.yOffset      = v;
-                        ConfigInstance.Shields.firstPersonMain.blocking.yOffset = v;
-                        ConfigInstance.Shields.firstPersonOff.blocking.yOffset  = v;
-                    }
-                })
+                .setSaveConsumer(v -> ConfigInstance.Shields.simpleYOffset = v)
                 .build());
+
+        cat.addEntry(new ButtonEntry(
+                Component.empty(),
+                Component.literal("Apply Side Shield Preset"),
+                () -> {
+                    applyMrOrdenadorPresets();
+                    ConfigManager.save();
+                    net.minecraft.client.Minecraft.getInstance().setScreen(ConfigScreenFactory.create(parent));
+                }
+        ));
+
+        cat.addEntry(new ButtonEntry(
+                Component.empty(),
+                Component.literal("Apply Default Shield Settings"),
+                () -> {
+                    ConfigManager.save();
+                    applyVanillaOptions();
+                    net.minecraft.client.Minecraft.getInstance().setScreen(ConfigScreenFactory.create(parent));
+                }
+        ));
 
         cat.addEntry(handSettingsSubCategory(eb,
                 Component.translatable("config.overlaymanager.shields.firstPersonMain"),
@@ -387,97 +376,95 @@ public class ConfigScreenFactory {
 
 
     private static void applyMrOrdenadorPresets() {
-        // First Person Main Hand — Idle
         ConfigInstance.Shields.firstPersonMain.idle.xOffset = 27.0;
         ConfigInstance.Shields.firstPersonMain.idle.yOffset = -27.0;
         ConfigInstance.Shields.firstPersonMain.idle.zOffset = 8.0;
-        ConfigInstance.Shields.firstPersonMain.idle.scaleX  = 1.0f;
-        ConfigInstance.Shields.firstPersonMain.idle.scaleY  = 1.0f;
-        ConfigInstance.Shields.firstPersonMain.idle.scaleZ  = 1.0f;
-        ConfigInstance.Shields.firstPersonMain.idle.rotX    = 5.0f;
-        ConfigInstance.Shields.firstPersonMain.idle.rotY    = 90.0f;
-        ConfigInstance.Shields.firstPersonMain.idle.rotZ    = -5.0f;
-        // First Person Main Hand — Blocking
+        ConfigInstance.Shields.firstPersonMain.idle.scaleX = 1.0f;
+        ConfigInstance.Shields.firstPersonMain.idle.scaleY = 1.0f;
+        ConfigInstance.Shields.firstPersonMain.idle.scaleZ = 1.0f;
+        ConfigInstance.Shields.firstPersonMain.idle.rotX = 5.0f;
+        ConfigInstance.Shields.firstPersonMain.idle.rotY = 90.0f;
+        ConfigInstance.Shields.firstPersonMain.idle.rotZ = -5.0f;
+
         ConfigInstance.Shields.firstPersonMain.blocking.xOffset = -19.0;
         ConfigInstance.Shields.firstPersonMain.blocking.yOffset = -31.0;
         ConfigInstance.Shields.firstPersonMain.blocking.zOffset = 0.0;
-        ConfigInstance.Shields.firstPersonMain.blocking.scaleX  = 0.7750105f;
-        ConfigInstance.Shields.firstPersonMain.blocking.scaleY  = 0.7752809f;
-        ConfigInstance.Shields.firstPersonMain.blocking.scaleZ  = 1.0f;
-        ConfigInstance.Shields.firstPersonMain.blocking.rotX    = -5.0f;
-        ConfigInstance.Shields.firstPersonMain.blocking.rotY    = -3.0f;
-        ConfigInstance.Shields.firstPersonMain.blocking.rotZ    = 0.0f;
-        // First Person Off Hand — Idle
+        ConfigInstance.Shields.firstPersonMain.blocking.scaleX = 0.7750105f;
+        ConfigInstance.Shields.firstPersonMain.blocking.scaleY = 0.7752809f;
+        ConfigInstance.Shields.firstPersonMain.blocking.scaleZ = 1.0f;
+        ConfigInstance.Shields.firstPersonMain.blocking.rotX = -5.0f;
+        ConfigInstance.Shields.firstPersonMain.blocking.rotY = -3.0f;
+        ConfigInstance.Shields.firstPersonMain.blocking.rotZ = 0.0f;
+
         ConfigInstance.Shields.firstPersonOff.idle.xOffset = -8.0;
         ConfigInstance.Shields.firstPersonOff.idle.yOffset = -27.0;
         ConfigInstance.Shields.firstPersonOff.idle.zOffset = 8.0;
-        ConfigInstance.Shields.firstPersonOff.idle.scaleX  = 1.0f;
-        ConfigInstance.Shields.firstPersonOff.idle.scaleY  = 1.0f;
-        ConfigInstance.Shields.firstPersonOff.idle.scaleZ  = 0.80898875f;
-        ConfigInstance.Shields.firstPersonOff.idle.rotX    = 0.0f;
-        ConfigInstance.Shields.firstPersonOff.idle.rotY    = 90.0f;
-        ConfigInstance.Shields.firstPersonOff.idle.rotZ    = -5.0f;
-        // First Person Off Hand — Blocking
+        ConfigInstance.Shields.firstPersonOff.idle.scaleX = 1.0f;
+        ConfigInstance.Shields.firstPersonOff.idle.scaleY = 1.0f;
+        ConfigInstance.Shields.firstPersonOff.idle.scaleZ = 0.80898875f;
+        ConfigInstance.Shields.firstPersonOff.idle.rotX = 0.0f;
+        ConfigInstance.Shields.firstPersonOff.idle.rotY = 90.0f;
+        ConfigInstance.Shields.firstPersonOff.idle.rotZ = -5.0f;
+
         ConfigInstance.Shields.firstPersonOff.blocking.xOffset = -5.0;
         ConfigInstance.Shields.firstPersonOff.blocking.yOffset = -32.0;
         ConfigInstance.Shields.firstPersonOff.blocking.zOffset = 0.0;
-        ConfigInstance.Shields.firstPersonOff.blocking.scaleX  = 0.8876405f;
-        ConfigInstance.Shields.firstPersonOff.blocking.scaleY  = 1.0f;
-        ConfigInstance.Shields.firstPersonOff.blocking.scaleZ  = 1.0f;
-        ConfigInstance.Shields.firstPersonOff.blocking.rotX    = -5.0f;
-        ConfigInstance.Shields.firstPersonOff.blocking.rotY    = -1.0f;
-        ConfigInstance.Shields.firstPersonOff.blocking.rotZ    = 3.0f;
+        ConfigInstance.Shields.firstPersonOff.blocking.scaleX = 0.8876405f;
+        ConfigInstance.Shields.firstPersonOff.blocking.scaleY = 1.0f;
+        ConfigInstance.Shields.firstPersonOff.blocking.scaleZ = 1.0f;
+        ConfigInstance.Shields.firstPersonOff.blocking.rotX = -5.0f;
+        ConfigInstance.Shields.firstPersonOff.blocking.rotY = -1.0f;
+        ConfigInstance.Shields.firstPersonOff.blocking.rotZ = 3.0f;
     }
 
-    private static void saveUserPresets() {
-        copyHandSettings(ConfigInstance.Shields.firstPersonMain, ConfigInstance.Shields.backupFirstPersonMain);
-        copyHandSettings(ConfigInstance.Shields.firstPersonOff,  ConfigInstance.Shields.backupFirstPersonOff);
-    }
+    private static void applyVanillaOptions() {
+        ConfigInstance.Shields.firstPersonMain.idle.xOffset = 0;
+        ConfigInstance.Shields.firstPersonMain.idle.yOffset = 0;
+        ConfigInstance.Shields.firstPersonMain.idle.zOffset = 0;
+        ConfigInstance.Shields.firstPersonMain.idle.scaleX = 0;
+        ConfigInstance.Shields.firstPersonMain.idle.scaleY = 0;
+        ConfigInstance.Shields.firstPersonMain.idle.scaleZ = 0;
+        ConfigInstance.Shields.firstPersonMain.idle.rotX = 0;
+        ConfigInstance.Shields.firstPersonMain.idle.rotY = 0;
+        ConfigInstance.Shields.firstPersonMain.idle.rotZ = 0;
 
-    private static void restoreUserPresets() {
-        if (hasBackedUpSettings) {
-            copyHandSettings(ConfigInstance.Shields.backupFirstPersonMain, ConfigInstance.Shields.firstPersonMain);
-            copyHandSettings(ConfigInstance.Shields.backupFirstPersonOff,  ConfigInstance.Shields.firstPersonOff);
-            hasBackedUpSettings = false;
-        } else {
-            applyVanillaDefaults();
-        }
-    }
+        ConfigInstance.Shields.firstPersonMain.blocking.xOffset = 0;
+        ConfigInstance.Shields.firstPersonMain.blocking.yOffset = 0;
+        ConfigInstance.Shields.firstPersonMain.blocking.zOffset = 0;
+        ConfigInstance.Shields.firstPersonMain.blocking.scaleX = 0;
+        ConfigInstance.Shields.firstPersonMain.blocking.scaleY = 0;
+        ConfigInstance.Shields.firstPersonMain.blocking.scaleZ = 0;
+        ConfigInstance.Shields.firstPersonMain.blocking.rotX = 0;
+        ConfigInstance.Shields.firstPersonMain.blocking.rotY = 0;
+        ConfigInstance.Shields.firstPersonMain.blocking.rotZ = 0;
 
-    private static void applyVanillaDefaults() {
-        resetHandSettings(ConfigInstance.Shields.firstPersonMain);
-        resetHandSettings(ConfigInstance.Shields.firstPersonOff);
-        resetHandSettings(ConfigInstance.Shields.thirdPersonMain);
-        resetHandSettings(ConfigInstance.Shields.thirdPersonOff);
-        resetHandSettings(ConfigInstance.Shields.otherPlayersMain);
-        resetHandSettings(ConfigInstance.Shields.otherPlayersOff);
-    }
+        ConfigInstance.Shields.firstPersonOff.idle.xOffset = 0;
+        ConfigInstance.Shields.firstPersonOff.idle.yOffset = 0;
+        ConfigInstance.Shields.firstPersonOff.idle.zOffset = 0;
+        ConfigInstance.Shields.firstPersonOff.idle.scaleX = 0;
+        ConfigInstance.Shields.firstPersonOff.idle.scaleY = 0;
+        ConfigInstance.Shields.firstPersonOff.idle.scaleZ = 0;
+        ConfigInstance.Shields.firstPersonOff.idle.rotX = 0;
+        ConfigInstance.Shields.firstPersonOff.idle.rotY = 0;
+        ConfigInstance.Shields.firstPersonOff.idle.rotZ = 0;
 
-    private static void resetHandSettings(ConfigInstance.HandSettings h) {
-        h.idle.xOffset = 0;    h.idle.yOffset = 0;    h.idle.zOffset = 0;
-        h.idle.scaleX  = 1f;   h.idle.scaleY  = 1f;   h.idle.scaleZ  = 1f;
-        h.idle.rotX    = 0f;   h.idle.rotY    = 0f;   h.idle.rotZ    = 0f;
-        h.blocking.xOffset = 0;    h.blocking.yOffset = 0;    h.blocking.zOffset = 0;
-        h.blocking.scaleX  = 1f;   h.blocking.scaleY  = 1f;   h.blocking.scaleZ  = 1f;
-        h.blocking.rotX    = 0f;   h.blocking.rotY    = 0f;   h.blocking.rotZ    = 0f;
+        ConfigInstance.Shields.firstPersonOff.blocking.xOffset = 0;
+        ConfigInstance.Shields.firstPersonOff.blocking.yOffset = 0;
+        ConfigInstance.Shields.firstPersonOff.blocking.zOffset = 0;
+        ConfigInstance.Shields.firstPersonOff.blocking.scaleX = 0;
+        ConfigInstance.Shields.firstPersonOff.blocking.scaleY = 0;
+        ConfigInstance.Shields.firstPersonOff.blocking.scaleZ = 0;
+        ConfigInstance.Shields.firstPersonOff.blocking.rotX = 0;
+        ConfigInstance.Shields.firstPersonOff.blocking.rotY = 0;
+        ConfigInstance.Shields.firstPersonOff.blocking.rotZ = 0;
     }
-
-    private static void copyHandSettings(ConfigInstance.HandSettings src, ConfigInstance.HandSettings dst) {
-        dst.idle.xOffset = src.idle.xOffset; dst.idle.yOffset = src.idle.yOffset; dst.idle.zOffset = src.idle.zOffset;
-        dst.idle.scaleX  = src.idle.scaleX;  dst.idle.scaleY  = src.idle.scaleY;  dst.idle.scaleZ  = src.idle.scaleZ;
-        dst.idle.rotX    = src.idle.rotX;    dst.idle.rotY    = src.idle.rotY;    dst.idle.rotZ    = src.idle.rotZ;
-        dst.blocking.xOffset = src.blocking.xOffset; dst.blocking.yOffset = src.blocking.yOffset; dst.blocking.zOffset = src.blocking.zOffset;
-        dst.blocking.scaleX  = src.blocking.scaleX;  dst.blocking.scaleY  = src.blocking.scaleY;  dst.blocking.scaleZ  = src.blocking.scaleZ;
-        dst.blocking.rotX    = src.blocking.rotX;    dst.blocking.rotY    = src.blocking.rotY;    dst.blocking.rotZ    = src.blocking.rotZ;
-    }
-
 
     private static SubCategoryListEntry handSettingsSubCategory(
             ConfigEntryBuilder eb,
             Component label,
             ConfigInstance.HandSettings hand) {
 
-        List<   me.shedaniel.clothconfig2.api.AbstractConfigListEntry> entries = new ArrayList<>();
+        List<me.shedaniel.clothconfig2.api.AbstractConfigListEntry> entries = new ArrayList<>();
         entries.add(eb.startTextDescription(Component.translatable("config.overlaymanager.shields.pose.idle")).build());
         addShieldSettingsEntries(entries, eb, hand.idle);
         entries.add(eb.startTextDescription(Component.translatable("config.overlaymanager.shields.pose.blocking")).build());
@@ -524,5 +511,50 @@ public class ConfigScreenFactory {
         SubCategoryBuilder sub = eb.startSubCategory(label, list);
         sub.setExpanded(false);
         return sub.build();
+    }
+
+    // ==========================================
+    // Custom Config Entry for the Action Buttons
+    // ==========================================
+    public static class ButtonEntry extends me.shedaniel.clothconfig2.api.AbstractConfigListEntry<Object> {
+        private final Button button;
+
+        public ButtonEntry(Component fieldName, Component buttonText, Runnable onClick) {
+            super(fieldName, false);
+            this.button = Button.builder(buttonText, btn -> onClick.run())
+                    .bounds(0, 0, 150, 20)
+                    .build();
+        }
+
+        @Override
+        public Object getValue() {
+            return null;
+        }
+
+        @Override
+        public Optional<Object> getDefaultValue() {
+            return Optional.empty();
+        }
+
+        @Override
+        public void save() {
+        }
+
+        @Override
+        public void render(GuiGraphics guiGraphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
+            this.button.setX(x + entryWidth / 2 - this.button.getWidth() / 2);
+            this.button.setY(y);
+            this.button.render(guiGraphics, mouseX, mouseY, delta);
+        }
+
+        @Override
+        public @NonNull List<? extends GuiEventListener> children() {
+            return Collections.singletonList(this.button);
+        }
+
+        @Override
+        public List<? extends NarratableEntry> narratables() {
+            return Collections.singletonList(this.button);
+        }
     }
 }
