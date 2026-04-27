@@ -40,7 +40,10 @@
 		"patches.boat.UnlockBoatPovMixin",
 
 		"patches.shield.ItemInHandLayerMixin",
-		"patches.shield.ItemInHandRendererMixin"
+		"patches.shield.ItemInHandRendererMixin",
+
+		"patches.particle.LivingEntityMixin",
+		"patches.particle.ParticleEngineMixin"
 	],
 	"BROKEN-NEEDS-FIXIND": [],
 	"injectors": {

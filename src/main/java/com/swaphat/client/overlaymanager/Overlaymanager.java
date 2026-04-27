@@ -2,7 +2,6 @@ package com.swaphat.client.overlaymanager;
 
 import com.swaphat.client.overlaymanager.config.ConfigInstance;
 import com.swaphat.client.overlaymanager.config.ConfigManager;
-import com.swaphat.client.overlaymanager.gui.screens.ConfigScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -22,7 +21,6 @@ public class Overlaymanager implements ClientModInitializer {
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
 			dispatcher.register(ClientCommandManager.literal("hi")
 					.executes(context -> {
-						Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(new ConfigScreen(Minecraft.getInstance().screen)));
 						return 1;
 					}));
 		});

@@ -16,7 +16,7 @@
 	"environment": "client",
 	"entrypoints": {
 		"client": ["com.swaphat.client.overlaymanager.Overlaymanager"],
-		"modmenu":["com.swaphat.client.overlaymanager.compatibility.ModmenuComp"]
+		"modmenu": ["com.swaphat.client.overlaymanager.compatibility.ModmenuComp"]
 	},
 	"mixins": [
 		"overlay-manager.mixins.json"

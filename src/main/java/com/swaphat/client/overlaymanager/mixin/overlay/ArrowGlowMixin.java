@@ -40,8 +40,9 @@ public abstract class ArrowGlowMixin {
                         int r = ConfigInstance.ArrowHighlight.red;
                         int g = ConfigInstance.ArrowHighlight.green;
                         int b = ConfigInstance.ArrowHighlight.blue;
+                        int a = (int) (ConfigInstance.ArrowHighlight.opacity * 255);
 
-                        int customColor = (r << 16) | (g << 8) | b;
+                        int customColor = (a << 24) | (r << 16) | (g << 8) | b;
                         cir.setReturnValue(customColor);
                     }
                 }

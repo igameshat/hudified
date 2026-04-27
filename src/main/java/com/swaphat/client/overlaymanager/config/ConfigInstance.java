@@ -22,6 +22,7 @@ public class ConfigInstance {
     public static PieChart PieChart = new PieChart();
     public static Boat Boat = new Boat();
     public static ShieldConfig Shields = new ShieldConfig();
+    public static ParticleConfig Particle = new ParticleConfig();
 
     public static class PumpkinOverlay {
         public boolean enabled = true;
@@ -49,7 +50,7 @@ public class ConfigInstance {
 
     public static class FreezeOverlay {
         public boolean enabled = false;
-        public int opacity = 1;
+        public float opacity = 1;
         public float Xscale = 5;
         public float Yscale = 2.6432338f;
     }
@@ -154,6 +155,19 @@ public class ConfigInstance {
         public float rotX = 0;
         public float rotY = 0;
         public float rotZ = 0;
+    }
+
+    public static class ParticleConfig {
+        public boolean enabled = true;
+
+        // Default chance for all particles (1.0 = 100%)
+        public float globalChance = 1.0f;
+
+        // Separate controls for ambient potion swirls
+        public float selfPotionChance = 0.5f;
+        public float otherPotionChance = 1.0f;
+
+        public java.util.HashMap<String, Float> customParticleChances = new java.util.HashMap<>();
     }
 
     public static class Environment {
