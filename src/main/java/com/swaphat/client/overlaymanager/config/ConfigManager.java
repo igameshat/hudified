@@ -31,6 +31,7 @@ public class ConfigManager {
         public ConfigInstance.Boat Boat;
         public ConfigInstance.ShieldConfig Shields;
         public ConfigInstance.ParticleConfig Particle;
+        public ConfigInstance.DroppedItems DroppedItems;
     }
 
     public static void load() {
@@ -58,6 +59,7 @@ public class ConfigManager {
                     if (data.Boat != null) ConfigInstance.Boat = data.Boat;
                     if (data.Shields != null) ConfigInstance.Shields = data.Shields;
                     if (data.Particle != null) ConfigInstance.Particle = data.Particle;
+                    if (data.DroppedItems != null) ConfigInstance.DroppedItems = data.DroppedItems;
                 }
             } catch (Exception e) {
                 System.err.println("Failed to load config!");
@@ -92,6 +94,7 @@ public class ConfigManager {
             data.Boat = ConfigInstance.Boat;
             data.Shields = ConfigInstance.Shields;
             data.Particle = ConfigInstance.Particle;
+            data.DroppedItems = ConfigInstance.DroppedItems;
 
             GSON.toJson(data, writer);
 

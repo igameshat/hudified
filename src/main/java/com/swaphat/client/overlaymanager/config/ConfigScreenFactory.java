@@ -36,7 +36,7 @@ public class ConfigScreenFactory {
         buildHud(builder, eb);
         buildEnvironment(builder, eb);
         buildBoat(builder, eb);
-        // We now pass the 'parent' screen into buildShields so the button can reload the UI
+        buildDroppedItems(builder, eb);
         buildShields(builder, eb, parent);
         buildParticles(builder, eb);
 
@@ -230,6 +230,8 @@ public class ConfigScreenFactory {
                 .setDefaultValue(false).setSaveConsumer(v -> ConfigInstance.Environment.noRainParticles = v).build());
         cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.environment.noSnow"), ConfigInstance.Environment.noSnow)
                 .setDefaultValue(false).setSaveConsumer(v -> ConfigInstance.Environment.noSnow = v).build());
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.environment.blockBreaking"), ConfigInstance.Environment.blockBreakingOverlay).setTooltip(Component.translatable("config.overlaymanager.environment.blockBreaking.tooltip"))
+                .setDefaultValue(false).setSaveConsumer(v -> ConfigInstance.Environment.blockBreakingOverlay = v).build());
     }
 
     private static void buildBoat(ConfigBuilder builder, ConfigEntryBuilder eb) {
@@ -421,9 +423,9 @@ public class ConfigScreenFactory {
         ConfigInstance.Shields.firstPersonMain.idle.xOffset = 0;
         ConfigInstance.Shields.firstPersonMain.idle.yOffset = 0;
         ConfigInstance.Shields.firstPersonMain.idle.zOffset = 0;
-        ConfigInstance.Shields.firstPersonMain.idle.scaleX = 0;
-        ConfigInstance.Shields.firstPersonMain.idle.scaleY = 0;
-        ConfigInstance.Shields.firstPersonMain.idle.scaleZ = 0;
+        ConfigInstance.Shields.firstPersonMain.idle.scaleX = 1;
+        ConfigInstance.Shields.firstPersonMain.idle.scaleY = 1;
+        ConfigInstance.Shields.firstPersonMain.idle.scaleZ = 1;
         ConfigInstance.Shields.firstPersonMain.idle.rotX = 0;
         ConfigInstance.Shields.firstPersonMain.idle.rotY = 0;
         ConfigInstance.Shields.firstPersonMain.idle.rotZ = 0;
@@ -431,9 +433,9 @@ public class ConfigScreenFactory {
         ConfigInstance.Shields.firstPersonMain.blocking.xOffset = 0;
         ConfigInstance.Shields.firstPersonMain.blocking.yOffset = 0;
         ConfigInstance.Shields.firstPersonMain.blocking.zOffset = 0;
-        ConfigInstance.Shields.firstPersonMain.blocking.scaleX = 0;
-        ConfigInstance.Shields.firstPersonMain.blocking.scaleY = 0;
-        ConfigInstance.Shields.firstPersonMain.blocking.scaleZ = 0;
+        ConfigInstance.Shields.firstPersonMain.blocking.scaleX = 1;
+        ConfigInstance.Shields.firstPersonMain.blocking.scaleY = 1;
+        ConfigInstance.Shields.firstPersonMain.blocking.scaleZ = 1;
         ConfigInstance.Shields.firstPersonMain.blocking.rotX = 0;
         ConfigInstance.Shields.firstPersonMain.blocking.rotY = 0;
         ConfigInstance.Shields.firstPersonMain.blocking.rotZ = 0;
@@ -441,9 +443,9 @@ public class ConfigScreenFactory {
         ConfigInstance.Shields.firstPersonOff.idle.xOffset = 0;
         ConfigInstance.Shields.firstPersonOff.idle.yOffset = 0;
         ConfigInstance.Shields.firstPersonOff.idle.zOffset = 0;
-        ConfigInstance.Shields.firstPersonOff.idle.scaleX = 0;
-        ConfigInstance.Shields.firstPersonOff.idle.scaleY = 0;
-        ConfigInstance.Shields.firstPersonOff.idle.scaleZ = 0;
+        ConfigInstance.Shields.firstPersonOff.idle.scaleX = 1;
+        ConfigInstance.Shields.firstPersonOff.idle.scaleY = 1;
+        ConfigInstance.Shields.firstPersonOff.idle.scaleZ = 1;
         ConfigInstance.Shields.firstPersonOff.idle.rotX = 0;
         ConfigInstance.Shields.firstPersonOff.idle.rotY = 0;
         ConfigInstance.Shields.firstPersonOff.idle.rotZ = 0;
@@ -451,12 +453,49 @@ public class ConfigScreenFactory {
         ConfigInstance.Shields.firstPersonOff.blocking.xOffset = 0;
         ConfigInstance.Shields.firstPersonOff.blocking.yOffset = 0;
         ConfigInstance.Shields.firstPersonOff.blocking.zOffset = 0;
-        ConfigInstance.Shields.firstPersonOff.blocking.scaleX = 0;
-        ConfigInstance.Shields.firstPersonOff.blocking.scaleY = 0;
-        ConfigInstance.Shields.firstPersonOff.blocking.scaleZ = 0;
+        ConfigInstance.Shields.firstPersonOff.blocking.scaleX = 1;
+        ConfigInstance.Shields.firstPersonOff.blocking.scaleY = 1;
+        ConfigInstance.Shields.firstPersonOff.blocking.scaleZ = 1;
         ConfigInstance.Shields.firstPersonOff.blocking.rotX = 0;
         ConfigInstance.Shields.firstPersonOff.blocking.rotY = 0;
         ConfigInstance.Shields.firstPersonOff.blocking.rotZ = 0;
+    }
+
+    private static void buildDroppedItems(ConfigBuilder builder, ConfigEntryBuilder eb) {
+        ConfigCategory cat = builder.getOrCreateCategory(
+                Component.translatable("config.overlaymanager.category.droppedItems"));
+
+        cat.addEntry(eb.startBooleanToggle(
+                        Component.translatable("config.overlaymanager.enabled"),
+                        ConfigInstance.DroppedItems.enabled)
+                .setDefaultValue(true)
+                .setSaveConsumer(v -> ConfigInstance.DroppedItems.enabled = v)
+                .build());
+
+        cat.addEntry(eb.startFloatField(
+                        Component.translatable("config.overlaymanager.droppedItems.scale"),
+                        ConfigInstance.DroppedItems.customScale)
+                .setDefaultValue(3.0f)
+                .setMin(0.1f).setMax(10f)
+                .setSaveConsumer(v -> ConfigInstance.DroppedItems.customScale = v)
+                .build());
+
+        cat.addEntry(eb.startStrList(
+                        Component.translatable("config.overlaymanager.droppedItems.list"),
+                        ConfigInstance.DroppedItems.itemList)
+                .setDefaultValue(java.util.List.of("minecraft:golden_apple"))
+                .setTooltip(Component.translatable("config.overlaymanager.droppedItems.list.tooltip"))
+                .setSaveConsumer(v -> ConfigInstance.DroppedItems.itemList = v)
+                .setCellErrorSupplier(str -> {
+                    net.minecraft.resources.Identifier id = net.minecraft.resources.Identifier.tryParse(str);
+
+                    if (id == null || !net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(id)) {
+                        return java.util.Optional.of(net.minecraft.network.chat.Component.literal("Invalid Item ID. Example: minecraft:apple"));
+                    }
+
+                    return java.util.Optional.empty();
+                })
+                .build());
     }
 
     private static SubCategoryListEntry handSettingsSubCategory(

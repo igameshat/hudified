@@ -43,7 +43,11 @@
 		"patches.shield.ItemInHandRendererMixin",
 
 		"patches.particle.LivingEntityMixin",
-		"patches.particle.ParticleEngineMixin"
+		"patches.particle.ParticleEngineMixin",
+
+		"patches.BlockBreakingOverlayMixin",
+
+		"patches.itemScale.DroppedItemScaleMixin"
 	],
 	"BROKEN-NEEDS-FIXIND": [],
 	"injectors": {

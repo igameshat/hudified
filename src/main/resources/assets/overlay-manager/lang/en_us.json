@@ -95,5 +95,13 @@
   "config.overlaymanager.particles.otherPotionChance.tooltip": "Controls ambient potion articles originating from other players and mobs.",
 
   "config.overlaymanager.particles.specific": "Specific Particle Overrides",
-  "config.overlaymanager.particles.specific.tooltip": "Default = Inherits from Global Chance.\n0% = Disabled.\n100% = Always Render."
+  "config.overlaymanager.particles.specific.tooltip": "Default = Inherits from Global Chance.\n0% = Disabled.\n100% = Always Render.",
+
+  "config.overlaymanager.environment.blockBreaking" : "Disable Block Breaking Overlay",
+  "config.overlaymanager.environment.blockBreaking.tooltip": "Controls the block breaking overlay",
+
+  "config.overlaymanager.category.droppedItems" : "Dropped Item Scale",
+  "config.overlaymanager.droppedItems.scale" : "scale",
+  "config.overlaymanager.droppedItems.list" : "Item list",
+  "config.overlaymanager.droppedItems.list.tooltip" : "List of items to scale. Use \\n for new lines."
 }

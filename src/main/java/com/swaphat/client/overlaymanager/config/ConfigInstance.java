@@ -23,6 +23,8 @@ public class ConfigInstance {
     public static Boat Boat = new Boat();
     public static ShieldConfig Shields = new ShieldConfig();
     public static ParticleConfig Particle = new ParticleConfig();
+    public static DroppedItems DroppedItems = new DroppedItems();
+
 
     public static class PumpkinOverlay {
         public boolean enabled = true;
@@ -179,5 +181,12 @@ public class ConfigInstance {
         public float rainOpacity = 1;
         public boolean noRainParticles = false;
         public boolean noSnow = false;
+        public boolean blockBreakingOverlay = true;
+    }
+
+    public static class DroppedItems {
+        public boolean enabled = true;
+        public float customScale = 3.0f;
+        public java.util.List<String> itemList = new java.util.ArrayList<>(java.util.List.of("minecraft:golden_apple"));
     }
 }
