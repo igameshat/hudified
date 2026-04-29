@@ -1,7 +1,5 @@
 package com.swaphat.client.overlaymanager.config;
 
-import net.minecraft.client.Minecraft;
-
 public class ConfigInstance {
     public static boolean OverlayEnabled = true;
 
@@ -51,10 +49,10 @@ public class ConfigInstance {
     }
 
     public static class FreezeOverlay {
-        public boolean enabled = false;
+        public boolean enabled = true;
         public float opacity = 1;
-        public float Xscale = 5;
-        public float Yscale = 2.6432338f;
+        public float Xscale = 1;
+        public float Yscale = 1;
     }
 
     public static class BlindnessOverlay {
@@ -72,14 +70,16 @@ public class ConfigInstance {
 
     public static class BossBar {
         public boolean enabled = true;
-        public int bossBarYOffset = 12;
-        public int bossBarXOffset = 0;
+        public int YOffset = 12;
+        public int XOffset = 0;
         public float scale = 1;
-        public boolean editLayout = false;
     }
 
     public static class Scoreboard {
         public boolean enabled = true;
+        public int YOffset = 12;
+        public int XOffset = 0;
+        public float scale = 1;
     }
 
     public static class Totem {
@@ -89,9 +89,9 @@ public class ConfigInstance {
     }
 
     public static class AttackIndicator {
-        public boolean enabled = false;
-        public int hotbarXOffset = 0;
-        public int hotbarYOffset = 0;
+        public boolean enabled = true;
+        public int YOffset = 12;
+        public int XOffset = 0;
         public float scale = 1;
     }
 
@@ -116,7 +116,6 @@ public class ConfigInstance {
         public int windowIndex = 0;
 
         public float scale = 1;
-        public boolean editLayout = false;
     }
 
     public static class Boat {
@@ -126,11 +125,7 @@ public class ConfigInstance {
 
     public static class ShieldConfig {
         public boolean enabled = true;
-        public static boolean MrOrdenadorPresets = false;
         public int simpleYOffset = 0;
-
-        public HandSettings backupFirstPersonMain = new HandSettings();
-        public HandSettings backupFirstPersonOff = new HandSettings();
 
         public HandSettings firstPersonMain = new HandSettings();
         public HandSettings firstPersonOff = new HandSettings();

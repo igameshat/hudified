@@ -16,7 +16,6 @@ import com.swaphat.client.overlaymanager.gui.screens.LayoutEditorScreen;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -32,13 +31,25 @@ public class ConfigScreenFactory {
         ConfigEntryBuilder eb = builder.entryBuilder();
 
         buildGeneral(builder, eb);
-        buildOverlays(builder, eb);
-        buildHud(builder, eb);
+        buildPumpkin(builder, eb);
+        buildFire(builder, eb);
+        buildSpyglass(builder, eb);
+        buildPortal(builder, eb);
+        buildFreeze(builder, eb);
+        buildBlindness(builder, eb);
+        buildDarkness(builder, eb);
+        buildVignette(builder, eb);
+        buildBossBar(builder, eb);
+        buildScoreboard(builder, eb);
+        buildTotem(builder, eb);
+        buildAttackIndicator(builder, eb);
+        buildArrowHighlight(builder, eb);
+        buildPieChart(builder, eb);
         buildEnvironment(builder, eb);
         buildBoat(builder, eb);
-        buildDroppedItems(builder, eb);
         buildShields(builder, eb, parent);
         buildParticles(builder, eb);
+        buildDroppedItems(builder, eb);
 
         return builder.build();
     }
@@ -56,176 +67,217 @@ public class ConfigScreenFactory {
                 .build());
     }
 
-    private static void buildOverlays(ConfigBuilder builder, ConfigEntryBuilder eb) {
-        ConfigCategory cat = builder.getOrCreateCategory(
-                Component.translatable("config.overlaymanager.category.overlays"));
+    private static void buildPumpkin(ConfigBuilder builder, ConfigEntryBuilder eb) {
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.pumpkin"));
 
-        cat.addEntry(subCategory(eb, Component.translatable("config.overlaymanager.pumpkin"),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.PumpkinOverlay.enabled)
-                        .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.PumpkinOverlay.enabled = v).build(),
-                eb.startFloatField(Component.translatable("config.overlaymanager.opacity"), ConfigInstance.PumpkinOverlay.opacity)
-                        .setDefaultValue(1f).setMin(0f).setMax(1f).setSaveConsumer(v -> ConfigInstance.PumpkinOverlay.opacity = v).build()
-        ));
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.PumpkinOverlay.enabled)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.PumpkinOverlay.enabled = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.opacity"), Math.round(ConfigInstance.PumpkinOverlay.opacity * 100), 0, 100)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(val + "%")).setSaveConsumer(v -> ConfigInstance.PumpkinOverlay.opacity = v / 100f).build());
+    }
 
-        cat.addEntry(subCategory(eb, Component.translatable("config.overlaymanager.fire"),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.FireOverlay.enabled)
-                        .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.FireOverlay.enabled = v).build(),
-                eb.startFloatField(Component.translatable("config.overlaymanager.opacity"), ConfigInstance.FireOverlay.opacity)
-                        .setDefaultValue(1f).setMin(0f).setMax(1f).setSaveConsumer(v -> ConfigInstance.FireOverlay.opacity = v).build(),
-                eb.startFloatField(Component.translatable("config.overlaymanager.fire.offsetPixels"), ConfigInstance.FireOverlay.offsetPixels)
-                        .setDefaultValue(0f).setSaveConsumer(v -> ConfigInstance.FireOverlay.offsetPixels = v).build()
-        ));
+    private static void buildFire(ConfigBuilder builder, ConfigEntryBuilder eb) {
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.fire"));
 
-        cat.addEntry(subCategory(eb, Component.translatable("config.overlaymanager.spyglass"),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.SpyglassOverlay.enabled)
-                        .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.SpyglassOverlay.enabled = v).build(),
-                eb.startFloatField(Component.translatable("config.overlaymanager.scale"), ConfigInstance.SpyglassOverlay.scale)
-                        .setDefaultValue(1f).setMin(0.1f).setMax(5f).setSaveConsumer(v -> ConfigInstance.SpyglassOverlay.scale = v).build()
-        ));
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.FireOverlay.enabled)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.FireOverlay.enabled = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.opacity"), Math.round(ConfigInstance.FireOverlay.opacity * 100), 0, 100)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(val + "%")).setSaveConsumer(v -> ConfigInstance.FireOverlay.opacity = v / 100f).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.fire.offsetPixels"), Math.round(ConfigInstance.FireOverlay.offsetPixels), -500, 500)
+                .setDefaultValue(0).setSaveConsumer(v -> ConfigInstance.FireOverlay.offsetPixels = v).build());
+    }
 
-        cat.addEntry(subCategory(eb, Component.translatable("config.overlaymanager.portal"),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.PortalOverlay.enabled)
-                        .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.PortalOverlay.enabled = v).build(),
-                eb.startFloatField(Component.translatable("config.overlaymanager.opacity"), ConfigInstance.PortalOverlay.opacity)
-                        .setDefaultValue(1f).setMin(0f).setMax(1f).setSaveConsumer(v -> ConfigInstance.PortalOverlay.opacity = v).build(),
-                eb.startFloatField(Component.translatable("config.overlaymanager.portal.speed"), ConfigInstance.PortalOverlay.speed)
-                        .setDefaultValue(1f).setMin(0f).setMax(10f).setSaveConsumer(v -> ConfigInstance.PortalOverlay.speed = v).build(),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.portal.allowGuisInPortal"), ConfigInstance.PortalOverlay.allowGuisInPortal)
-                        .setDefaultValue(false).setSaveConsumer(v -> ConfigInstance.PortalOverlay.allowGuisInPortal = v).build(),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.portal.allowCameraShake"), ConfigInstance.PortalOverlay.allowCameraShake)
-                        .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.PortalOverlay.allowCameraShake = v).build()
-        ));
+    private static void buildSpyglass(ConfigBuilder builder, ConfigEntryBuilder eb) {
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.spyglass"));
 
-        cat.addEntry(subCategory(eb, Component.translatable("config.overlaymanager.freeze"),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.FreezeOverlay.enabled)
-                        .setDefaultValue(false).setSaveConsumer(v -> ConfigInstance.FreezeOverlay.enabled = v).build(),
-                eb.startFloatField(Component.translatable("config.overlaymanager.opacity"), ConfigInstance.FreezeOverlay.opacity)
-                        .setDefaultValue(1f).setMin(0f).setMax(1f).setSaveConsumer(v -> ConfigInstance.FreezeOverlay.opacity = v).build(),
-                eb.startFloatField(Component.translatable("config.overlaymanager.freeze.xScale"), ConfigInstance.FreezeOverlay.Xscale)
-                        .setDefaultValue(5f).setMin(0.1f).setSaveConsumer(v -> ConfigInstance.FreezeOverlay.Xscale = v).build(),
-                eb.startFloatField(Component.translatable("config.overlaymanager.freeze.yScale"), ConfigInstance.FreezeOverlay.Yscale)
-                        .setDefaultValue(2.6432338f).setMin(0.1f).setSaveConsumer(v -> ConfigInstance.FreezeOverlay.Yscale = v).build()
-        ));
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.SpyglassOverlay.enabled)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.SpyglassOverlay.enabled = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.scale"), Math.round(ConfigInstance.SpyglassOverlay.scale * 100), 10, 500)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(String.format("%.2fx", val / 100f))).setSaveConsumer(v -> ConfigInstance.SpyglassOverlay.scale = v / 100f).build());
+    }
 
-        cat.addEntry(subCategory(eb, Component.translatable("config.overlaymanager.blindness"),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.BlindnessOverlay.enabled)
-                        .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.BlindnessOverlay.enabled = v).build()
-        ));
+    private static void buildPortal(ConfigBuilder builder, ConfigEntryBuilder eb) {
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.portal"));
 
-        cat.addEntry(subCategory(eb, Component.translatable("config.overlaymanager.darkness"),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.DarknessOverlay.enabled)
-                        .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.DarknessOverlay.enabled = v).build()
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.PortalOverlay.enabled)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.PortalOverlay.enabled = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.opacity"), Math.round(ConfigInstance.PortalOverlay.opacity * 100), 0, 100)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(val + "%")).setSaveConsumer(v -> ConfigInstance.PortalOverlay.opacity = v / 100f).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.portal.speed"), Math.round(ConfigInstance.PortalOverlay.speed * 100), 0, 1000)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(String.format("%.2fx", val / 100f))).setSaveConsumer(v -> ConfigInstance.PortalOverlay.speed = v / 100f).build());
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.portal.allowGuisInPortal"), ConfigInstance.PortalOverlay.allowGuisInPortal)
+                .setDefaultValue(false).setSaveConsumer(v -> ConfigInstance.PortalOverlay.allowGuisInPortal = v).build());
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.portal.allowCameraShake"), ConfigInstance.PortalOverlay.allowCameraShake)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.PortalOverlay.allowCameraShake = v).build());
+    }
+
+    private static void buildFreeze(ConfigBuilder builder, ConfigEntryBuilder eb) {
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.freeze"));
+
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.FreezeOverlay.enabled)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.FreezeOverlay.enabled = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.opacity"), Math.round(ConfigInstance.FreezeOverlay.opacity * 100), 0, 100)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(val + "%")).setSaveConsumer(v -> ConfigInstance.FreezeOverlay.opacity = v / 100f).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.freeze.xScale"), Math.round(ConfigInstance.FreezeOverlay.Xscale * 100), 0, 500)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(String.format("%.2fx", val / 100f))).setSaveConsumer(v -> ConfigInstance.FreezeOverlay.Xscale = v / 100f).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.freeze.yScale"), Math.round(ConfigInstance.FreezeOverlay.Yscale * 100), 0, 500)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(String.format("%.2fx", val / 100f))).setSaveConsumer(v -> ConfigInstance.FreezeOverlay.Yscale = v / 100f).build());
+    }
+
+    private static void buildBlindness(ConfigBuilder builder, ConfigEntryBuilder eb) {
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.blindness"));
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.BlindnessOverlay.enabled)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.BlindnessOverlay.enabled = v).build());
+    }
+
+    private static void buildDarkness(ConfigBuilder builder, ConfigEntryBuilder eb) {
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.darkness"));
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.DarknessOverlay.enabled)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.DarknessOverlay.enabled = v).build());
+    }
+
+    private static void buildVignette(ConfigBuilder builder, ConfigEntryBuilder eb) {
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.vignette"));
+
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.Vignette.enabled)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.Vignette.enabled = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.opacity"), Math.round(ConfigInstance.Vignette.opacity * 100), 0, 100)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(val + "%")).setSaveConsumer(v -> ConfigInstance.Vignette.opacity = v / 100f).build());
+    }
+
+    private static void buildBossBar(ConfigBuilder builder, ConfigEntryBuilder eb) {
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.bossBar"));
+
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.BossBar.enabled)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.BossBar.enabled = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.bossBar.xOffset"), ConfigInstance.BossBar.XOffset, -1000, 1000)
+                .setDefaultValue(0).setSaveConsumer(v -> ConfigInstance.BossBar.XOffset = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.bossBar.yOffset"), ConfigInstance.BossBar.YOffset, -1000, 1000)
+                .setDefaultValue(12).setSaveConsumer(v -> ConfigInstance.BossBar.YOffset = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.scale"), Math.round(ConfigInstance.BossBar.scale * 100), 10, 500)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(String.format("%.2fx", val / 100f))).setSaveConsumer(v -> ConfigInstance.BossBar.scale = v / 100f).build());
+        cat.addEntry(new ButtonEntry(
+                Component.empty(),
+                Component.literal("Edit Boss Bar Layout"),
+                () -> {
+                    Screen currentScreen = net.minecraft.client.Minecraft.getInstance().screen;
+                    net.minecraft.client.Minecraft.getInstance().setScreen(
+                            new LayoutEditorScreen(currentScreen, LayoutEditorScreen.EditMode.BOSS_BAR)
+                    );
+                }
         ));
     }
 
-    private static void buildHud(ConfigBuilder builder, ConfigEntryBuilder eb) {
-        ConfigCategory cat = builder.getOrCreateCategory(
-                Component.translatable("config.overlaymanager.category.hud"));
+    private static void buildScoreboard(ConfigBuilder builder, ConfigEntryBuilder eb) {
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.scoreboard"));
 
-        cat.addEntry(subCategory(eb, Component.translatable("config.overlaymanager.vignette"),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.Vignette.enabled)
-                        .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.Vignette.enabled = v).build(),
-                eb.startFloatField(Component.translatable("config.overlaymanager.opacity"), ConfigInstance.Vignette.opacity)
-                        .setDefaultValue(1f).setMin(0f).setMax(1f).setSaveConsumer(v -> ConfigInstance.Vignette.opacity = v).build()
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.Scoreboard.enabled)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.Scoreboard.enabled = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.scoreboard.xOffset"), ConfigInstance.Scoreboard.XOffset, -1000, 1000)
+                .setDefaultValue(0).setSaveConsumer(v -> ConfigInstance.Scoreboard.XOffset = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.scoreboard.yOffset"), ConfigInstance.Scoreboard.YOffset, -1000, 1000)
+                .setDefaultValue(12).setSaveConsumer(v -> ConfigInstance.Scoreboard.YOffset = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.scale"), Math.round(ConfigInstance.Scoreboard.scale * 100), 10, 500)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(String.format("%.2fx", val / 100f))).setSaveConsumer(v -> ConfigInstance.Scoreboard.scale = v / 100f).build());
+        cat.addEntry(new ButtonEntry(
+                Component.empty(),
+                Component.literal("Edit Scoreboard Layout"),
+                () -> {
+                    Screen currentScreen = net.minecraft.client.Minecraft.getInstance().screen;
+                    net.minecraft.client.Minecraft.getInstance().setScreen(
+                            new LayoutEditorScreen(currentScreen, LayoutEditorScreen.EditMode.SCOREBOARD)
+                    );
+                }
         ));
+    }
 
-        cat.addEntry(subCategory(eb, Component.translatable("config.overlaymanager.bossBar"),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.BossBar.enabled)
-                        .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.BossBar.enabled = v).build(),
-                eb.startIntField(Component.translatable("config.overlaymanager.bossBar.xOffset"), ConfigInstance.BossBar.bossBarXOffset)
-                        .setDefaultValue(0).setSaveConsumer(v -> ConfigInstance.BossBar.bossBarXOffset = v).build(),
-                eb.startIntField(Component.translatable("config.overlaymanager.bossBar.yOffset"), ConfigInstance.BossBar.bossBarYOffset)
-                        .setDefaultValue(12).setSaveConsumer(v -> ConfigInstance.BossBar.bossBarYOffset = v).build(),
-                eb.startFloatField(Component.translatable("config.overlaymanager.scale"), ConfigInstance.BossBar.scale)
-                        .setDefaultValue(1f).setMin(0.1f).setMax(5f).setSaveConsumer(v -> ConfigInstance.BossBar.scale = v).build(),
-                new ButtonEntry(
-                        Component.empty(),
-                        Component.literal("Edit Boss Bar Layout"),
-                        () -> {
-                            Screen currentScreen = net.minecraft.client.Minecraft.getInstance().screen;
-                            net.minecraft.client.Minecraft.getInstance().setScreen(
-                                    new LayoutEditorScreen(currentScreen, LayoutEditorScreen.EditMode.BOSS_BAR)
-                            );
-                        }
-                )
+    private static void buildTotem(ConfigBuilder builder, ConfigEntryBuilder eb) {
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.totem"));
+
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.Totem.enabled)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.Totem.enabled = v).build());
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.totem.showAnimation"), ConfigInstance.Totem.showTotemAnimation)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.Totem.showTotemAnimation = v).build());
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.totem.showParticles"), ConfigInstance.Totem.showParticles)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.Totem.showParticles = v).build());
+    }
+
+    private static void buildAttackIndicator(ConfigBuilder builder, ConfigEntryBuilder eb) {
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.attackIndicator"));
+
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.AttackIndicator.enabled)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.AttackIndicator.enabled = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.attackIndicator.xOffset"), ConfigInstance.AttackIndicator.XOffset, -1000, 1000)
+                .setDefaultValue(0).setSaveConsumer(v -> ConfigInstance.AttackIndicator.XOffset = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.attackIndicator.yOffset"), ConfigInstance.AttackIndicator.YOffset, -1000, 1000)
+                .setDefaultValue(0).setSaveConsumer(v -> ConfigInstance.AttackIndicator.YOffset = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.scale"), Math.round(ConfigInstance.AttackIndicator.scale * 100), 10, 500)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(String.format("%.2fx", val / 100f))).setSaveConsumer(v -> ConfigInstance.AttackIndicator.scale = v / 100f).build());
+        cat.addEntry(new ButtonEntry(
+                Component.empty(),
+                Component.literal("Edit Indicator Layout"),
+                () -> {
+                    Screen currentScreen = net.minecraft.client.Minecraft.getInstance().screen;
+                    net.minecraft.client.Minecraft.getInstance().setScreen(
+                            new LayoutEditorScreen(currentScreen, LayoutEditorScreen.EditMode.ATTACK_INDICATOR)
+                    );
+                }
         ));
+    }
 
-        cat.addEntry(subCategory(eb, Component.translatable("config.overlaymanager.scoreboard"),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.Scoreboard.enabled)
-                        .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.Scoreboard.enabled = v).build()
-        ));
+    private static void buildArrowHighlight(ConfigBuilder builder, ConfigEntryBuilder eb) {
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.arrowHighlight"));
 
-        cat.addEntry(subCategory(eb, Component.translatable("config.overlaymanager.totem"),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.Totem.enabled)
-                        .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.Totem.enabled = v).build(),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.totem.showAnimation"), ConfigInstance.Totem.showTotemAnimation)
-                        .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.Totem.showTotemAnimation = v).build(),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.totem.showParticles"), ConfigInstance.Totem.showParticles)
-                        .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.Totem.showParticles = v).build()
-        ));
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.ArrowHighlight.enabled)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.ArrowHighlight.enabled = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.arrowHighlight.red"), ConfigInstance.ArrowHighlight.red, 0, 255)
+                .setDefaultValue(0).setSaveConsumer(v -> ConfigInstance.ArrowHighlight.red = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.arrowHighlight.green"), ConfigInstance.ArrowHighlight.green, 0, 255)
+                .setDefaultValue(158).setSaveConsumer(v -> ConfigInstance.ArrowHighlight.green = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.arrowHighlight.blue"), ConfigInstance.ArrowHighlight.blue, 0, 255)
+                .setDefaultValue(166).setSaveConsumer(v -> ConfigInstance.ArrowHighlight.blue = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.opacity"), Math.round(ConfigInstance.ArrowHighlight.opacity * 100), 0, 100)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(val + "%")).setSaveConsumer(v -> ConfigInstance.ArrowHighlight.opacity = v / 100f).build());
+    }
 
-        cat.addEntry(subCategory(eb, Component.translatable("config.overlaymanager.attackIndicator"),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.AttackIndicator.enabled)
-                        .setDefaultValue(false).setSaveConsumer(v -> ConfigInstance.AttackIndicator.enabled = v).build(),
-                eb.startIntField(Component.translatable("config.overlaymanager.attackIndicator.xOffset"), ConfigInstance.AttackIndicator.hotbarXOffset)
-                        .setDefaultValue(0).setSaveConsumer(v -> ConfigInstance.AttackIndicator.hotbarXOffset = v).build(),
-                eb.startIntField(Component.translatable("config.overlaymanager.attackIndicator.yOffset"), ConfigInstance.AttackIndicator.hotbarYOffset)
-                        .setDefaultValue(0).setSaveConsumer(v -> ConfigInstance.AttackIndicator.hotbarYOffset = v).build(),
-                eb.startFloatField(Component.translatable("config.overlaymanager.scale"), ConfigInstance.AttackIndicator.scale)
-                        .setDefaultValue(1f).setMin(0.1f).setMax(5f).setSaveConsumer(v -> ConfigInstance.AttackIndicator.scale = v).build()
-        ));
+    private static void buildPieChart(ConfigBuilder builder, ConfigEntryBuilder eb) {
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.pieChart"));
 
-        cat.addEntry(subCategory(eb, Component.translatable("config.overlaymanager.arrowHighlight"),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.ArrowHighlight.enabled)
-                        .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.ArrowHighlight.enabled = v).build(),
-                eb.startIntSlider(Component.translatable("config.overlaymanager.arrowHighlight.red"), ConfigInstance.ArrowHighlight.red, 0, 255)
-                        .setDefaultValue(0).setSaveConsumer(v -> ConfigInstance.ArrowHighlight.red = v).build(),
-                eb.startIntSlider(Component.translatable("config.overlaymanager.arrowHighlight.green"), ConfigInstance.ArrowHighlight.green, 0, 255)
-                        .setDefaultValue(158).setSaveConsumer(v -> ConfigInstance.ArrowHighlight.green = v).build(),
-                eb.startIntSlider(Component.translatable("config.overlaymanager.arrowHighlight.blue"), ConfigInstance.ArrowHighlight.blue, 0, 255)
-                        .setDefaultValue(166).setSaveConsumer(v -> ConfigInstance.ArrowHighlight.blue = v).build(),
-                eb.startFloatField(Component.translatable("config.overlaymanager.opacity"), ConfigInstance.ArrowHighlight.opacity)
-                        .setDefaultValue(1f).setMin(0f).setMax(1f).setSaveConsumer(v -> ConfigInstance.ArrowHighlight.opacity = v).build()
-        ));
-
-        cat.addEntry(subCategory(eb, Component.translatable("config.overlaymanager.pieChart"),
-                eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.PieChart.enabled)
-                        .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.PieChart.enabled = v).build(),
-                eb.startIntField(Component.translatable("config.overlaymanager.pieChart.x"), ConfigInstance.PieChart.x)
-                        .setDefaultValue(-1).setSaveConsumer(v -> ConfigInstance.PieChart.x = v).build(),
-                eb.startIntField(Component.translatable("config.overlaymanager.pieChart.y"), ConfigInstance.PieChart.y)
-                        .setDefaultValue(500).setSaveConsumer(v -> ConfigInstance.PieChart.y = v).build(),
-                eb.startFloatField(Component.translatable("config.overlaymanager.scale"), ConfigInstance.PieChart.scale)
-                        .setDefaultValue(1f).setMin(0.1f).setMax(5f).setSaveConsumer(v -> ConfigInstance.PieChart.scale = v).build(),
-                new ButtonEntry(
-                        Component.empty(),
-                        Component.literal("Edit Pie Chart Layout"),
-                        () -> {
-                            Screen currentScreen = net.minecraft.client.Minecraft.getInstance().screen;
-                            net.minecraft.client.Minecraft.getInstance().setScreen(
-                                    new LayoutEditorScreen(currentScreen, LayoutEditorScreen.EditMode.PIE_CHART)
-                            );
-                        }
-                )
+        cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.PieChart.enabled)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.PieChart.enabled = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.pieChart.x"), ConfigInstance.PieChart.x, -1, 2000)
+                .setDefaultValue(-1).setTextGetter(val -> val == -1 ? Component.literal("Auto (-1)") : Component.literal(String.valueOf(val))).setSaveConsumer(v -> ConfigInstance.PieChart.x = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.pieChart.y"), ConfigInstance.PieChart.y, -1, 2000)
+                .setDefaultValue(500).setTextGetter(val -> val == -1 ? Component.literal("Auto (-1)") : Component.literal(String.valueOf(val))).setSaveConsumer(v -> ConfigInstance.PieChart.y = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.scale"), Math.round(ConfigInstance.PieChart.scale * 100), 10, 500)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(String.format("%.2fx", val / 100f))).setSaveConsumer(v -> ConfigInstance.PieChart.scale = v / 100f).build());
+        cat.addEntry(new ButtonEntry(
+                Component.empty(),
+                Component.literal("Edit Pie Chart Layout"),
+                () -> {
+                    Screen currentScreen = net.minecraft.client.Minecraft.getInstance().screen;
+                    net.minecraft.client.Minecraft.getInstance().setScreen(
+                            new LayoutEditorScreen(currentScreen, LayoutEditorScreen.EditMode.PIE_CHART)
+                    );
+                }
         ));
     }
 
     private static void buildEnvironment(ConfigBuilder builder, ConfigEntryBuilder eb) {
-        ConfigCategory cat = builder.getOrCreateCategory(
-                Component.translatable("config.overlaymanager.category.environment"));
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.category.environment"));
 
         cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.environment.fullbright"), ConfigInstance.Environment.fullbright)
                 .setDefaultValue(false).setSaveConsumer(v -> ConfigInstance.Environment.fullbright = v).build());
         cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.environment.disableFog"), ConfigInstance.Environment.disableFog)
                 .setDefaultValue(false).setSaveConsumer(v -> ConfigInstance.Environment.disableFog = v).build());
-        cat.addEntry(eb.startFloatField(Component.translatable("config.overlaymanager.environment.fogMultiplier"), ConfigInstance.Environment.fogMultiplier)
-                .setDefaultValue(1f).setMin(0f).setMax(10f).setSaveConsumer(v -> ConfigInstance.Environment.fogMultiplier = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.environment.fogMultiplier"), Math.round(ConfigInstance.Environment.fogMultiplier * 100), 0, 1000)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(String.format("%.2fx", val / 100f))).setSaveConsumer(v -> ConfigInstance.Environment.fogMultiplier = v / 100f).build());
         cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.environment.clearLava"), ConfigInstance.Environment.clearLava)
                 .setDefaultValue(false).setSaveConsumer(v -> ConfigInstance.Environment.clearLava = v).build());
         cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.environment.clearWater"), ConfigInstance.Environment.clearWater)
                 .setDefaultValue(false).setSaveConsumer(v -> ConfigInstance.Environment.clearWater = v).build());
-        cat.addEntry(eb.startFloatField(Component.translatable("config.overlaymanager.environment.rainOpacity"), ConfigInstance.Environment.rainOpacity)
-                .setDefaultValue(1f).setMin(0f).setMax(1f).setSaveConsumer(v -> ConfigInstance.Environment.rainOpacity = v).build());
+        cat.addEntry(eb.startIntSlider(Component.translatable("config.overlaymanager.environment.rainOpacity"), Math.round(ConfigInstance.Environment.rainOpacity * 100), 0, 100)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(val + "%")).setSaveConsumer(v -> ConfigInstance.Environment.rainOpacity = v / 100f).build());
         cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.environment.noRainParticles"), ConfigInstance.Environment.noRainParticles)
                 .setDefaultValue(false).setSaveConsumer(v -> ConfigInstance.Environment.noRainParticles = v).build());
         cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.environment.noSnow"), ConfigInstance.Environment.noSnow)
@@ -235,8 +287,7 @@ public class ConfigScreenFactory {
     }
 
     private static void buildBoat(ConfigBuilder builder, ConfigEntryBuilder eb) {
-        ConfigCategory cat = builder.getOrCreateCategory(
-                Component.translatable("config.overlaymanager.category.boat"));
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.category.boat"));
 
         cat.addEntry(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.Boat.enabled)
                 .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.Boat.enabled = v).build());
@@ -245,8 +296,7 @@ public class ConfigScreenFactory {
     }
 
     private static void buildParticles(ConfigBuilder builder, ConfigEntryBuilder eb) {
-        ConfigCategory cat = builder.getOrCreateCategory(
-                Component.translatable("config.overlaymanager.category.particles"));
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.category.particles"));
 
         cat.addEntry(eb.startBooleanToggle(
                         Component.translatable("config.overlaymanager.particles.enabled"),
@@ -316,10 +366,8 @@ public class ConfigScreenFactory {
                 .build());
     }
 
-    // Notice the updated method signature to receive the 'parent' screen
     private static void buildShields(ConfigBuilder builder, ConfigEntryBuilder eb, Screen parent) {
-        ConfigCategory cat = builder.getOrCreateCategory(
-                Component.translatable("config.overlaymanager.category.shields"));
+        ConfigCategory cat = builder.getOrCreateCategory(Component.translatable("config.overlaymanager.category.shields"));
 
         cat.addEntry(eb.startBooleanToggle(
                         Component.translatable("config.overlaymanager.enabled"),
@@ -328,9 +376,9 @@ public class ConfigScreenFactory {
                 .setSaveConsumer(v -> ConfigInstance.Shields.enabled = v)
                 .build());
 
-        cat.addEntry(eb.startIntField(
+        cat.addEntry(eb.startIntSlider(
                         Component.translatable("config.overlaymanager.shields.simpleHeight"),
-                        ConfigInstance.Shields.simpleYOffset)
+                        ConfigInstance.Shields.simpleYOffset, -500, 500)
                 .setDefaultValue(0)
                 .setTooltip(Component.translatable("config.overlaymanager.shields.simpleHeight.tooltip"))
                 .setSaveConsumer(v -> ConfigInstance.Shields.simpleYOffset = v)
@@ -356,26 +404,13 @@ public class ConfigScreenFactory {
                 }
         ));
 
-        cat.addEntry(handSettingsSubCategory(eb,
-                Component.translatable("config.overlaymanager.shields.firstPersonMain"),
-                ConfigInstance.Shields.firstPersonMain));
-        cat.addEntry(handSettingsSubCategory(eb,
-                Component.translatable("config.overlaymanager.shields.firstPersonOff"),
-                ConfigInstance.Shields.firstPersonOff));
-        cat.addEntry(handSettingsSubCategory(eb,
-                Component.translatable("config.overlaymanager.shields.thirdPersonMain"),
-                ConfigInstance.Shields.thirdPersonMain));
-        cat.addEntry(handSettingsSubCategory(eb,
-                Component.translatable("config.overlaymanager.shields.thirdPersonOff"),
-                ConfigInstance.Shields.thirdPersonOff));
-        cat.addEntry(handSettingsSubCategory(eb,
-                Component.translatable("config.overlaymanager.shields.otherPlayersMain"),
-                ConfigInstance.Shields.otherPlayersMain));
-        cat.addEntry(handSettingsSubCategory(eb,
-                Component.translatable("config.overlaymanager.shields.otherPlayersOff"),
-                ConfigInstance.Shields.otherPlayersOff));
+        cat.addEntry(handSettingsSubCategory(eb, Component.translatable("config.overlaymanager.shields.firstPersonMain"), ConfigInstance.Shields.firstPersonMain));
+        cat.addEntry(handSettingsSubCategory(eb, Component.translatable("config.overlaymanager.shields.firstPersonOff"), ConfigInstance.Shields.firstPersonOff));
+        cat.addEntry(handSettingsSubCategory(eb, Component.translatable("config.overlaymanager.shields.thirdPersonMain"), ConfigInstance.Shields.thirdPersonMain));
+        cat.addEntry(handSettingsSubCategory(eb, Component.translatable("config.overlaymanager.shields.thirdPersonOff"), ConfigInstance.Shields.thirdPersonOff));
+        cat.addEntry(handSettingsSubCategory(eb, Component.translatable("config.overlaymanager.shields.otherPlayersMain"), ConfigInstance.Shields.otherPlayersMain));
+        cat.addEntry(handSettingsSubCategory(eb, Component.translatable("config.overlaymanager.shields.otherPlayersOff"), ConfigInstance.Shields.otherPlayersOff));
     }
-
 
     private static void applyMrOrdenadorPresets() {
         ConfigInstance.Shields.firstPersonMain.idle.xOffset = 27.0;
@@ -472,12 +507,12 @@ public class ConfigScreenFactory {
                 .setSaveConsumer(v -> ConfigInstance.DroppedItems.enabled = v)
                 .build());
 
-        cat.addEntry(eb.startFloatField(
+        cat.addEntry(eb.startIntSlider(
                         Component.translatable("config.overlaymanager.droppedItems.scale"),
-                        ConfigInstance.DroppedItems.customScale)
-                .setDefaultValue(3.0f)
-                .setMin(0.1f).setMax(10f)
-                .setSaveConsumer(v -> ConfigInstance.DroppedItems.customScale = v)
+                        Math.round(ConfigInstance.DroppedItems.customScale * 100), 10, 1000)
+                .setDefaultValue(300)
+                .setTextGetter(val -> Component.literal(String.format("%.2fx", val / 100f)))
+                .setSaveConsumer(v -> ConfigInstance.DroppedItems.customScale = v / 100f)
                 .build());
 
         cat.addEntry(eb.startStrList(
@@ -520,36 +555,24 @@ public class ConfigScreenFactory {
             ConfigEntryBuilder eb,
             ConfigInstance.ShieldSettings s) {
 
-        list.add(eb.startDoubleField(Component.translatable("config.overlaymanager.shields.xOffset"), s.xOffset)
-                .setDefaultValue(0.0).setSaveConsumer(v -> s.xOffset = v).build());
-        list.add(eb.startDoubleField(Component.translatable("config.overlaymanager.shields.yOffset"), s.yOffset)
-                .setDefaultValue(0.0).setSaveConsumer(v -> s.yOffset = v).build());
-        list.add(eb.startDoubleField(Component.translatable("config.overlaymanager.shields.zOffset"), s.zOffset)
-                .setDefaultValue(0.0).setSaveConsumer(v -> s.zOffset = v).build());
-        list.add(eb.startFloatField(Component.translatable("config.overlaymanager.shields.scaleX"), s.scaleX)
-                .setDefaultValue(1f).setMin(0f).setSaveConsumer(v -> s.scaleX = v).build());
-        list.add(eb.startFloatField(Component.translatable("config.overlaymanager.shields.scaleY"), s.scaleY)
-                .setDefaultValue(1f).setMin(0f).setSaveConsumer(v -> s.scaleY = v).build());
-        list.add(eb.startFloatField(Component.translatable("config.overlaymanager.shields.scaleZ"), s.scaleZ)
-                .setDefaultValue(1f).setMin(0f).setSaveConsumer(v -> s.scaleZ = v).build());
-        list.add(eb.startFloatField(Component.translatable("config.overlaymanager.shields.rotX"), s.rotX)
-                .setDefaultValue(0f).setSaveConsumer(v -> s.rotX = v).build());
-        list.add(eb.startFloatField(Component.translatable("config.overlaymanager.shields.rotY"), s.rotY)
-                .setDefaultValue(0f).setSaveConsumer(v -> s.rotY = v).build());
-        list.add(eb.startFloatField(Component.translatable("config.overlaymanager.shields.rotZ"), s.rotZ)
-                .setDefaultValue(0f).setSaveConsumer(v -> s.rotZ = v).build());
-    }
-
-    @SuppressWarnings({"rawtypes"})
-    private static SubCategoryListEntry subCategory(
-            ConfigEntryBuilder eb,
-            Component label,
-            me.shedaniel.clothconfig2.api.AbstractConfigListEntry<?>... children) {
-
-        List<me.shedaniel.clothconfig2.api.AbstractConfigListEntry> list = new ArrayList<>(Arrays.asList(children));
-        SubCategoryBuilder sub = eb.startSubCategory(label, list);
-        sub.setExpanded(false);
-        return sub.build();
+        list.add(eb.startIntSlider(Component.translatable("config.overlaymanager.shields.xOffset"), (int) Math.round(s.xOffset * 10), -1000, 1000)
+                .setDefaultValue(0).setTextGetter(val -> Component.literal(String.format("%.1f", val / 10.0))).setSaveConsumer(v -> s.xOffset = v / 10.0).build());
+        list.add(eb.startIntSlider(Component.translatable("config.overlaymanager.shields.yOffset"), (int) Math.round(s.yOffset * 10), -1000, 1000)
+                .setDefaultValue(0).setTextGetter(val -> Component.literal(String.format("%.1f", val / 10.0))).setSaveConsumer(v -> s.yOffset = v / 10.0).build());
+        list.add(eb.startIntSlider(Component.translatable("config.overlaymanager.shields.zOffset"), (int) Math.round(s.zOffset * 10), -1000, 1000)
+                .setDefaultValue(0).setTextGetter(val -> Component.literal(String.format("%.1f", val / 10.0))).setSaveConsumer(v -> s.zOffset = v / 10.0).build());
+        list.add(eb.startIntSlider(Component.translatable("config.overlaymanager.shields.scaleX"), Math.round(s.scaleX * 100), 0, 500)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(String.format("%.2fx", val / 100f))).setSaveConsumer(v -> s.scaleX = v / 100f).build());
+        list.add(eb.startIntSlider(Component.translatable("config.overlaymanager.shields.scaleY"), Math.round(s.scaleY * 100), 0, 500)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(String.format("%.2fx", val / 100f))).setSaveConsumer(v -> s.scaleY = v / 100f).build());
+        list.add(eb.startIntSlider(Component.translatable("config.overlaymanager.shields.scaleZ"), Math.round(s.scaleZ * 100), 0, 500)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(String.format("%.2fx", val / 100f))).setSaveConsumer(v -> s.scaleZ = v / 100f).build());
+        list.add(eb.startIntSlider(Component.translatable("config.overlaymanager.shields.rotX"), Math.round(s.rotX), -180, 180)
+                .setDefaultValue(0).setTextGetter(val -> Component.literal(val + "°")).setSaveConsumer(v -> s.rotX = (float) v).build());
+        list.add(eb.startIntSlider(Component.translatable("config.overlaymanager.shields.rotY"), Math.round(s.rotY), -180, 180)
+                .setDefaultValue(0).setTextGetter(val -> Component.literal(val + "°")).setSaveConsumer(v -> s.rotY = (float) v).build());
+        list.add(eb.startIntSlider(Component.translatable("config.overlaymanager.shields.rotZ"), Math.round(s.rotZ), -180, 180)
+                .setDefaultValue(0).setTextGetter(val -> Component.literal(val + "°")).setSaveConsumer(v -> s.rotZ = (float) v).build());
     }
 
     // ==========================================

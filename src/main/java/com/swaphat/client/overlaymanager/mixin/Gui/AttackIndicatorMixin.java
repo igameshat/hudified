@@ -19,27 +19,33 @@ public class AttackIndicatorMixin {
     @Unique
     private boolean overlayManager$appliedHotbar = false;
 
+    // ==========================================
+    // 1. CROSSHAIR INDICATOR
+    // ==========================================
     @Inject(
             method = "renderCrosshair",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getAttackStrengthScale(F)F")
     )
     private void modifyCrosshairStart(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        if (!ConfigInstance.OverlayEnabled) return;
+
         guiGraphics.pose().pushMatrix();
         this.overlayManager$appliedCrosshair = true;
 
         if (ConfigInstance.AttackIndicator.enabled) {
             float scale = ConfigInstance.AttackIndicator.scale;
-            int xOff = ConfigInstance.AttackIndicator.hotbarXOffset;
-            int yOff = ConfigInstance.AttackIndicator.hotbarYOffset;
+            float xOff = ConfigInstance.AttackIndicator.XOffset;
+            float yOff = ConfigInstance.AttackIndicator.YOffset;
 
-            int centerX = guiGraphics.guiWidth() / 2;
-            int centerY = guiGraphics.guiHeight() / 2;
+            float centerX = guiGraphics.guiWidth() / 2.0f;
+            float centerY = guiGraphics.guiHeight() / 2.0f;
 
             guiGraphics.pose().translate(centerX + xOff, centerY + yOff);
             guiGraphics.pose().scale(scale, scale);
             guiGraphics.pose().translate(-centerX, -centerY);
         } else {
-            guiGraphics.pose().scale(0, 0);
+            // Hide it without breaking the rest of the crosshair
+            guiGraphics.pose().scale(0.0f, 0.0f);
         }
     }
 
@@ -51,28 +57,32 @@ public class AttackIndicatorMixin {
         }
     }
 
+    // ==========================================
     // 2. HOTBAR INDICATOR
+    // ==========================================
     @Inject(
             method = "renderItemHotbar",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getAttackStrengthScale(F)F")
     )
     private void modifyHotbarStart(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        if (!ConfigInstance.OverlayEnabled) return; // Let vanilla handle it entirely
+
         guiGraphics.pose().pushMatrix();
         this.overlayManager$appliedHotbar = true;
 
-        if (ConfigInstance.AttackIndicator.enabled && ConfigInstance.OverlayEnabled) {
+        if (ConfigInstance.AttackIndicator.enabled) {
             float scale = ConfigInstance.AttackIndicator.scale;
-            int xOff = ConfigInstance.AttackIndicator.hotbarXOffset;
-            int yOff = ConfigInstance.AttackIndicator.hotbarYOffset;
+            float xOff = ConfigInstance.AttackIndicator.XOffset;
+            float yOff = ConfigInstance.AttackIndicator.YOffset;
 
-            int centerX = (guiGraphics.guiWidth() / 2) + 91;
-            int centerY = guiGraphics.guiHeight() - 20;
+            float centerX = (guiGraphics.guiWidth() / 2.0f) + 91.0f;
+            float centerY = guiGraphics.guiHeight() - 20.0f;
 
             guiGraphics.pose().translate(centerX + xOff, centerY + yOff);
             guiGraphics.pose().scale(scale, scale);
             guiGraphics.pose().translate(-centerX, -centerY);
         } else {
-            guiGraphics.pose().scale(0, 0);
+            guiGraphics.pose().scale(0.0f, 0.0f);
         }
     }
 

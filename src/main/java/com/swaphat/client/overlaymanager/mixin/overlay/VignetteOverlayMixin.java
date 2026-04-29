@@ -15,6 +15,6 @@ public class VignetteOverlayMixin {
             ordinal = 0
     )
     private float applyVignetteOpacity(float f) {
-        return Mth.clamp(f * (ConfigInstance.Vignette.enabled && ConfigInstance.OverlayEnabled ? ConfigInstance.Vignette.opacity/255 : 1), 0, 1);
+        return Mth.clamp(f * (ConfigInstance.Vignette.enabled && ConfigInstance.OverlayEnabled ? ConfigInstance.Vignette.opacity : 1), 0, 1);
     }
 }

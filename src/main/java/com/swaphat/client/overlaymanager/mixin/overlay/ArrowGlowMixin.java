@@ -4,6 +4,7 @@ import com.swaphat.client.overlaymanager.config.ConfigInstance;
 import com.swaphat.client.overlaymanager.mixin.accessors.AbstractArrowAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import org.spongepowered.asm.mixin.Mixin;
@@ -42,8 +43,7 @@ public abstract class ArrowGlowMixin {
                         int b = ConfigInstance.ArrowHighlight.blue;
                         int a = (int) (ConfigInstance.ArrowHighlight.opacity * 255);
 
-                        int customColor = (a << 24) | (r << 16) | (g << 8) | b;
-                        cir.setReturnValue(customColor);
+                        cir.setReturnValue(ARGB.color(a, r, g, b));
                     }
                 }
             }

@@ -30,8 +30,8 @@ public class BossBarMixin {
         float vanillaY = 12.0f;
 
         // Offsets
-        float offsetX = ConfigInstance.BossBar.bossBarXOffset;
-        float offsetY = ConfigInstance.BossBar.bossBarYOffset - vanillaY;
+        float offsetX = ConfigInstance.BossBar.XOffset;
+        float offsetY = ConfigInstance.BossBar.YOffset - vanillaY;
 
         // Apply offsets and move to the center of the bar to apply scale
         poseStack.translate(centerX + offsetX, vanillaY + offsetY);

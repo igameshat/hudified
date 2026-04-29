@@ -18,20 +18,19 @@ public abstract class FreezingOverlayMixin {
     private void renderCornerSnappedFreeze(GuiGraphics guiGraphics, Identifier identifier, float f, CallbackInfo ci) {
         if (identifier.getPath().contains("powder_snow_outline")) {
 
-            if (!ConfigInstance.FreezeOverlay.enabled && ConfigInstance.OverlayEnabled) {
+            if (!(ConfigInstance.FreezeOverlay.enabled && ConfigInstance.OverlayEnabled)) {
                 return;
-            }
+            } else ci.cancel();
 
-            ci.cancel();
 
-            float opacityMultiplier = (float) ConfigInstance.FreezeOverlay.opacity / 255;
+            float opacityMultiplier = ConfigInstance.FreezeOverlay.opacity;
             int color = ARGB.white(f * opacityMultiplier);
 
             int screenWidth = guiGraphics.guiWidth();
             int screenHeight = guiGraphics.guiHeight();
 
-            int drawSizeX = (int) (128 * ConfigInstance.FreezeOverlay.Xscale);
-            int drawSizeY = (int) (128 * ConfigInstance.FreezeOverlay.Yscale);
+            int drawSizeX = (int) (640 * ConfigInstance.FreezeOverlay.Xscale);
+            int drawSizeY = (int) (338.3339264 * ConfigInstance.FreezeOverlay.Yscale);
 
             // Texture Constants
             // We are sampling 128px chunks from a 256px total file

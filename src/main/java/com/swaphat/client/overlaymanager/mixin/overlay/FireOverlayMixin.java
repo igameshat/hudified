@@ -44,6 +44,6 @@ public class FireOverlayMixin {
 
     @ModifyConstant(method = "renderFire", constant = @Constant(floatValue = .9F))
     private static float modifyFireAlpha(float originalAlpha) {
-        return ConfigInstance.FireOverlay.opacity / 255;
+        return ConfigInstance.FireOverlay.opacity;
     }
 }

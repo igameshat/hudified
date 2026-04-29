@@ -35,7 +35,7 @@ public abstract class PortalOverlayMixin {
 
         float vanillaDelta = player.portalEffectIntensity - player.oPortalEffectIntensity;
         float speedMultiplier = ConfigInstance.PortalOverlay.speed;
-        float maxOpacity = ConfigInstance.PortalOverlay.opacity / 255;
+        float maxOpacity = ConfigInstance.PortalOverlay.opacity;
 
         player.portalEffectIntensity = player.oPortalEffectIntensity + (vanillaDelta * speedMultiplier);
 

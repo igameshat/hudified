@@ -39,7 +39,6 @@ public class SpyglassOverlayMixin {
                 ordinal = 0
         )
         private float applyVignetteOpacity(float f) {
-            return Mth.clamp(f * (ConfigInstance.Vignette.enabled && ConfigInstance.OverlayEnabled ? ConfigInstance.Vignette.opacity : 1)/255, 0, 1);
-        }
+            return Mth.clamp(f * (ConfigInstance.Vignette.enabled && ConfigInstance.OverlayEnabled ? ConfigInstance.Vignette.opacity : 1.0f), 0.0f, 1.0f);        }
     }
 }
