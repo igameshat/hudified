@@ -1,7 +1,10 @@
 package com.swaphat.client.overlaymanager.config;
 
+import com.mojang.blaze3d.platform.InputConstants;
+
 public class ConfigInstance {
     public static boolean OverlayEnabled = true;
+    public static InputConstants.Key menuKeybind = InputConstants.UNKNOWN;
 
     public static PumpkinOverlay PumpkinOverlay = new PumpkinOverlay();
     public static FireOverlay FireOverlay = new FireOverlay();
@@ -16,28 +19,30 @@ public class ConfigInstance {
     public static Totem Totem = new Totem();
     public static Environment Environment = new Environment();
     public static AttackIndicator AttackIndicator = new AttackIndicator();
-    public static ArrowHighlight ArrowHighlight = new ArrowHighlight();
+    public static projectileHighlight projectileHighlight = new projectileHighlight();
     public static PieChart PieChart = new PieChart();
     public static Boat Boat = new Boat();
     public static ShieldConfig Shields = new ShieldConfig();
     public static ParticleConfig Particle = new ParticleConfig();
     public static DroppedItems DroppedItems = new DroppedItems();
 
-
     public static class PumpkinOverlay {
         public boolean enabled = true;
         public float opacity = 1;
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
     public static class FireOverlay {
         public boolean enabled = true;
         public float offsetPixels = 0;
         public float opacity = 1;
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
     public static class SpyglassOverlay {
         public boolean enabled = true;
         public float scale = 1;
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
     public static class PortalOverlay {
@@ -46,6 +51,7 @@ public class ConfigInstance {
         public float speed = 1;
         public boolean allowGuisInPortal = false;
         public boolean allowCameraShake = true;
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
     public static class FreezeOverlay {
@@ -53,19 +59,23 @@ public class ConfigInstance {
         public float opacity = 1;
         public float Xscale = 1;
         public float Yscale = 1;
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
     public static class BlindnessOverlay {
         public boolean enabled = true;
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
     public static class DarknessOverlay {
         public boolean enabled = true;
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
     public static class Vignette {
         public boolean enabled = true;
         public float opacity = 1;
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
     public static class BossBar {
@@ -73,6 +83,7 @@ public class ConfigInstance {
         public int YOffset = 12;
         public int XOffset = 0;
         public float scale = 1;
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
     public static class Scoreboard {
@@ -80,12 +91,14 @@ public class ConfigInstance {
         public int YOffset = 12;
         public int XOffset = 0;
         public float scale = 1;
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
     public static class Totem {
         public boolean enabled = true;
         public boolean showTotemAnimation = true;
         public boolean showParticles = true;
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
     public static class AttackIndicator {
@@ -93,48 +106,48 @@ public class ConfigInstance {
         public int YOffset = 12;
         public int XOffset = 0;
         public float scale = 1;
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
-    public static class ArrowHighlight {
+    public static class projectileHighlight {
         public boolean enabled = true;
         public int red = 0;
         public int green = 158;
         public int blue = 166;
         public float opacity = 1;
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
+        public java.util.List<String> ignoredProjectiles = new java.util.ArrayList<>();
     }
 
     public static class PieChart {
         public boolean enabled = true;
-
         public int x = -1;
         public int y = 500;
-
         public int oldWindowWidth = -1;
         public int oldWindowHeight = -1;
-
         public boolean renderingPieChart = false;
         public int windowIndex = 0;
-
         public float scale = 1;
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
     public static class Boat {
         public boolean enabled = true;
         public boolean unlockBoatPov = true;
+        public boolean showBoatItem = true;
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
     public static class ShieldConfig {
         public boolean enabled = true;
         public int simpleYOffset = 0;
-
         public HandSettings firstPersonMain = new HandSettings();
         public HandSettings firstPersonOff = new HandSettings();
-
         public HandSettings thirdPersonMain = new HandSettings();
         public HandSettings thirdPersonOff = new HandSettings();
-
         public HandSettings otherPlayersMain = new HandSettings();
         public HandSettings otherPlayersOff = new HandSettings();
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
     public static class HandSettings {
@@ -146,11 +159,9 @@ public class ConfigInstance {
         public double xOffset = 0;
         public double yOffset = 0;
         public double zOffset = 0;
-
         public float scaleX = 1;
         public float scaleY = 1;
         public float scaleZ = 1;
-
         public float rotX = 0;
         public float rotY = 0;
         public float rotZ = 0;
@@ -158,16 +169,16 @@ public class ConfigInstance {
 
     public static class ParticleConfig {
         public boolean enabled = true;
-
         public float globalChance = 1.0f;
-
         public float selfPotionChance = 0.5f;
         public float otherPotionChance = 1.0f;
-
         public java.util.HashMap<String, Float> customParticleChances = new java.util.HashMap<>();
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
     public static class Environment {
+        // Leaving environment without a toggle since it controls multiple distinct bools (fullbright, fog, etc.),
+        // unless you want one master toggle for it too.
         public boolean fullbright = false;
         public boolean disableFog = false;
         public float fogMultiplier = 1;
@@ -183,5 +194,6 @@ public class ConfigInstance {
         public boolean enabled = true;
         public float customScale = 3.0f;
         public java.util.List<String> itemList = new java.util.ArrayList<>(java.util.List.of("minecraft:golden_apple"));
+        public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 }

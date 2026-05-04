@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(AbstractArrow.class)
-public interface AbstractArrowAccessor {
+public interface AbstractProjectileAccessor {
 
     // @Invoker allows us to call a protected method from outside the class!
     @Invoker("isInGround")

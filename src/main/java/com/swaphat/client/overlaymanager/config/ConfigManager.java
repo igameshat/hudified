@@ -25,7 +25,7 @@ public class ConfigManager {
         public ConfigInstance.Scoreboard Scoreboard;
         public ConfigInstance.Totem Totem;
         public ConfigInstance.Environment Environment;
-        public ConfigInstance.ArrowHighlight ArrowHighlight;
+        public ConfigInstance.projectileHighlight projectileHighlight;
         public ConfigInstance.AttackIndicator AttackIndicator;
         public ConfigInstance.PieChart PieChart;
         public ConfigInstance.Boat Boat;
@@ -53,7 +53,7 @@ public class ConfigManager {
                     if (data.Scoreboard != null) ConfigInstance.Scoreboard = data.Scoreboard;
                     if (data.Totem != null) ConfigInstance.Totem = data.Totem;
                     if (data.Environment != null) ConfigInstance.Environment = data.Environment;
-                    if (data.ArrowHighlight != null) ConfigInstance.ArrowHighlight = data.ArrowHighlight;
+                    if (data.projectileHighlight != null) ConfigInstance.projectileHighlight = data.projectileHighlight;
                     if (data.AttackIndicator != null) ConfigInstance.AttackIndicator = data.AttackIndicator;
                     if (data.PieChart != null) ConfigInstance.PieChart = data.PieChart;
                     if (data.Boat != null) ConfigInstance.Boat = data.Boat;
@@ -88,7 +88,7 @@ public class ConfigManager {
             data.Scoreboard = ConfigInstance.Scoreboard;
             data.Totem = ConfigInstance.Totem;
             data.Environment = ConfigInstance.Environment;
-            data.ArrowHighlight = ConfigInstance.ArrowHighlight;
+            data.projectileHighlight = ConfigInstance.projectileHighlight;
             data.AttackIndicator = ConfigInstance.AttackIndicator;
             data.PieChart = ConfigInstance.PieChart;
             data.Boat = ConfigInstance.Boat;

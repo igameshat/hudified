@@ -2,8 +2,10 @@
   "config.overlaymanager.title": "Overlay Manager",
 
   "config.overlaymanager.category.general": "General",
-  "config.overlaymanager.category.overlays": "Overlays",
-  "config.overlaymanager.category.hud": "HUD",
+  "config.overlaymanager.category.visualOverlays": "Visual Overlays",
+  "config.overlaymanager.category.hudUi": "HUD & UI",
+  "config.overlaymanager.category.entityWorld": "Entity & World Render",
+  "config.overlaymanager.category.environmentGameplay": "Environment & Gameplay",
   "config.overlaymanager.category.environment": "Environment",
   "config.overlaymanager.category.boat": "Boat",
   "config.overlaymanager.category.shields": "Shields",
@@ -12,6 +14,9 @@
 
   "config.overlaymanager.overlayEnabled": "Enable All Overlays",
   "config.overlaymanager.overlayEnabled.tooltip": "Master toggle - disabling this bypasses every overlay at once.",
+
+  "config.overlaymanager.menuKeybind": "Menu Keybind",
+  "config.overlaymanager.toggleKeybind": "Toggle Keybind",
 
   "config.overlaymanager.enabled": "Enabled",
   "config.overlaymanager.opacity": "Opacity",
@@ -48,10 +53,13 @@
   "config.overlaymanager.attackIndicator.xOffset": "X Offset",
   "config.overlaymanager.attackIndicator.yOffset": "Y Offset",
 
-  "config.overlaymanager.arrowHighlight": "Arrow Highlight",
-  "config.overlaymanager.arrowHighlight.red": "Red",
-  "config.overlaymanager.arrowHighlight.green": "Green",
-  "config.overlaymanager.arrowHighlight.blue": "Blue",
+  "config.overlaymanager.projectileHighlight": "Projectile Highlight",
+  "config.overlaymanager.projectileHighlight.red": "Red",
+  "config.overlaymanager.projectileHighlight.green": "Green",
+  "config.overlaymanager.projectileHighlight.blue": "Blue",
+  "config.overlaymanager.projectileHighlight.ignored": "Ignored Projectiles",
+  "config.overlaymanager.projectileHighlight.ignored.tooltip": "List of projectile Entity IDs to ignore (e.g., minecraft:arrow, minecraft:wither_skull). Use \\n for new lines.",
+
 
   "config.overlaymanager.pieChart": "Pie Chart",
   "config.overlaymanager.pieChart.x": "X Position",
@@ -65,10 +73,11 @@
   "config.overlaymanager.environment.rainOpacity": "Rain Opacity",
   "config.overlaymanager.environment.noRainParticles": "No Rain Particles",
   "config.overlaymanager.environment.noSnow": "No Snow",
-  "config.overlaymanager.environment.blockBreaking" : "Disable Block Breaking Overlay",
+  "config.overlaymanager.environment.blockBreaking": "Disable Block Breaking Overlay",
   "config.overlaymanager.environment.blockBreaking.tooltip": "Controls the block breaking overlay.",
 
   "config.overlaymanager.boat.unlockBoatPov": "Unlock Boat Camera (free look)",
+  "config.overlaymanager.boat.showBoatItem": "Show held item even when riding in a boat",
 
   "config.overlaymanager.shields.advancedOptions": "Advanced Options",
   "config.overlaymanager.shields.advancedOptions.tooltip": "Exposes per-hand transform sliders for precise shield positioning.",
@@ -104,7 +113,21 @@
   "config.overlaymanager.particles.specific": "Specific Particle Overrides",
   "config.overlaymanager.particles.specific.tooltip": "Default = Inherits from Global Chance.\n0% = Disabled.\n100% = Always Render.",
 
-  "config.overlaymanager.droppedItems.scale" : "Scale",
-  "config.overlaymanager.droppedItems.list" : "Item List",
-  "config.overlaymanager.droppedItems.list.tooltip" : "List of items to scale. Use \\n for new lines."
+  "config.overlaymanager.droppedItems.scale": "Scale",
+  "config.overlaymanager.droppedItems.list": "Item List",
+  "config.overlaymanager.droppedItems.list.tooltip": "List of items to scale. Use \\n for new lines.",
+  "config.overlaymanager.droppedItems.invalidItem": "Invalid Item",
+
+  "config.overlaymanager.button.editBossBarLayout": "Edit Boss Bar Layout",
+  "config.overlaymanager.button.editScoreboardLayout": "Edit Scoreboard Layout",
+  "config.overlaymanager.button.editAttackIndicatorLayout": "Edit Indicator Layout",
+  "config.overlaymanager.button.editPieChartLayout": "Edit Pie Chart Layout",
+  "config.overlaymanager.button.applySideShieldPreset": "Apply Side Shield Preset",
+  "config.overlaymanager.button.applyDefaultShieldSettings": "Apply Default Shield Settings",
+
+  "config.overlaymanager.generic.auto": "Auto",
+  "config.overlaymanager.generic.default": "Default",
+  "config.overlaymanager.generic.invalidEntity": "Invalid Entity ID. Example: minecraft:arrow",
+  "config.overlaymanager.generic.invalidItem": "Invalid Item ID. Example: minecraft:apple"
+
 }

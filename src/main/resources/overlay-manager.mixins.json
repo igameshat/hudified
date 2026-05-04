@@ -10,7 +10,7 @@
 		"overlay.FreezingOverlayMixin",
 		"overlay.VignetteOverlayMixin",
 		"overlay.DarknessOverlayMixin",
-		"overlay.ArrowGlowMixin",
+		"overlay.ProjectileGlowMixin",
 
 		"patches.PortalGuiMixin",
 		"patches.GameRendererPortalMixin",
@@ -29,7 +29,7 @@
 		"features.FullbrightMixin",
 		"features.WeatherEffectRendererMixin",
 
-		"accessors.AbstractArrowAccessor",
+		"accessors.AbstractProjectileAccessor",
 
 		"patches.pieChart.MinecraftMixin",
 		"patches.pieChart.WindowModificationMixin",
