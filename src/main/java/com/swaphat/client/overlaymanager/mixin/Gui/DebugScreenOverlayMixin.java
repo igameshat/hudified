@@ -1,9 +1,7 @@
 package com.swaphat.client.overlaymanager.mixin.Gui;
 
 import com.swaphat.client.overlaymanager.config.ConfigInstance;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

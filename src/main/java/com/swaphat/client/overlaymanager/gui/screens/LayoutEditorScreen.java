@@ -136,10 +136,9 @@ public class LayoutEditorScreen extends Screen {
 
                 double minX = bx - ((182 / 2.0) * bScale);
                 double maxX = bx + ((182 / 2.0) * bScale);
-                double minY = by;
                 double maxY = by + (15 * bScale);
 
-                if (mx >= minX && mx <= maxX && my >= minY && my <= maxY) {
+                if (mx >= minX && mx <= maxX && my >= (double) by && my <= maxY) {
                     this.isDragging = true;
                     this.dragOffsetX = mx - bx;
                     this.dragOffsetY = my - by;
@@ -176,11 +175,10 @@ public class LayoutEditorScreen extends Screen {
                 float sScale = ConfigInstance.Scoreboard.scale;
 
                 double minX = sx - (100 * sScale);
-                double maxX = sx;
                 double minY = sy - (30 * sScale);
                 double maxY = sy + (30 * sScale);
 
-                if (mx >= minX && mx <= maxX && my >= minY && my <= maxY) {
+                if (mx >= minX && mx <= (double) sx && my >= minY && my <= maxY) {
                     this.isDragging = true;
                     this.dragOffsetX = mx - sx;
                     this.dragOffsetY = my - sy;

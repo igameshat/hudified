@@ -18,11 +18,7 @@ public class Overlaymanager implements ClientModInitializer {
 		ConfigScreenFactory.registerKeybinds();
 		LOGGER.info("Overlay Manager initialized.");
 
-		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-			dispatcher.register(ClientCommandManager.literal("hi")
-					.executes(context -> {
-						return 1;
-					}));
-		});
+		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcher.register(ClientCommandManager.literal("hi")
+                .executes(context -> 1)));
 	}
 }

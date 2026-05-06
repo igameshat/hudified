@@ -142,7 +142,6 @@ public class ConfigInstance {
         public boolean renderingPieChart = false;
         public int windowIndex = 0;
         public float scale = 1;
-        public boolean ShowBackground = true;
         public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
