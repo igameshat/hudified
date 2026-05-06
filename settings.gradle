@@ -9,5 +9,4 @@ pluginManagement {
 	}
 }
 
-// Should match your modid
-rootProject.name = 'overlay-manager'
+rootProject.name = 'hudified'

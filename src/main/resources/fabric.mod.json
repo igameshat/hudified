@@ -1,9 +1,9 @@
 {
 	"schemaVersion": 1,
-	"id": "overlay-manager",
+	"id": "hudified",
 	"version": "${version}",
-	"name": "overlay-manager",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "hudified",
+	"description": "an overlay utility mod that has most of the things you will need for a better experience in minecraft",
 	"authors": [
 		"Infinitygames","Keszenin"
 	],
@@ -12,14 +12,14 @@
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/overlay-manager/icon.png",
+	"icon": "assets/hudified/icon.png",
 	"environment": "client",
 	"entrypoints": {
-		"client": ["com.swaphat.client.overlaymanager.Overlaymanager"],
-		"modmenu": ["com.swaphat.client.overlaymanager.compatibility.ModmenuComp"]
+		"client": ["com.swaphat.client.hudified.Hudified"],
+		"modmenu": ["com.swaphat.client.hudified.compatibility.ModmenuComp"]
 	},
 	"mixins": [
-		"overlay-manager.mixins.json"
+		"hudified.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.18.6",
