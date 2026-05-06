@@ -10,13 +10,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(DebugScreenOverlay.class) // Make sure this matches the class name in your source
+@Mixin(DebugScreenOverlay.class)
 public class DebugScreenOverlayMixin {
 
     @Inject(method = "showProfilerChart()Z", at = @At("HEAD"), cancellable = true)
     private void renderPieOnHUD(CallbackInfoReturnable<Boolean> info) {
+        if(!ConfigInstance.OverlayEnabled) return;
         Minecraft minecraft = Minecraft.getInstance();
 
-        info.setReturnValue(ConfigInstance.PieChart.enabled && !minecraft.options.hideGui && ConfigInstance.OverlayEnabled);
+        info.setReturnValue(ConfigInstance.PieChart.enabled && !minecraft.options.hideGui);
     }
 }

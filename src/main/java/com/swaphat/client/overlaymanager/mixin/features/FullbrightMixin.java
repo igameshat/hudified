@@ -15,10 +15,8 @@ public class FullbrightMixin {
     )
     private float injectFullbright(Double instance) {
         if (ConfigInstance.Environment.fullbright && ConfigInstance.OverlayEnabled) {
-            // 10.0F is the standard internal multiplier for maximum brightness
             return 10.0F;
         }
-        // Otherwise, return the user's actual vanilla gamma setting
         return instance.floatValue();
     }
 }

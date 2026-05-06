@@ -2,16 +2,35 @@ package com.swaphat.client.overlaymanager.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.*;
 
 public class ConfigManager {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson GSON = new GsonBuilder()
+            .setPrettyPrinting()
+            .registerTypeAdapter(InputConstants.Key.class, new TypeAdapter<InputConstants.Key>() {
+                @Override
+                public void write(JsonWriter out, InputConstants.Key value) throws IOException {
+                    out.value(value != null ? value.getName() : InputConstants.UNKNOWN.getName());
+                }
+
+                @Override
+                public InputConstants.Key read(JsonReader in) throws IOException {
+                    return InputConstants.getKey(in.nextString());
+                }
+            })
+            .create();
+
     private static final File FILE = FabricLoader.getInstance().getConfigDir().resolve("overlay-manager.json").toFile();
 
     private static class ConfigMirror {
         public boolean OverlayEnabled;
+        public InputConstants.Key menuKeybind;
 
         public ConfigInstance.PumpkinOverlay PumpkinOverlay;
         public ConfigInstance.FireOverlay FireOverlay;
@@ -25,7 +44,7 @@ public class ConfigManager {
         public ConfigInstance.Scoreboard Scoreboard;
         public ConfigInstance.Totem Totem;
         public ConfigInstance.Environment Environment;
-        public ConfigInstance.projectileHighlight projectileHighlight;
+        public ConfigInstance.ProjectileHighlight ProjectileHighlight;
         public ConfigInstance.AttackIndicator AttackIndicator;
         public ConfigInstance.PieChart PieChart;
         public ConfigInstance.Boat Boat;
@@ -39,7 +58,9 @@ public class ConfigManager {
             try (FileReader reader = new FileReader(FILE)) {
                 ConfigMirror data = GSON.fromJson(reader, ConfigMirror.class);
 
-                if (data != null) {ConfigInstance.OverlayEnabled = data.OverlayEnabled;
+                if (data != null) {
+                    ConfigInstance.OverlayEnabled = data.OverlayEnabled;
+                    if (data.menuKeybind != null) ConfigInstance.menuKeybind = data.menuKeybind;
 
                     if (data.PumpkinOverlay != null) ConfigInstance.PumpkinOverlay = data.PumpkinOverlay;
                     if (data.FireOverlay != null) ConfigInstance.FireOverlay = data.FireOverlay;
@@ -53,7 +74,7 @@ public class ConfigManager {
                     if (data.Scoreboard != null) ConfigInstance.Scoreboard = data.Scoreboard;
                     if (data.Totem != null) ConfigInstance.Totem = data.Totem;
                     if (data.Environment != null) ConfigInstance.Environment = data.Environment;
-                    if (data.projectileHighlight != null) ConfigInstance.projectileHighlight = data.projectileHighlight;
+                    if (data.ProjectileHighlight != null) ConfigInstance.ProjectileHighlight = data.ProjectileHighlight;
                     if (data.AttackIndicator != null) ConfigInstance.AttackIndicator = data.AttackIndicator;
                     if (data.PieChart != null) ConfigInstance.PieChart = data.PieChart;
                     if (data.Boat != null) ConfigInstance.Boat = data.Boat;
@@ -75,6 +96,7 @@ public class ConfigManager {
             ConfigMirror data = new ConfigMirror();
 
             data.OverlayEnabled = ConfigInstance.OverlayEnabled;
+            data.menuKeybind = ConfigInstance.menuKeybind;
 
             data.PumpkinOverlay = ConfigInstance.PumpkinOverlay;
             data.FireOverlay = ConfigInstance.FireOverlay;
@@ -88,7 +110,7 @@ public class ConfigManager {
             data.Scoreboard = ConfigInstance.Scoreboard;
             data.Totem = ConfigInstance.Totem;
             data.Environment = ConfigInstance.Environment;
-            data.projectileHighlight = ConfigInstance.projectileHighlight;
+            data.ProjectileHighlight = ConfigInstance.ProjectileHighlight;
             data.AttackIndicator = ConfigInstance.AttackIndicator;
             data.PieChart = ConfigInstance.PieChart;
             data.Boat = ConfigInstance.Boat;

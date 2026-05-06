@@ -14,7 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class SpyglassOverlayMixin {
     @Inject(method = "renderSpyglassOverlay", at = @At("HEAD"), cancellable = true)
     private void onRenderSpyglassOverlayHead(GuiGraphics guiGraphics, float scopeScale, CallbackInfo ci) {
-        if (!ConfigInstance.SpyglassOverlay.enabled && !ConfigInstance.OverlayEnabled) {
+        if(!ConfigInstance.OverlayEnabled) return;
+        if (!ConfigInstance.SpyglassOverlay.enabled) {
             ci.cancel();
         }
     }
@@ -25,6 +26,7 @@ public class SpyglassOverlayMixin {
             argsOnly = true
     )
     private float modifySpyglassScale(float originalScale) {
+
         if (ConfigInstance.SpyglassOverlay.enabled && ConfigInstance.OverlayEnabled) {
             return originalScale * ConfigInstance.SpyglassOverlay.scale;
         }

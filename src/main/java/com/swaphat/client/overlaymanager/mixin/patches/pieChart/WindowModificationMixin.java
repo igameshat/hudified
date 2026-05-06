@@ -21,10 +21,6 @@ public class WindowModificationMixin {
             return;
         }
 
-        // Calculate the ratio of the resize
-        double scaleX = (double) width / ConfigInstance.PieChart.oldWindowWidth;
-        double scaleY = (double) height / ConfigInstance.PieChart.oldWindowHeight;
-
         // Update stored size
         ConfigInstance.PieChart.oldWindowWidth = width;
         ConfigInstance.PieChart.oldWindowHeight = height;

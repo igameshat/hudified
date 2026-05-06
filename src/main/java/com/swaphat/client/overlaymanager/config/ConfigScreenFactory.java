@@ -1,6 +1,7 @@
 package com.swaphat.client.overlaymanager.config;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.Window;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -298,32 +299,93 @@ public class ConfigScreenFactory {
 
     private static SubCategoryListEntry buildprojectileHighlight(ConfigEntryBuilder eb) {
         List<AbstractConfigListEntry> entries = new ArrayList<>();
-        entries.add(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.projectileHighlight.enabled)
-                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.projectileHighlight.enabled = v).build());
+        entries.add(eb.startBooleanToggle(Component.translatable("config.overlaymanager.enabled"), ConfigInstance.ProjectileHighlight.enabled)
+                .setDefaultValue(true).setSaveConsumer(v -> ConfigInstance.ProjectileHighlight.enabled = v).build());
 
-        entries.add(eb.startKeyCodeField(Component.translatable("config.overlaymanager.toggleKeybind"), ConfigInstance.projectileHighlight.toggleKeybind)
-                .setDefaultValue(InputConstants.UNKNOWN).setKeySaveConsumer(v -> ConfigInstance.projectileHighlight.toggleKeybind = v).build());
+        entries.add(eb.startKeyCodeField(Component.translatable("config.overlaymanager.toggleKeybind"), ConfigInstance.ProjectileHighlight.toggleKeybind)
+                .setDefaultValue(InputConstants.UNKNOWN).setKeySaveConsumer(v -> ConfigInstance.ProjectileHighlight.toggleKeybind = v).build());
 
-        entries.add(eb.startIntSlider(Component.translatable("config.overlaymanager.projectileHighlight.red"), ConfigInstance.projectileHighlight.red, 0, 255)
-                .setDefaultValue(0).setSaveConsumer(v -> ConfigInstance.projectileHighlight.red = v).build());
-        entries.add(eb.startIntSlider(Component.translatable("config.overlaymanager.projectileHighlight.green"), ConfigInstance.projectileHighlight.green, 0, 255)
-                .setDefaultValue(158).setSaveConsumer(v -> ConfigInstance.projectileHighlight.green = v).build());
-        entries.add(eb.startIntSlider(Component.translatable("config.overlaymanager.projectileHighlight.blue"), ConfigInstance.projectileHighlight.blue, 0, 255)
-                .setDefaultValue(166).setSaveConsumer(v -> ConfigInstance.projectileHighlight.blue = v).build());
-        entries.add(eb.startIntSlider(Component.translatable("config.overlaymanager.opacity"), Math.round(ConfigInstance.projectileHighlight.opacity * 100), 0, 100)
-                .setDefaultValue(100).setTextGetter(val -> Component.literal(val + "%")).setSaveConsumer(v -> ConfigInstance.projectileHighlight.opacity = v / 100f).build());
+        entries.add(eb.startIntSlider(Component.translatable("config.overlaymanager.projectileHighlight.red"), ConfigInstance.ProjectileHighlight.red, 0, 255)
+                .setDefaultValue(0).setSaveConsumer(v -> ConfigInstance.ProjectileHighlight.red = v).build());
+        entries.add(eb.startIntSlider(Component.translatable("config.overlaymanager.projectileHighlight.green"), ConfigInstance.ProjectileHighlight.green, 0, 255)
+                .setDefaultValue(158).setSaveConsumer(v -> ConfigInstance.ProjectileHighlight.green = v).build());
+        entries.add(eb.startIntSlider(Component.translatable("config.overlaymanager.projectileHighlight.blue"), ConfigInstance.ProjectileHighlight.blue, 0, 255)
+                .setDefaultValue(166).setSaveConsumer(v -> ConfigInstance.ProjectileHighlight.blue = v).build());
+        entries.add(eb.startIntSlider(Component.translatable("config.overlaymanager.opacity"), Math.round(ConfigInstance.ProjectileHighlight.opacity * 100), 0, 100)
+                .setDefaultValue(100).setTextGetter(val -> Component.literal(val + "%")).setSaveConsumer(v -> ConfigInstance.ProjectileHighlight.opacity = v / 100f).build());
 
         entries.add(eb.startStrList(
-                        Component.translatable("config.overlaymanager.projectileHighlight.ignored"),
-                        ConfigInstance.projectileHighlight.ignoredProjectiles)
-                .setDefaultValue(new ArrayList<>())
-                .setTooltip(Component.translatable("config.overlaymanager.projectileHighlight.ignored.tooltip"))
-                .setSaveConsumer(v -> ConfigInstance.projectileHighlight.ignoredProjectiles = v)
-                .setCellErrorSupplier(str -> {
-                    net.minecraft.resources.Identifier id = net.minecraft.resources.Identifier.tryParse(str);
+                        Component.translatable("config.overlaymanager.projectileHighlight.whitelisted"),
+                        ConfigInstance.ProjectileHighlight.supportedProjectiles)
+                .setDefaultValue(new java.util.ArrayList<>(java.util.List.of(
+                        "minecraft:arrow",
+                        "minecraft:spectral_arrow",
+                        "minecraft:snowball",
+                        "minecraft:egg",
+                        "minecraft:ender_pearl",
+                        "minecraft:potion",
+                        "minecraft:trident",
+                        "minecraft:fireball",
+                        "minecraft:small_fireball",
+                        "minecraft:shulker_bullet"
+                )))
+                .setTooltip(
+                        Component.translatable("config.overlaymanager.projectileHighlight.whitelisted.tooltip"),
+                        Component.literal(" "),
+                        Component.literal("§eFormatting Tips:"),
+                        Component.literal("§7- Vanilla: Type 'arrow'"),
+                        Component.literal("§7- Modded: Type 'tonk' (Auto-detects namespace)"),
+                        Component.literal("§7- Specific: Type 'blurk:tonk' if multiple mods use the same name.")
+                )
+                .setSaveConsumer(v -> {
+                    java.util.List<String> formattedList = new java.util.ArrayList<>();
+                    for (String str : v) {
+                        if (str.contains(":")) {
+                            formattedList.add(str);
+                            continue;
+                        }
 
-                    if (id == null || !net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.containsKey(id)) {
-                        return Optional.of(net.minecraft.network.chat.Component.translatable("config.overlaymanager.generic.invalidEntity"));
+                        // --- SMART NAMESPACE DETECTOR ---
+                        String foundId = null;
+                        int matchCount = 0;
+                        for (net.minecraft.resources.Identifier id : net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.keySet()) {
+                            if (id.getPath().equals(str)) {
+                                foundId = id.toString();
+                                matchCount++;
+                            }
+                        }
+
+                        // If exactly ONE mod adds a projectile with this name, use its namespace!
+                        if (matchCount == 1) {
+                            formattedList.add(foundId);
+                        } else {
+                            // If 0 found (mod not loaded) or multiple found (conflict), default to minecraft:
+                            formattedList.add("minecraft:" + str);
+                        }
+                    }
+                    ConfigInstance.ProjectileHighlight.supportedProjectiles = formattedList;
+                })
+                .setCellErrorSupplier(str -> {
+                    String formattedStr = str;
+
+                    if (!str.contains(":")) {
+                        int matchCount = 0;
+                        String foundId = null;
+                        for (net.minecraft.resources.Identifier id : net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.keySet()) {
+                            if (id.getPath().equals(str)) {
+                                foundId = id.toString();
+                                matchCount++;
+                            }
+                        }
+                        formattedStr = (matchCount == 1) ? foundId : "minecraft:" + str;
+                    }
+
+                    net.minecraft.resources.Identifier id = net.minecraft.resources.Identifier.tryParse(formattedStr);
+
+                    // We still allow it to save even if the mod isn't currently loaded,
+                    // we just verify it has legal characters.
+                    if (id == null) {
+                        return java.util.Optional.of(net.minecraft.network.chat.Component.translatable("config.overlaymanager.generic.invalidEntity"));
                     }
 
                     return java.util.Optional.empty();
@@ -732,5 +794,70 @@ public class ConfigScreenFactory {
         public List<? extends NarratableEntry> narratables() {
             return Collections.singletonList(this.button);
         }
+    }
+
+    // =========================================================================
+    // INJECTED KEYBIND LOGIC
+    // =========================================================================
+
+    private static final java.util.Set<InputConstants.Key> previousKeys = new java.util.HashSet<>();
+    private static final java.util.Set<InputConstants.Key> currentKeys = new java.util.HashSet<>();
+
+    public static void registerKeybinds() {
+        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(client -> {
+
+            if (client.player == null || client.screen != null) {
+                previousKeys.clear();
+                currentKeys.clear();
+                return;
+            }
+
+            final boolean[] configChanged = {false};
+
+            // 2. FIX: Using your exact mapping (client.getWindow())
+            java.util.function.Predicate<InputConstants.Key> justPressed = (key) -> {
+                if (key == null || key == InputConstants.UNKNOWN) return false;
+
+                boolean isDown = InputConstants.isKeyDown(client.getWindow(), key.getValue());
+                boolean wasDown = previousKeys.contains(key);
+
+                if (isDown) currentKeys.add(key);
+
+                return isDown && !wasDown;
+            };
+
+            // 3. FIX: Main Keybind now toggles the Master Boolean instead of opening the menu
+            if (justPressed.test(ConfigInstance.menuKeybind)) {
+                ConfigInstance.OverlayEnabled = !ConfigInstance.OverlayEnabled;
+                configChanged[0] = true;
+            }
+
+            // Category Toggles
+            if (justPressed.test(ConfigInstance.PumpkinOverlay.toggleKeybind)) { ConfigInstance.PumpkinOverlay.enabled = !ConfigInstance.PumpkinOverlay.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.FireOverlay.toggleKeybind)) { ConfigInstance.FireOverlay.enabled = !ConfigInstance.FireOverlay.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.SpyglassOverlay.toggleKeybind)) { ConfigInstance.SpyglassOverlay.enabled = !ConfigInstance.SpyglassOverlay.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.PortalOverlay.toggleKeybind)) { ConfigInstance.PortalOverlay.enabled = !ConfigInstance.PortalOverlay.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.FreezeOverlay.toggleKeybind)) { ConfigInstance.FreezeOverlay.enabled = !ConfigInstance.FreezeOverlay.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.BlindnessOverlay.toggleKeybind)) { ConfigInstance.BlindnessOverlay.enabled = !ConfigInstance.BlindnessOverlay.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.DarknessOverlay.toggleKeybind)) { ConfigInstance.DarknessOverlay.enabled = !ConfigInstance.DarknessOverlay.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.Vignette.toggleKeybind)) { ConfigInstance.Vignette.enabled = !ConfigInstance.Vignette.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.BossBar.toggleKeybind)) { ConfigInstance.BossBar.enabled = !ConfigInstance.BossBar.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.Scoreboard.toggleKeybind)) { ConfigInstance.Scoreboard.enabled = !ConfigInstance.Scoreboard.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.Totem.toggleKeybind)) { ConfigInstance.Totem.enabled = !ConfigInstance.Totem.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.AttackIndicator.toggleKeybind)) { ConfigInstance.AttackIndicator.enabled = !ConfigInstance.AttackIndicator.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.ProjectileHighlight.toggleKeybind)) { ConfigInstance.ProjectileHighlight.enabled = !ConfigInstance.ProjectileHighlight.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.PieChart.toggleKeybind)) { ConfigInstance.PieChart.enabled = !ConfigInstance.PieChart.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.Boat.toggleKeybind)) { ConfigInstance.Boat.enabled = !ConfigInstance.Boat.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.Particle.toggleKeybind)) { ConfigInstance.Particle.enabled = !ConfigInstance.Particle.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.Shields.toggleKeybind)) { ConfigInstance.Shields.enabled = !ConfigInstance.Shields.enabled; configChanged[0] = true; }
+            if (justPressed.test(ConfigInstance.DroppedItems.toggleKeybind)) { ConfigInstance.DroppedItems.enabled = !ConfigInstance.DroppedItems.enabled; configChanged[0] = true; }
+
+            // Cleanup & Saving
+            previousKeys.clear();
+            previousKeys.addAll(currentKeys);
+            currentKeys.clear();
+
+            if (configChanged[0]) ConfigManager.save();
+        });
     }
 }

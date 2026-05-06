@@ -21,8 +21,8 @@ public abstract class PortalGuiMixin {
 
     @Inject(method = {"renderPortalOverlay"}, at = @At("HEAD"), cancellable = true)
     private void bypassVanillaEasing(GuiGraphics guiGraphics, float f, CallbackInfo ci) {
-        // Cancel the vanilla math
-        if(ConfigInstance.PortalOverlay.enabled && !ConfigInstance.OverlayEnabled) {
+        if(!ConfigInstance.OverlayEnabled) return;
+        if(ConfigInstance.PortalOverlay.enabled) {
             ci.cancel();
             return;
         }

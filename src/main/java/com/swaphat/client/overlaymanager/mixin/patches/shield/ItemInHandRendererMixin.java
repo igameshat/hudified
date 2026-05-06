@@ -21,7 +21,6 @@ public class ItemInHandRendererMixin {
 
     @Unique
     private boolean overlayManager$shouldTransform(LivingEntity entity, ItemStack stack, ItemDisplayContext context) {
-        // Must be enabled
         if (!ConfigInstance.OverlayEnabled || !ConfigInstance.Shields.enabled) return false;
         // Must be a shield
         if (stack == null || !(stack.getItem() instanceof ShieldItem)) return false;
@@ -35,7 +34,7 @@ public class ItemInHandRendererMixin {
     @Inject(method = "renderItem", at = @At("HEAD"))
     private void overlayManager$firstPersonBefore(LivingEntity entity, ItemStack stack, ItemDisplayContext displayContext, PoseStack poseStack, SubmitNodeCollector collector, int seed, CallbackInfo ci) {
         if (!overlayManager$shouldTransform(entity, stack, displayContext)) return;
-
+        if(!ConfigInstance.OverlayEnabled) return;
         ConfigInstance.ShieldSettings settings = getShieldSettings(stack, displayContext);
 
         // Apply transformations
@@ -57,13 +56,12 @@ public class ItemInHandRendererMixin {
                 ConfigInstance.Shields.firstPersonMain :
                 ConfigInstance.Shields.firstPersonOff;
 
-        ConfigInstance.ShieldSettings settings = isBlocking ? handSettings.blocking : handSettings.idle;
-        return settings;
+        return isBlocking ? handSettings.blocking : handSettings.idle;
     }
 
     @Inject(method = "renderItem", at = @At("RETURN"))
     private void overlayManager$firstPersonAfter(LivingEntity entity, ItemStack stack, ItemDisplayContext displayContext, PoseStack poseStack, SubmitNodeCollector collector, int seed, CallbackInfo ci) {
-        // Use the EXACT SAME method call to decide if we pop
+        if(!ConfigInstance.OverlayEnabled) return;
         if (overlayManager$shouldTransform(entity, stack, displayContext)) {
             poseStack.popPose();
         }

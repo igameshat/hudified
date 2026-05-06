@@ -43,9 +43,8 @@ public class LayoutEditorScreen extends Screen {
         };
         guiGraphics.drawCenteredString(this.font, "Click and Drag to reposition the " + elementName, this.width / 2, 20, 0xFFFFFF);
 
-        // ==========================================
-        // 1. Render Pie Chart
-        // ==========================================
+
+
         if (mode == EditMode.PIE_CHART && ConfigInstance.PieChart.enabled) {
             int px = ConfigInstance.PieChart.x;
             int py = ConfigInstance.PieChart.y;
@@ -60,9 +59,7 @@ public class LayoutEditorScreen extends Screen {
             guiGraphics.pose().popMatrix();
         }
 
-        // ==========================================
-        // 2. Render Boss Bar Placeholder
-        // ==========================================
+
         if (mode == EditMode.BOSS_BAR && ConfigInstance.BossBar.enabled) {
             int bx = (this.width / 2) + ConfigInstance.BossBar.XOffset;
             int by = ConfigInstance.BossBar.YOffset;
@@ -81,11 +78,10 @@ public class LayoutEditorScreen extends Screen {
             guiGraphics.pose().popMatrix();
         }
 
-        // ==========================================
-        // 3. Render Scoreboard Placeholder
-        // ==========================================
+
+
         if (mode == EditMode.SCOREBOARD && ConfigInstance.Scoreboard.enabled) {
-            // Anchor is right-middle
+
             int sx = this.width + ConfigInstance.Scoreboard.XOffset;
             int sy = (this.height / 2) + ConfigInstance.Scoreboard.YOffset;
             float sScale = ConfigInstance.Scoreboard.scale;
@@ -97,23 +93,22 @@ public class LayoutEditorScreen extends Screen {
             guiGraphics.pose().translate(sx, sy);
             guiGraphics.pose().scale(sScale, sScale);
 
-            // Vanilla scoreboard renders stretching leftwards from the right edge
+
             guiGraphics.fill(-scW, -scH / 2, 0, scH / 2, 0x880000AA);
             guiGraphics.drawCenteredString(this.font, "Scoreboard", -scW / 2, -4, 0xFFFFFF);
 
             guiGraphics.pose().popMatrix();
         }
 
-        // ==========================================
-        // 4. Render Attack Indicator Placeholder
-        // ==========================================
+
+
         if (mode == EditMode.ATTACK_INDICATOR && ConfigInstance.AttackIndicator.enabled) {
-            // Anchor is exact center
+
             int ax = (this.width / 2) + ConfigInstance.AttackIndicator.XOffset;
             int ay = (this.height / 2) + ConfigInstance.AttackIndicator.YOffset;
             float aScale = ConfigInstance.AttackIndicator.scale;
 
-            int aiSize = 18; // Standard 18x18 icon
+            int aiSize = 18;
 
             guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(ax, ay);
@@ -134,7 +129,6 @@ public class LayoutEditorScreen extends Screen {
             double mx = mouseButtonEvent.x();
             double my = mouseButtonEvent.y();
 
-            // Handle Boss Bar Hitbox
             if (mode == EditMode.BOSS_BAR && ConfigInstance.BossBar.enabled) {
                 int bx = (this.width / 2) + ConfigInstance.BossBar.XOffset;
                 int by = ConfigInstance.BossBar.YOffset;
@@ -153,15 +147,22 @@ public class LayoutEditorScreen extends Screen {
                 }
             }
 
-            // Handle Pie Chart Hitbox
+
             if (mode == EditMode.PIE_CHART && ConfigInstance.PieChart.enabled) {
                 int px = ConfigInstance.PieChart.x;
                 int py = ConfigInstance.PieChart.y;
                 float pScale = ConfigInstance.PieChart.scale;
 
-                if (mx >= px - (110 * pScale) && mx <= px + (110 * pScale) &&
-                        my >= py - (250 * pScale) && my <= py + (10 * pScale)) {
+                // Left: perfect (-220)
+                double minX = px - (220 * pScale);
+                // Right: Shaved off 5 pixels
+                double maxX = px - (5 * pScale);
+                // Top: Shaved off 10 pixels (250 -> 240)
+                double minY = py - (240 * pScale);
+                // Bottom: Shaved off 1 pixel (10 -> 9)
+                double maxY = py + (9 * pScale);
 
+                if (mx >= minX && mx <= maxX && my >= minY && my <= maxY) {
                     this.isDragging = true;
                     this.dragOffsetX = mx - px;
                     this.dragOffsetY = my - py;
@@ -169,7 +170,6 @@ public class LayoutEditorScreen extends Screen {
                 }
             }
 
-            // Handle Scoreboard Hitbox
             if (mode == EditMode.SCOREBOARD && ConfigInstance.Scoreboard.enabled) {
                 int sx = this.width + ConfigInstance.Scoreboard.XOffset;
                 int sy = (this.height / 2) + ConfigInstance.Scoreboard.YOffset;
@@ -188,7 +188,6 @@ public class LayoutEditorScreen extends Screen {
                 }
             }
 
-            // Handle Attack Indicator Hitbox
             if (mode == EditMode.ATTACK_INDICATOR && ConfigInstance.AttackIndicator.enabled) {
                 int ax = (this.width / 2) + ConfigInstance.AttackIndicator.XOffset;
                 int ay = (this.height / 2) + ConfigInstance.AttackIndicator.YOffset;
@@ -214,17 +213,11 @@ public class LayoutEditorScreen extends Screen {
     public boolean mouseDragged(@NonNull MouseButtonEvent mouseButtonEvent, double d, double e) {
         if (this.isDragging) {
             if (mode == EditMode.PIE_CHART) {
-                float pScale = ConfigInstance.PieChart.scale;
                 int targetX = (int) (mouseButtonEvent.x() - this.dragOffsetX);
                 int targetY = (int) (mouseButtonEvent.y() - this.dragOffsetY);
 
-                int minX = (int) (110 * pScale);
-                int maxX = (int) (this.width - (110 * pScale));
-                int minY = (int) (250 * pScale);
-                int maxY = (int) (this.height - (10 * pScale));
-
-                ConfigInstance.PieChart.x = Mth.clamp(targetX, minX, maxX);
-                ConfigInstance.PieChart.y = Mth.clamp(targetY, minY, maxY);
+                ConfigInstance.PieChart.x = targetX;
+                ConfigInstance.PieChart.y = targetY;
 
             } else if (mode == EditMode.BOSS_BAR) {
                 float bScale = ConfigInstance.BossBar.scale;
@@ -262,10 +255,10 @@ public class LayoutEditorScreen extends Screen {
                 int targetAbsoluteX = (int) (mouseButtonEvent.x() - this.dragOffsetX);
                 int targetAbsoluteY = (int) (mouseButtonEvent.y() - this.dragOffsetY);
 
-                int minX = (int) (9 * aScale);
-                int maxX = (int) (this.width - (9 * aScale));
-                int minY = (int) (9 * aScale);
-                int maxY = (int) (this.height - (9 * aScale));
+                int minX = 0;
+                int maxX = (int) (this.width - (1 * aScale));
+                int minY = 0;
+                int maxY = (int) (this.height - (1 * aScale));
 
                 int clampedX = Mth.clamp(targetAbsoluteX, minX, maxX);
                 int clampedY = Mth.clamp(targetAbsoluteY, minY, maxY);

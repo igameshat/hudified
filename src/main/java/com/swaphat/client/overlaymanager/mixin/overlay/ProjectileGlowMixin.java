@@ -2,13 +2,12 @@ package com.swaphat.client.overlaymanager.mixin.overlay;
 
 import com.swaphat.client.overlaymanager.config.ConfigInstance;
 import com.swaphat.client.overlaymanager.mixin.accessors.AbstractProjectileAccessor;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.util.ARGB;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -16,48 +15,63 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Entity.class)
 public abstract class ProjectileGlowMixin {
 
+    @Shadow public abstract net.minecraft.world.level.Level level();
+
     @Inject(method = "isCurrentlyGlowing", at = @At("HEAD"), cancellable = true)
     private void forceProjectileGlow(CallbackInfoReturnable<Boolean> cir) {
-        if (ConfigInstance.projectileHighlight.enabled && ConfigInstance.OverlayEnabled) {
+        if (!this.level().isClientSide()) return;
 
-            if ((Object) this instanceof Projectile projectile) {
+        // 1. Uses the 'enabled' boolean
+        if (!ConfigInstance.OverlayEnabled || !ConfigInstance.ProjectileHighlight.enabled) return;
 
-                if (projectile instanceof AbstractArrow arrow) {
-                    if (((AbstractProjectileAccessor) arrow).overlayManager$isInGround()) {
-                        return;
-                    }
-                }
+        if ((Object) this instanceof Projectile projectile) {
+            String entityId = BuiltInRegistries.ENTITY_TYPE.getKey(projectile.getType()).toString();
 
-                LocalPlayer player = Minecraft.getInstance().player;
-                if (player != null && player.hasLineOfSight(projectile)) {
-                    cir.setReturnValue(true);
+            // 2. Uses the 'supportedProjectiles' list
+            if (!ConfigInstance.ProjectileHighlight.supportedProjectiles.contains(entityId)) {
+                return;
+            }
+
+            if (projectile instanceof AbstractArrow arrow) {
+                if (((AbstractProjectileAccessor) arrow).overlayManager$isInGround()) {
+                    return;
                 }
             }
+
+            cir.setReturnValue(true);
         }
     }
 
     @Inject(method = "getTeamColor", at = @At("HEAD"), cancellable = true)
     private void changeProjectileGlowColor(CallbackInfoReturnable<Integer> cir) {
-        if (ConfigInstance.projectileHighlight.enabled && ConfigInstance.OverlayEnabled) {
+        if (!this.level().isClientSide()) return;
 
-            if ((Object) this instanceof Projectile projectile) {
+        // 1. Uses the 'enabled' boolean
+        if (!ConfigInstance.OverlayEnabled || !ConfigInstance.ProjectileHighlight.enabled) return;
 
-                if (projectile instanceof AbstractArrow arrow) {
-                    if (((AbstractProjectileAccessor) arrow).overlayManager$isInGround()) {
-                        return;
-                    }
-                }
+        if ((Object) this instanceof Projectile projectile) {
+            String entityId = BuiltInRegistries.ENTITY_TYPE.getKey(projectile.getType()).toString();
 
-                LocalPlayer player = Minecraft.getInstance().player;
-                if (player != null && player.hasLineOfSight(projectile)) {
-                    int r = ConfigInstance.projectileHighlight.red;
-                    int g = ConfigInstance.projectileHighlight.green;
-                    int b = ConfigInstance.projectileHighlight.blue;
-                    int a = (int) (ConfigInstance.projectileHighlight.opacity * 255);
+            // 2. Uses the 'supportedProjectiles' list
+            if (!ConfigInstance.ProjectileHighlight.supportedProjectiles.contains(entityId)) {
+                return;
+            }
 
-                    cir.setReturnValue(ARGB.color(a, r, g, b));
+            if (projectile instanceof AbstractArrow arrow) {
+                if (((AbstractProjectileAccessor) arrow).overlayManager$isInGround()) {
+                    return;
                 }
             }
+
+            // 3. Uses 'opacity', 'red', 'green', and 'blue' to create the ARGB integer
+            int a = (int) (ConfigInstance.ProjectileHighlight.opacity * 255);
+            int r = ConfigInstance.ProjectileHighlight.red;
+            int g = ConfigInstance.ProjectileHighlight.green;
+            int b = ConfigInstance.ProjectileHighlight.blue;
+
+            int argb = (a << 24) | (r << 16) | (g << 8) | b;
+
+            cir.setReturnValue(argb);
         }
     }
 }

@@ -2,6 +2,9 @@ package com.swaphat.client.overlaymanager.config;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ConfigInstance {
     public static boolean OverlayEnabled = true;
     public static InputConstants.Key menuKeybind = InputConstants.UNKNOWN;
@@ -19,7 +22,7 @@ public class ConfigInstance {
     public static Totem Totem = new Totem();
     public static Environment Environment = new Environment();
     public static AttackIndicator AttackIndicator = new AttackIndicator();
-    public static projectileHighlight projectileHighlight = new projectileHighlight();
+    public static ProjectileHighlight ProjectileHighlight = new ProjectileHighlight();
     public static PieChart PieChart = new PieChart();
     public static Boat Boat = new Boat();
     public static ShieldConfig Shields = new ShieldConfig();
@@ -49,13 +52,13 @@ public class ConfigInstance {
         public boolean enabled = true;
         public float opacity = 1;
         public float speed = 1;
-        public boolean allowGuisInPortal = false;
-        public boolean allowCameraShake = true;
+        public boolean allowGuisInPortal = true;
+        public boolean allowCameraShake = false;
         public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
     public static class FreezeOverlay {
-        public boolean enabled = true;
+        public boolean enabled = false;
         public float opacity = 1;
         public float Xscale = 1;
         public float Yscale = 1;
@@ -109,18 +112,29 @@ public class ConfigInstance {
         public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 
-    public static class projectileHighlight {
+    public static class ProjectileHighlight {
         public boolean enabled = true;
         public int red = 0;
         public int green = 158;
         public int blue = 166;
         public float opacity = 1;
         public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
-        public java.util.List<String> ignoredProjectiles = new java.util.ArrayList<>();
+        public List<String> supportedProjectiles = new ArrayList<>(List.of(
+                "minecraft:arrow",
+                "minecraft:spectral_arrow",
+                "minecraft:snowball",
+                "minecraft:egg",
+                "minecraft:ender_pearl",
+                "minecraft:potion",
+                "minecraft:trident",
+                "minecraft:fireball",
+                "minecraft:small_fireball",
+                "minecraft:shulker_bullet"
+        ));
     }
 
     public static class PieChart {
-        public boolean enabled = true;
+        public boolean enabled = false;
         public int x = -1;
         public int y = 500;
         public int oldWindowWidth = -1;
@@ -128,6 +142,7 @@ public class ConfigInstance {
         public boolean renderingPieChart = false;
         public int windowIndex = 0;
         public float scale = 1;
+        public boolean ShowBackground = true;
         public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
 

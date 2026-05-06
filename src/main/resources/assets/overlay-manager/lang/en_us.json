@@ -10,7 +10,7 @@
   "config.overlaymanager.category.boat": "Boat",
   "config.overlaymanager.category.shields": "Shields",
   "config.overlaymanager.category.particles": "Particles",
-  "config.overlaymanager.category.droppedItems": "Dropped Item Scale",
+  "config.overlaymanager.category.droppedItems": "Item Scale",
 
   "config.overlaymanager.overlayEnabled": "Enable All Overlays",
   "config.overlaymanager.overlayEnabled.tooltip": "Master toggle - disabling this bypasses every overlay at once.",
@@ -57,8 +57,8 @@
   "config.overlaymanager.projectileHighlight.red": "Red",
   "config.overlaymanager.projectileHighlight.green": "Green",
   "config.overlaymanager.projectileHighlight.blue": "Blue",
-  "config.overlaymanager.projectileHighlight.ignored": "Ignored Projectiles",
-  "config.overlaymanager.projectileHighlight.ignored.tooltip": "List of projectile Entity IDs to ignore (e.g., minecraft:arrow, minecraft:wither_skull). Use \\n for new lines.",
+  "config.overlaymanager.projectileHighlight.whitelisted": "whitelisted Projectiles",
+  "config.overlaymanager.projectileHighlight.whitelisted.tooltip": "List of projectile Entity IDs to whitelist (e.g., minecraft:arrow, minecraft:wither_skull).",
 
 
   "config.overlaymanager.pieChart": "Pie Chart",
@@ -115,7 +115,7 @@
 
   "config.overlaymanager.droppedItems.scale": "Scale",
   "config.overlaymanager.droppedItems.list": "Item List",
-  "config.overlaymanager.droppedItems.list.tooltip": "List of items to scale. Use \\n for new lines.",
+  "config.overlaymanager.droppedItems.list.tooltip": "List of items to scale.",
   "config.overlaymanager.droppedItems.invalidItem": "Invalid Item",
 
   "config.overlaymanager.button.editBossBarLayout": "Edit Boss Bar Layout",

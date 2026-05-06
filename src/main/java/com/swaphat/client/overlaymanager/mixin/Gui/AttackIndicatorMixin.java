@@ -19,15 +19,13 @@ public class AttackIndicatorMixin {
     @Unique
     private boolean overlayManager$appliedHotbar = false;
 
-    // ==========================================
-    // 1. CROSSHAIR INDICATOR
-    // ==========================================
+
     @Inject(
             method = "renderCrosshair",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getAttackStrengthScale(F)F")
     )
     private void modifyCrosshairStart(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        if (!ConfigInstance.OverlayEnabled) return;
+        if(!ConfigInstance.OverlayEnabled) return;
 
         guiGraphics.pose().pushMatrix();
         this.overlayManager$appliedCrosshair = true;
@@ -51,6 +49,7 @@ public class AttackIndicatorMixin {
 
     @Inject(method = "renderCrosshair", at = @At("RETURN"))
     private void modifyCrosshairEnd(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        if(!ConfigInstance.OverlayEnabled) return;
         if (this.overlayManager$appliedCrosshair) {
             guiGraphics.pose().popMatrix();
             this.overlayManager$appliedCrosshair = false;
@@ -65,7 +64,7 @@ public class AttackIndicatorMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getAttackStrengthScale(F)F")
     )
     private void modifyHotbarStart(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        if (!ConfigInstance.OverlayEnabled) return; // Let vanilla handle it entirely
+        if(!ConfigInstance.OverlayEnabled) return;
 
         guiGraphics.pose().pushMatrix();
         this.overlayManager$appliedHotbar = true;
@@ -88,6 +87,7 @@ public class AttackIndicatorMixin {
 
     @Inject(method = "renderItemHotbar", at = @At("RETURN"))
     private void modifyHotbarEnd(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        if(!ConfigInstance.OverlayEnabled) return;
         if (this.overlayManager$appliedHotbar) {
             guiGraphics.pose().popMatrix();
             this.overlayManager$appliedHotbar = false;

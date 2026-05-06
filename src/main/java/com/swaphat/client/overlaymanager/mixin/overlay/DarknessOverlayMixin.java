@@ -13,10 +13,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class DarknessOverlayMixin {
     @Inject(method = "renderTextureOverlay", at = @At("HEAD"), cancellable = true)
     private void stopBlackOverlays(GuiGraphics guiGraphics, Identifier identifier, float f, CallbackInfo ci) {
+        if(!ConfigInstance.OverlayEnabled) return;
         String path = identifier.getPath();
-        if (path.contains("blindness") && !ConfigInstance.BlindnessOverlay.enabled && ConfigInstance.OverlayEnabled) {
+        if (path.contains("blindness") && !ConfigInstance.BlindnessOverlay.enabled) {
             ci.cancel();
-        } else if (path.contains("darkness") && !ConfigInstance.DarknessOverlay.enabled && ConfigInstance.OverlayEnabled) {
+        } else if (path.contains("darkness") && !ConfigInstance.DarknessOverlay.enabled) {
             ci.cancel();
         }
     }

@@ -18,7 +18,7 @@ public abstract class FreezingOverlayMixin {
     private void renderCornerSnappedFreeze(GuiGraphics guiGraphics, Identifier identifier, float f, CallbackInfo ci) {
         if (identifier.getPath().contains("powder_snow_outline")) {
 
-            if (!(ConfigInstance.FreezeOverlay.enabled && ConfigInstance.OverlayEnabled)) {
+            if (!ConfigInstance.FreezeOverlay.enabled || !ConfigInstance.OverlayEnabled) {
                 return;
             } else ci.cancel();
 

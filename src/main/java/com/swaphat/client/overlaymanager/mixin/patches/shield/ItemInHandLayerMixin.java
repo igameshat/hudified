@@ -27,14 +27,15 @@ public class ItemInHandLayerMixin {
 
     @Inject(method = "submitArmWithItem", at = @At("HEAD"))
     private void overlayManager$thirdPersonBefore(ArmedEntityRenderState state, ItemStackRenderState itemState, ItemStack stack, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
-        overlayManager$didPush = false; // reset every call
+        if(!ConfigInstance.OverlayEnabled) return;
+        overlayManager$didPush = false;
 
         if (!ConfigInstance.Shields.enabled || stack == null || !(stack.getItem() instanceof ShieldItem)) return;
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || state == null || mc.level == null) return;
 
-        boolean isSelf = false;
+        boolean isSelf;
         boolean isBlocking = false;
 
         try {
@@ -74,6 +75,7 @@ public class ItemInHandLayerMixin {
 
     @Inject(method = "submitArmWithItem", at = @At("RETURN"))
     private void overlayManager$thirdPersonAfter(ArmedEntityRenderState state, ItemStackRenderState itemState, ItemStack stack, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
+        if(!ConfigInstance.OverlayEnabled) return;
         if (overlayManager$didPush) {
             overlayManager$didPush = false;
             poseStack.popPose();

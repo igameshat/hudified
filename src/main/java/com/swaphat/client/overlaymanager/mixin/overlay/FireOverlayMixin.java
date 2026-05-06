@@ -18,10 +18,10 @@ public class FireOverlayMixin {
 
     @Inject(method = "renderFire", at = @At("HEAD"), cancellable = true)
     private static void onRenderFireHead(PoseStack poseStack, MultiBufferSource bufferSource, TextureAtlasSprite sprite, CallbackInfo ci) {
-
+        if(!ConfigInstance.OverlayEnabled) return;
         float opacity = ConfigInstance.FireOverlay.opacity;
 
-        if (!ConfigInstance.FireOverlay.enabled && opacity <= 0 && !ConfigInstance.OverlayEnabled) {
+        if (!ConfigInstance.FireOverlay.enabled && opacity <= 0) {
             ci.cancel();
             return;
         }
@@ -34,10 +34,10 @@ public class FireOverlayMixin {
 
     @Inject(method = "renderFire", at = @At("RETURN"))
     private static void onRenderFireReturn(PoseStack poseStack, MultiBufferSource bufferSource, TextureAtlasSprite sprite, CallbackInfo ci) {
+        if(!ConfigInstance.OverlayEnabled) return;
         float opacity = ConfigInstance.FireOverlay.opacity;
 
-        // Only reverse our changes if we actually pushed them in HEAD
-        if (ConfigInstance.FireOverlay.enabled && opacity > 0 && ConfigInstance.OverlayEnabled) {
+        if (ConfigInstance.FireOverlay.enabled && opacity > 0) {
             poseStack.popPose();
         }
     }

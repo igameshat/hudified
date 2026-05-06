@@ -12,13 +12,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LevelRenderer.class)
 public class BlockBreakingOverlayMixin {
 
-    // 1. Cleanly disable the overlay completely if the scale is set to 0
     @Inject(
             method = {"renderBlockDestroyAnimation"},
             at = @At("HEAD"),
             cancellable = true
     )
     private void disableBlockBreakingOverlay(PoseStack poseStack, net.minecraft.client.renderer.MultiBufferSource.BufferSource bufferSource, net.minecraft.client.renderer.state.LevelRenderState levelRenderState, CallbackInfo ci) {
+        if(!ConfigInstance.OverlayEnabled) return;
         if (ConfigInstance.Environment.blockBreakingOverlay) {
             ci.cancel();
         }
@@ -33,6 +33,7 @@ public class BlockBreakingOverlayMixin {
             index = 2
     )
     private float modifyBlockBreakingScale(float originalScale) {
+        if(!ConfigInstance.OverlayEnabled) return originalScale;
         return ConfigInstance.Environment.blockBreakingOverlay ? 0 : originalScale;
     }
 }

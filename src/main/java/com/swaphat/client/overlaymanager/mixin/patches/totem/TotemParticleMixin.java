@@ -28,7 +28,7 @@ public class TotemParticleMixin {
     private void redirectTotemParticles(ParticleEngine particleEngine, Entity entity, ParticleOptions particleOptions, int lifetime) {
         Minecraft client = Minecraft.getInstance();
 
-        // Check if the particle being spawned is the Totem particle
+        if(!ConfigInstance.OverlayEnabled) return;
         boolean isTotem = (particleOptions.getType() == ParticleTypes.TOTEM_OF_UNDYING);
 
         if (isTotem) {

@@ -12,23 +12,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LocalPlayer.class)
 public abstract class PortalOverlayMixin {
-
-    // 1. Allow GUI Interaction
-    // (Using WrapOperation as it's the safest equivalent to your Redirect)
     @WrapOperation(
             method = {"handlePortalTransitionEffect"},
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;isAllowedInPortal()Z")
     )
     private boolean allowScreensInPortal(Screen instance, Operation<Boolean> original) {
-
-        return (ConfigInstance.PortalOverlay.allowGuisInPortal && ConfigInstance.OverlayEnabled) || original.call(instance);
+        if(!ConfigInstance.OverlayEnabled) original.call(instance);
+        return ConfigInstance.PortalOverlay.allowGuisInPortal || original.call(instance);
     }
 
     @Inject(method = {"handlePortalTransitionEffect"}, at = @At("TAIL"))
     private void adjustPortalSpeedAndOpacity(CallbackInfo ci) {
+        if(!ConfigInstance.OverlayEnabled) return;
         LocalPlayer player = (LocalPlayer) (Object) this;
 
-        if (!ConfigInstance.PortalOverlay.enabled || !ConfigInstance.OverlayEnabled) {
+        if (!ConfigInstance.PortalOverlay.enabled) {
             player.portalEffectIntensity = 0;
             return;
         }
