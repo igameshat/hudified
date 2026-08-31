@@ -2,19 +2,19 @@ package com.swaphat.client.hudified.mixin.Gui;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public class HUDPieChartMixin {
 
-    @Inject(method = "render", at = @At("TAIL"))
-    private void renderPieOnHUD(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(method = "extractRenderState", at = @At("TAIL"))
+    private void renderPieOnHUD(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
         Minecraft mc = Minecraft.getInstance();
 
@@ -39,7 +39,7 @@ public class HUDPieChartMixin {
 
             guiGraphics.pose().translate(-x, -y);
 
-            Minecraft.getInstance().getDebugOverlay().getProfilerPieChart().render(guiGraphics);
+            Minecraft.getInstance().getDebugOverlay().getProfilerPieChart().extractRenderState(guiGraphics);
 
             guiGraphics.pose().popMatrix();
         }

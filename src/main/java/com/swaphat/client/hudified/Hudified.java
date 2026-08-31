@@ -3,7 +3,6 @@ package com.swaphat.client.hudified;
 import com.swaphat.client.hudified.config.ConfigManager;
 import com.swaphat.client.hudified.config.ConfigScreenFactory;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +16,5 @@ public class Hudified implements ClientModInitializer {
 		ConfigManager.load();
 		ConfigScreenFactory.registerKeybinds();
 		LOGGER.info("Overlay Manager initialized.");
-
-		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcher.register(ClientCommandManager.literal("hi")
-                .executes(context -> 1)));
 	}
 }

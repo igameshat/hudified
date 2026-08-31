@@ -1,59 +1,47 @@
 {
-	"required": true,
-	"package": "com.swaphat.client.hudified.mixin",
-	"compatibilityLevel": "JAVA_21",
-	"client": [
-		"overlay.FireOverlayMixin",
-		"overlay.PumpkinOverlayMixin",
-		"overlay.SpyglassOverlayMixin",
-		"overlay.PortalOverlayMixin",
-		"overlay.FreezingOverlayMixin",
-		"overlay.VignetteOverlayMixin",
-		"overlay.DarknessOverlayMixin",
-		"overlay.ProjectileGlowMixin",
-
-		"patches.PortalGuiMixin",
-		"patches.GameRendererPortalMixin",
-		"patches.BlindnessMovementMixin",
-
-		"patches.fog.FogRendererMixin",
-		"patches.fog.FogDisableMixin",
-
-		"patches.totem.TotemOverlayMixin",
-		"patches.totem.TotemParticleMixin",
-
-		"Gui.ScoreboardMixin",
-		"Gui.BossBarMixin",
-		"Gui.AttackIndicatorMixin",
-
+	"required" : true,
+	"package" : "com.swaphat.client.hudified.mixin",
+	"compatibilityLevel" : "JAVA_21",
+	"client" : [
+		"accessors.AbstractProjectileAccessor",
+		"features.ClientLevelWeatherMixin",
 		"features.FullbrightMixin",
 		"features.WeatherEffectRendererMixin",
-
-		"accessors.AbstractProjectileAccessor",
-
-		"patches.pieChart.MinecraftMixin",
-		"patches.pieChart.WindowModificationMixin",
+		"Gui.AttackIndicatorMixin",
+		"Gui.BossBarMixin",
 		"Gui.DebugScreenOverlayMixin",
-		"patches.pieChart.ProfilerPieChartMixin",
 		"Gui.HUDPieChartMixin",
-
+		"Gui.ScoreboardMixin",
+		"overlay.DarknessOverlayMixin",
+		"overlay.FireOverlayMixin",
+		"overlay.FreezingOverlayMixin",
+		"overlay.PortalOverlayMixin",
+		"overlay.ProjectileGlowMixin",
+		"overlay.PumpkinOverlayMixin",
+		"overlay.SpyglassOverlayMixin",
+		"overlay.VignetteOverlayMixin",
+		"patches.BlindnessMovementMixin",
+		"patches.BlockBreakingOverlayMixin",
+		"patches.GameRendererPortalMixin",
+		"patches.PortalGuiMixin",
 		"patches.boat.UnlockBoatPovMixin",
-
-		"patches.shield.ItemInHandLayerMixin",
-		"patches.shield.ItemInHandRendererMixin",
-
+		"patches.fog.FogDisableMixin",
+		"patches.fog.FogRendererMixin",
+		"patches.itemScale.DroppedItemScaleMixin",
 		"patches.particle.LivingEntityMixin",
 		"patches.particle.ParticleEngineMixin",
-
-		"patches.BlockBreakingOverlayMixin",
-
-		"patches.itemScale.DroppedItemScaleMixin"
+		"patches.pieChart.MinecraftMixin",
+		"patches.pieChart.ProfilerPieChartMixin",
+		"patches.pieChart.WindowModificationMixin",
+		"patches.shield.ItemInHandLayerMixin",
+		"patches.shield.ItemInHandRendererMixin",
+		"patches.totem.TotemOverlayMixin",
+		"patches.totem.TotemParticleMixin"
 	],
-	"BROKEN-NEEDS-FIXIND": [],
-	"injectors": {
-		"defaultRequire": 1
+	"injectors" : {
+		"defaultRequire" : 1
 	},
-	"overwrites": {
-		"requireAnnotations": true
+	"overwrites" : {
+		"requireAnnotations" : true
 	}
 }

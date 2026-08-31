@@ -2,7 +2,8 @@ package com.swaphat.client.hudified.mixin.overlay;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,10 +11,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public class SpyglassOverlayMixin {
-    @Inject(method = "renderSpyglassOverlay", at = @At("HEAD"), cancellable = true)
-    private void onRenderSpyglassOverlayHead(GuiGraphics guiGraphics, float scopeScale, CallbackInfo ci) {
+    @Inject(method = "extractSpyglassOverlay", at = @At("HEAD"), cancellable = true)
+    private void onRenderSpyglassOverlayHead(GuiGraphicsExtractor guiGraphics, float scopeScale, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
         if (!ConfigInstance.SpyglassOverlay.enabled) {
             ci.cancel();
@@ -21,10 +22,10 @@ public class SpyglassOverlayMixin {
     }
 
     @ModifyVariable(
-            method = "renderSpyglassOverlay",
+            method = "extractSpyglassOverlay",
             at = @At("HEAD"),
-            argsOnly = true
-    )
+            argsOnly = true,
+            name = "scale")
     private float modifySpyglassScale(float originalScale) {
 
         if (ConfigInstance.SpyglassOverlay.enabled && ConfigInstance.OverlayEnabled) {
@@ -33,14 +34,11 @@ public class SpyglassOverlayMixin {
         return originalScale;
     }
 
-    @Mixin(Gui.class)
-    public static class VignetteOverlayMixin {
-        @ModifyVariable(
-                method = "renderVignette",
-                at = @At("STORE"),
-                ordinal = 0
-        )
-        private float applyVignetteOpacity(float f) {
-            return Mth.clamp(f * (ConfigInstance.Vignette.enabled && ConfigInstance.OverlayEnabled ? ConfigInstance.Vignette.opacity : 1.0f), 0.0f, 1.0f);        }
-    }
+
+    @ModifyVariable(
+            method = "extractVignette",
+            at = @At("STORE"),
+            name = "borderWarningStrength")
+    private float applyVignetteOpacity(float f) {
+        return Mth.clamp(f * (ConfigInstance.Vignette.enabled && ConfigInstance.OverlayEnabled ? ConfigInstance.Vignette.opacity : 1.0f), 0.0f, 1.0f);        }
 }

@@ -2,15 +2,15 @@ package com.swaphat.client.hudified.mixin.Gui;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public class AttackIndicatorMixin {
 
     @Unique
@@ -19,15 +19,14 @@ public class AttackIndicatorMixin {
     @Unique
     private boolean overlayManager$appliedHotbar = false;
 
-
     @Inject(
-            method = "renderCrosshair",
+            method = "extractCrosshair",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getAttackStrengthScale(F)F")
     )
-    private void modifyCrosshairStart(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void modifyCrosshairStart(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
 
-        guiGraphics.pose().pushMatrix();
+        graphics.pose().pushMatrix();
         this.overlayManager$appliedCrosshair = true;
 
         if (ConfigInstance.AttackIndicator.enabled) {
@@ -35,38 +34,35 @@ public class AttackIndicatorMixin {
             float xOff = ConfigInstance.AttackIndicator.XOffset;
             float yOff = ConfigInstance.AttackIndicator.YOffset;
 
-            float centerX = guiGraphics.guiWidth() / 2.0f;
-            float centerY = guiGraphics.guiHeight() / 2.0f;
+            float centerX = graphics.guiWidth() / 2.0f;
+            float centerY = graphics.guiHeight() / 2.0f;
 
-            guiGraphics.pose().translate(centerX + xOff, centerY + yOff);
-            guiGraphics.pose().scale(scale, scale);
-            guiGraphics.pose().translate(-centerX, -centerY);
+            graphics.pose().translate(centerX + xOff, centerY + yOff);
+            graphics.pose().scale(scale, scale);
+            graphics.pose().translate(-centerX, -centerY);
         } else {
-            // Hide it without breaking the rest of the crosshair
-            guiGraphics.pose().scale(0.0f, 0.0f);
+            graphics.pose().scale(0.0f, 0.0f);
         }
     }
 
-    @Inject(method = "renderCrosshair", at = @At("RETURN"))
-    private void modifyCrosshairEnd(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(method = "extractCrosshair", at = @At("RETURN"))
+    private void modifyCrosshairEnd(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
         if (this.overlayManager$appliedCrosshair) {
-            guiGraphics.pose().popMatrix();
+            graphics.pose().popMatrix();
             this.overlayManager$appliedCrosshair = false;
         }
     }
 
-    // ==========================================
-    // 2. HOTBAR INDICATOR
-    // ==========================================
+
     @Inject(
-            method = "renderItemHotbar",
+            method = "extractItemHotbar",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getAttackStrengthScale(F)F")
     )
-    private void modifyHotbarStart(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void modifyHotbarStart(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
 
-        guiGraphics.pose().pushMatrix();
+        graphics.pose().pushMatrix();
         this.overlayManager$appliedHotbar = true;
 
         if (ConfigInstance.AttackIndicator.enabled) {
@@ -74,22 +70,22 @@ public class AttackIndicatorMixin {
             float xOff = ConfigInstance.AttackIndicator.XOffset;
             float yOff = ConfigInstance.AttackIndicator.YOffset;
 
-            float centerX = (guiGraphics.guiWidth() / 2.0f) + 91.0f;
-            float centerY = guiGraphics.guiHeight() - 20.0f;
+            float centerX = (graphics.guiWidth() / 2.0f) + 91.0f;
+            float centerY = graphics.guiHeight() - 20.0f;
 
-            guiGraphics.pose().translate(centerX + xOff, centerY + yOff);
-            guiGraphics.pose().scale(scale, scale);
-            guiGraphics.pose().translate(-centerX, -centerY);
+            graphics.pose().translate(centerX + xOff, centerY + yOff);
+            graphics.pose().scale(scale, scale);
+            graphics.pose().translate(-centerX, -centerY);
         } else {
-            guiGraphics.pose().scale(0.0f, 0.0f);
+            graphics.pose().scale(0.0f, 0.0f);
         }
     }
 
-    @Inject(method = "renderItemHotbar", at = @At("RETURN"))
-    private void modifyHotbarEnd(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(method = "extractItemHotbar", at = @At("RETURN"))
+    private void modifyHotbarEnd(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
         if (this.overlayManager$appliedHotbar) {
-            guiGraphics.pose().popMatrix();
+            graphics.pose().popMatrix();
             this.overlayManager$appliedHotbar = false;
         }
     }

@@ -7,9 +7,9 @@ import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.gui.entries.SubCategoryListEntry;
 import me.shedaniel.clothconfig2.impl.builders.SubCategoryBuilder;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
@@ -218,8 +218,8 @@ public class ConfigScreenFactory {
                 Component.empty(),
                 Component.translatable("config.hudified.button.editBossBarLayout"),
                 () -> {
-                    Screen currentScreen = net.minecraft.client.Minecraft.getInstance().screen;
-                    net.minecraft.client.Minecraft.getInstance().setScreen(
+                    Screen currentScreen = net.minecraft.client.Minecraft.getInstance().gui.screen();
+                    net.minecraft.client.Minecraft.getInstance().setScreenAndShow(
                             new LayoutEditorScreen(currentScreen, LayoutEditorScreen.EditMode.BOSS_BAR)
                     );
                 }
@@ -245,8 +245,8 @@ public class ConfigScreenFactory {
                 Component.empty(),
                 Component.translatable("config.hudified.button.editScoreboardLayout"),
                 () -> {
-                    Screen currentScreen = net.minecraft.client.Minecraft.getInstance().screen;
-                    net.minecraft.client.Minecraft.getInstance().setScreen(
+                    Screen currentScreen = net.minecraft.client.Minecraft.getInstance().gui.screen();
+                    net.minecraft.client.Minecraft.getInstance().setScreenAndShow(
                             new LayoutEditorScreen(currentScreen, LayoutEditorScreen.EditMode.SCOREBOARD)
                     );
                 }
@@ -287,8 +287,8 @@ public class ConfigScreenFactory {
                 Component.empty(),
                 Component.translatable("config.hudified.button.editAttackIndicatorLayout"),
                 () -> {
-                    Screen currentScreen = net.minecraft.client.Minecraft.getInstance().screen;
-                    net.minecraft.client.Minecraft.getInstance().setScreen(
+                    Screen currentScreen = net.minecraft.client.Minecraft.getInstance().gui.screen();
+                    net.minecraft.client.Minecraft.getInstance().setScreenAndShow(
                             new LayoutEditorScreen(currentScreen, LayoutEditorScreen.EditMode.ATTACK_INDICATOR)
                     );
                 }
@@ -412,8 +412,8 @@ public class ConfigScreenFactory {
                 Component.empty(),
                 Component.translatable("config.hudified.button.editPieChartLayout"),
                 () -> {
-                    Screen currentScreen = net.minecraft.client.Minecraft.getInstance().screen;
-                    net.minecraft.client.Minecraft.getInstance().setScreen(
+                    Screen currentScreen = net.minecraft.client.Minecraft.getInstance().gui.screen();
+                    net.minecraft.client.Minecraft.getInstance().setScreenAndShow(
                             new LayoutEditorScreen(currentScreen, LayoutEditorScreen.EditMode.PIE_CHART)
                     );
                 }
@@ -564,7 +564,7 @@ public class ConfigScreenFactory {
                 () -> {
                     applyMrOrdenadorPresets();
                     ConfigManager.save();
-                    net.minecraft.client.Minecraft.getInstance().setScreen(ConfigScreenFactory.create(parent));
+                    net.minecraft.client.Minecraft.getInstance().setScreenAndShow(ConfigScreenFactory.create(parent));
                 }
         ));
 
@@ -574,7 +574,7 @@ public class ConfigScreenFactory {
                 () -> {
                     ConfigManager.save();
                     applyVanillaOptions();
-                    net.minecraft.client.Minecraft.getInstance().setScreen(ConfigScreenFactory.create(parent));
+                    net.minecraft.client.Minecraft.getInstance().setScreenAndShow(ConfigScreenFactory.create(parent));
                 }
         ));
 
@@ -778,10 +778,10 @@ public class ConfigScreenFactory {
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
+        public void extractRenderState(GuiGraphicsExtractor guiGraphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
             this.button.setX(x + entryWidth / 2 - this.button.getWidth() / 2);
             this.button.setY(y);
-            this.button.render(guiGraphics, mouseX, mouseY, delta);
+            this.button.extractRenderState(guiGraphics, mouseX, mouseY, delta);
         }
 
         @Override
@@ -805,7 +805,7 @@ public class ConfigScreenFactory {
     public static void registerKeybinds() {
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(client -> {
 
-            if (client.player == null || client.screen != null) {
+            if (client.player == null || client.gui.screen() != null) {
                 previousKeys.clear();
                 currentKeys.clear();
                 return;

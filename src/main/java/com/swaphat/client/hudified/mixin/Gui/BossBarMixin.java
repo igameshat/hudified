@@ -1,7 +1,7 @@
 package com.swaphat.client.hudified.mixin.Gui;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import org.joml.Matrix3x2fStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,8 +17,8 @@ public class BossBarMixin {
     @Unique
     private boolean overlayManager$matrixPushed = false;
 
-    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
-    private void overlayManager$onRenderHead(GuiGraphics guiGraphics, CallbackInfo ci) {
+    @Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
+    private void overlayManager$onRenderHead(GuiGraphicsExtractor guiGraphics, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
         this.overlayManager$matrixPushed = false;
         if (!ConfigInstance.BossBar.enabled) {
@@ -50,8 +50,8 @@ public class BossBarMixin {
         poseStack.translate(-centerX, -vanillaY);
     }
 
-    @Inject(method = "render", at = @At("RETURN"))
-    private void overlayManager$onRenderReturn(GuiGraphics guiGraphics, CallbackInfo ci) {
+    @Inject(method = "extractRenderState", at = @At("RETURN"))
+    private void overlayManager$onRenderReturn(GuiGraphicsExtractor guiGraphics, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
         if (this.overlayManager$matrixPushed) {
             guiGraphics.pose().popMatrix();

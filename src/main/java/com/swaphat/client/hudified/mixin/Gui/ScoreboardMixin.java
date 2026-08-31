@@ -2,18 +2,18 @@ package com.swaphat.client.hudified.mixin.Gui;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public class ScoreboardMixin {
 
-    @Inject(method = "renderScoreboardSidebar", at = @At("HEAD"), cancellable = true)
-    private void overlayManager$onRenderHead(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(method = "extractScoreboardSidebar", at = @At("HEAD"), cancellable = true)
+    private void overlayManager$onRenderHead(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (!ConfigInstance.OverlayEnabled) {
             return;
         }
@@ -38,8 +38,8 @@ public class ScoreboardMixin {
         guiGraphics.pose().translate(-originX, -originY);
     }
 
-    @Inject(method = "renderScoreboardSidebar", at = @At("RETURN"))
-    private void overlayManager$onRenderReturn(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(method = "extractScoreboardSidebar", at = @At("RETURN"))
+    private void overlayManager$onRenderReturn(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (ConfigInstance.OverlayEnabled && ConfigInstance.Scoreboard.enabled) {
             guiGraphics.pose().popMatrix();
         }

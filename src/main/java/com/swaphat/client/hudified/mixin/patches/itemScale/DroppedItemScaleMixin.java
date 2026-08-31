@@ -5,7 +5,7 @@ import com.swaphat.client.hudified.config.ConfigInstance;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.state.ItemEntityRenderState;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState; // <-- Updated package import
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -25,13 +25,13 @@ public class DroppedItemScaleMixin {
     @Unique
     private static final Map<ItemEntityRenderState, Float> overlayManager$scaleCache = new WeakHashMap<>();
 
-    // Phase 1: Store the scale during extraction (matches your working mod's updateRenderState logic)
+    // Phase 1: Store the scale during extraction
     @Inject(
-            method = {"extractRenderState(Lnet/minecraft/world/entity/item/ItemEntity;Lnet/minecraft/client/renderer/entity/state/ItemEntityRenderState;F)V"},
+            method = "extractRenderState(Lnet/minecraft/world/entity/item/ItemEntity;Lnet/minecraft/client/renderer/entity/state/ItemEntityRenderState;F)V",
             at = @At("TAIL")
     )
     private void onExtractRenderState(ItemEntity itemEntity, ItemEntityRenderState state, float partialTicks, CallbackInfo ci) {
-        // Clear old scale to prevent ghosting
+        // Clear old scale to prevent ghosting (Crucial for 1.21 state pooling!)
         overlayManager$scaleCache.remove(state);
 
         if (!ConfigInstance.DroppedItems.enabled) {
@@ -51,9 +51,10 @@ public class DroppedItemScaleMixin {
         }
     }
 
-    // Phase 2: Apply the scale immediately after pushPose() (matches your working mod's render logic exactly)
+    // Phase 2: Apply the scale immediately after pushPose()
+    // Note the updated descriptor path for CameraRenderState in the method string
     @Inject(
-            method = {"submit(Lnet/minecraft/client/renderer/entity/state/ItemEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V"},
+            method = "submit(Lnet/minecraft/client/renderer/entity/state/ItemEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V",

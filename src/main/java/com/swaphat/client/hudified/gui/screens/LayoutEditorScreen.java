@@ -2,7 +2,7 @@ package com.swaphat.client.hudified.gui.screens;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
 import com.swaphat.client.hudified.config.ConfigManager;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
@@ -34,14 +34,14 @@ public class LayoutEditorScreen extends Screen {
     }
 
     @Override
-    public void render(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float delta) {
         String elementName = switch (mode) {
             case PIE_CHART -> "Pie Chart";
             case BOSS_BAR -> "Boss Bar";
             case SCOREBOARD -> "Scoreboard";
             case ATTACK_INDICATOR -> "Attack Indicator";
         };
-        guiGraphics.drawCenteredString(this.font, "Click and Drag to reposition the " + elementName, this.width / 2, 20, 0xFFFFFF);
+        guiGraphics.centeredText(this.font, "Click and Drag to reposition the " + elementName, this.width / 2, 20, 0xFFFFFF);
 
 
 
@@ -55,7 +55,7 @@ public class LayoutEditorScreen extends Screen {
             guiGraphics.pose().scale(pScale, pScale);
             guiGraphics.pose().translate(-px, -py);
 
-            this.minecraft.getDebugOverlay().getProfilerPieChart().render(guiGraphics);
+            this.minecraft.getDebugOverlay().getProfilerPieChart().extractRenderState(guiGraphics);
             guiGraphics.pose().popMatrix();
         }
 
@@ -73,7 +73,7 @@ public class LayoutEditorScreen extends Screen {
             guiGraphics.pose().scale(bScale, bScale);
 
             guiGraphics.fill(-bbW / 2, 0, bbW / 2, bbH, 0x8800AA00);
-            guiGraphics.drawCenteredString(this.font, "Boss Bar", 0, 4, 0xFFFFFF);
+            guiGraphics.centeredText(this.font, "Boss Bar", 0, 4, 0xFFFFFF);
 
             guiGraphics.pose().popMatrix();
         }
@@ -95,7 +95,7 @@ public class LayoutEditorScreen extends Screen {
 
 
             guiGraphics.fill(-scW, -scH / 2, 0, scH / 2, 0x880000AA);
-            guiGraphics.drawCenteredString(this.font, "Scoreboard", -scW / 2, -4, 0xFFFFFF);
+            guiGraphics.centeredText(this.font, "Scoreboard", -scW / 2, -4, 0xFFFFFF);
 
             guiGraphics.pose().popMatrix();
         }
@@ -115,12 +115,12 @@ public class LayoutEditorScreen extends Screen {
             guiGraphics.pose().scale(aScale, aScale);
 
             guiGraphics.fill(-aiSize / 2, -aiSize / 2, aiSize / 2, aiSize / 2, 0x88AA0000);
-            guiGraphics.drawCenteredString(this.font, "+", 0, -4, 0xFFFFFF);
+            guiGraphics.centeredText(this.font, "+", 0, -4, 0xFFFFFF);
 
             guiGraphics.pose().popMatrix();
         }
 
-        super.render(guiGraphics, mouseX, mouseY, delta);
+        super.extractRenderState(guiGraphics, mouseX, mouseY, delta);
     }
 
     @Override
@@ -280,6 +280,6 @@ public class LayoutEditorScreen extends Screen {
     @Override
     public void onClose() {
         ConfigManager.save();
-        this.minecraft.setScreen(this.parent);
+        this.minecraft.setScreenAndShow(this.parent);
     }
 }

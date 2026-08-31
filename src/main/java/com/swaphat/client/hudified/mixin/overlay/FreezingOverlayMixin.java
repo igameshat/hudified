@@ -2,7 +2,8 @@ package com.swaphat.client.hudified.mixin.overlay;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
@@ -11,11 +12,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public abstract class FreezingOverlayMixin {
 
-    @Inject(method = {"renderTextureOverlay"}, at = @At("HEAD"), cancellable = true)
-    private void renderCornerSnappedFreeze(GuiGraphics guiGraphics, Identifier identifier, float f, CallbackInfo ci) {
+    @Inject(method = {"extractTextureOverlay"}, at = @At("HEAD"), cancellable = true)
+    private void renderCornerSnappedFreeze(GuiGraphicsExtractor guiGraphics, Identifier identifier, float f, CallbackInfo ci) {
         if (identifier.getPath().contains("powder_snow_outline")) {
 
             if (!ConfigInstance.FreezeOverlay.enabled || !ConfigInstance.OverlayEnabled) {
@@ -37,22 +38,22 @@ public abstract class FreezingOverlayMixin {
             int totalTex = 256;
             float halfTex = 128;
 
-            // 1. TOP-LEFT: Samples (0,0) to (128,128)
+            // TOP-LEFT: Samples (0,0) to (128,128)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, identifier,
                     0, 0,
                     0, 0, drawSizeX, drawSizeY, 128, 128, totalTex, totalTex, color);
 
-            // 2. TOP-RIGHT: Samples (128,0) to (256,128)
+            // TOP-RIGHT: Samples (128,0) to (256,128)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, identifier,
                     screenWidth - drawSizeX, 0,
                     halfTex, 0, drawSizeX, drawSizeY, 128, 128, totalTex, totalTex, color);
 
-            // 3. BOTTOM-LEFT: Samples (0,128) to (128,256)
+            // BOTTOM-LEFT: Samples (0,128) to (128,256)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, identifier,
                     0, screenHeight - drawSizeY,
                     0, halfTex, drawSizeX, drawSizeY, 128, 128, totalTex, totalTex, color);
 
-            // 4. BOTTOM-RIGHT: Samples (128,128) to (256,256)
+            // BOTTOM-RIGHT: Samples (128,128) to (256,256)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, identifier,
                     screenWidth - drawSizeX, screenHeight - drawSizeY,
                     halfTex, halfTex, drawSizeX, drawSizeY, 128, 128, totalTex, totalTex, color);

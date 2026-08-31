@@ -2,7 +2,8 @@ package com.swaphat.client.hudified.mixin.overlay;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,13 +11,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public class PumpkinOverlayMixin {
 
     private static Identifier lastShaderLocation;
 
-    @Inject(method = "renderTextureOverlay", at = @At("HEAD"), cancellable = true)
-    private void captureMetadata(GuiGraphics guiGraphics, Identifier shaderLocation, float alpha, CallbackInfo ci) {
+    @Inject(method = "extractTextureOverlay", at = @At("HEAD"), cancellable = true)
+    private void captureMetadata(GuiGraphicsExtractor guiGraphics, Identifier shaderLocation, float alpha, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
 
         lastShaderLocation = shaderLocation;
@@ -28,7 +29,7 @@ public class PumpkinOverlayMixin {
     }
 
     @ModifyVariable(
-            method = "renderTextureOverlay",
+            method = "extractTextureOverlay",
             at = @At("HEAD"),
             argsOnly = true,
             ordinal = 0 // Targets the first float argument (which is 'alpha')
