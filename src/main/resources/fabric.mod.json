@@ -9,7 +9,7 @@
 	],
 	"contributors" : ["macagooner"],
 	"contact": {
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/igameshat/hudified"
 	},
 	"license": "MIT",
 	"icon": "assets/hudified/icon.png",

@@ -37,22 +37,18 @@ public abstract class FreezingOverlayMixin {
             int totalTex = 256;
             float halfTex = 128;
 
-            // 1. TOP-LEFT: Samples (0,0) to (128,128)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, identifier,
                     0, 0,
                     0, 0, drawSizeX, drawSizeY, 128, 128, totalTex, totalTex, color);
 
-            // 2. TOP-RIGHT: Samples (128,0) to (256,128)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, identifier,
                     screenWidth - drawSizeX, 0,
                     halfTex, 0, drawSizeX, drawSizeY, 128, 128, totalTex, totalTex, color);
 
-            // 3. BOTTOM-LEFT: Samples (0,128) to (128,256)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, identifier,
                     0, screenHeight - drawSizeY,
                     0, halfTex, drawSizeX, drawSizeY, 128, 128, totalTex, totalTex, color);
 
-            // 4. BOTTOM-RIGHT: Samples (128,128) to (256,256)
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, identifier,
                     screenWidth - drawSizeX, screenHeight - drawSizeY,
                     halfTex, halfTex, drawSizeX, drawSizeY, 128, 128, totalTex, totalTex, color);

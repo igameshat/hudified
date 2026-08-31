@@ -26,8 +26,7 @@ public abstract class ParticleEngineMixin {
 
         String idString = particleId.toString();
 
-        // 1. Check if this specific particle is in the config map.
-        // 2. If not, use the global default.
+
         float chance = ConfigInstance.Particle.customParticleChances.getOrDefault(
                 idString,
                 ConfigInstance.Particle.globalChance

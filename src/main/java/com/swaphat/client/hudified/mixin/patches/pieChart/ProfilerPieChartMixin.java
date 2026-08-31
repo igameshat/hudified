@@ -17,7 +17,6 @@ public class ProfilerPieChartMixin {
 
     @Shadow private int bottomOffset;
 
-    // 1. Anchor the X Center to our Config
     @WrapOperation(
             method = "render",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;guiWidth()I")
@@ -29,7 +28,6 @@ public class ProfilerPieChartMixin {
         return ConfigInstance.PieChart.x;
     }
 
-    // 2. Anchor the Y Bottom to our Config
     @WrapOperation(
             method = "render",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;guiHeight()I")
@@ -41,7 +39,6 @@ public class ProfilerPieChartMixin {
         return ConfigInstance.PieChart.y + this.bottomOffset + 5;
     }
 
-    // 3. THE FIX: Intercept the unscalable Pie Slices and force them to scale!
     @WrapOperation(
             method = "render",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;submitProfilerChartRenderState(Ljava/util/List;IIII)V")
@@ -61,7 +58,6 @@ public class ProfilerPieChartMixin {
         int scaledMaxX = (int) ((maxX - cx) * scale + cx);
         int scaledMaxY = (int) ((maxY - cy) * scale + cy);
 
-        // Send the perfectly scaled coordinates to the GPU
         original.call(instance, list, scaledMinX, scaledMinY, scaledMaxX, scaledMaxY);
     }
 }
