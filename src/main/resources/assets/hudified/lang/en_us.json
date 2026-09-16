@@ -76,7 +76,7 @@
   "config.hudified.environment.blockBreaking": "Disable Block Breaking Overlay",
   "config.hudified.environment.blockBreaking.tooltip": "Controls the block breaking overlay.",
 
-  "config.hudified.boat.unlockBoatPov": "Unlock Boat Camera (free look)",
+  "config.hudified.boat.unlockBoatPov": "Unlock Boat Camera (360 rotation)",
   "config.hudified.boat.showBoatItem": "Show held item even when riding in a boat",
 
   "config.hudified.shields.advancedOptions": "Advanced Options",
