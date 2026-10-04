@@ -35,8 +35,8 @@ public class BossBarMixin {
         float scale = ConfigInstance.BossBar.scale;
 
         // Vanilla rendering origin points
-        float centerX = guiGraphics.guiWidth() / 2.0f;
-        float vanillaY = 12.0f;
+        float centerX = guiGraphics.guiWidth() / 2f;
+        float vanillaY = 12f;
 
         // Offsets
         float offsetX = ConfigInstance.BossBar.XOffset;

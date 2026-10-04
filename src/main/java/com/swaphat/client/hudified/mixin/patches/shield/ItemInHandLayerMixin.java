@@ -67,14 +67,14 @@ public class ItemInHandLayerMixin {
         overlayManager$didPush = true;
 
         poseStack.translate(settings.xOffset / 100.0, (settings.yOffset+ConfigInstance.Shields.simpleYOffset) / 100.0, settings.zOffset / 100.0);
-        poseStack.mulPose(Axis.XP.rotationDegrees(settings.rotX));
-        poseStack.mulPose(Axis.YP.rotationDegrees(settings.rotY));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(settings.rotZ));
+        poseStack.rotateDegrees(Axis.XP, settings.rotX);
+        poseStack.rotateDegrees(Axis.YP, settings.rotY);
+        poseStack.rotateDegrees(Axis.ZP, settings.rotZ);
         poseStack.scale(Math.max(0, settings.scaleX), Math.max(0, settings.scaleY), Math.max(0, settings.scaleZ));
     }
 
     @Inject(method = "submitArmWithItem", at = @At("RETURN"))
-    private void overlayManager$thirdPersonAfter(ArmedEntityRenderState state, ItemStackRenderState itemState, ItemStack stack, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
+    private void overlayManager$thirdPersonAfter(ArmedEntityRenderState state, ItemStackRenderState item, ItemStack itemStack, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
         if (overlayManager$didPush) {
             overlayManager$didPush = false;

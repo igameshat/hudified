@@ -21,13 +21,11 @@ public abstract class ProjectileGlowMixin {
     private void forceProjectileGlow(CallbackInfoReturnable<Boolean> cir) {
         if (!this.level().isClientSide()) return;
 
-        // 1. Uses the 'enabled' boolean
         if (!ConfigInstance.OverlayEnabled || !ConfigInstance.ProjectileHighlight.enabled) return;
 
         if ((Object) this instanceof Projectile projectile) {
             String entityId = BuiltInRegistries.ENTITY_TYPE.getKey(projectile.getType()).toString();
 
-            // 2. Uses the 'supportedProjectiles' list
             if (!ConfigInstance.ProjectileHighlight.supportedProjectiles.contains(entityId)) {
                 return;
             }
@@ -46,13 +44,11 @@ public abstract class ProjectileGlowMixin {
     private void changeProjectileGlowColor(CallbackInfoReturnable<Integer> cir) {
         if (!this.level().isClientSide()) return;
 
-        // 1. Uses the 'enabled' boolean
         if (!ConfigInstance.OverlayEnabled || !ConfigInstance.ProjectileHighlight.enabled) return;
 
         if ((Object) this instanceof Projectile projectile) {
             String entityId = BuiltInRegistries.ENTITY_TYPE.getKey(projectile.getType()).toString();
 
-            // 2. Uses the 'supportedProjectiles' list
             if (!ConfigInstance.ProjectileHighlight.supportedProjectiles.contains(entityId)) {
                 return;
             }
@@ -63,7 +59,6 @@ public abstract class ProjectileGlowMixin {
                 }
             }
 
-            // 3. Uses 'opacity', 'red', 'green', and 'blue' to create the ARGB integer
             int a = (int) (ConfigInstance.ProjectileHighlight.opacity * 255);
             int r = ConfigInstance.ProjectileHighlight.red;
             int g = ConfigInstance.ProjectileHighlight.green;

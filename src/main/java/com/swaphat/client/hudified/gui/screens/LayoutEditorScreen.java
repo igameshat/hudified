@@ -1,7 +1,9 @@
 package com.swaphat.client.hudified.gui.screens;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.swaphat.client.hudified.config.ConfigInstance;
 import com.swaphat.client.hudified.config.ConfigManager;
+import com.swaphat.client.hudified.extras.PieChartBounds;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -12,6 +14,9 @@ import org.jspecify.annotations.NonNull;
 public class LayoutEditorScreen extends Screen {
     public enum EditMode { PIE_CHART, BOSS_BAR, SCOREBOARD, ATTACK_INDICATOR }
 
+    private record Box(int minX, int minY, int maxX, int maxY) {
+    }
+
     private final Screen parent;
     private final EditMode mode;
 
@@ -20,7 +25,7 @@ public class LayoutEditorScreen extends Screen {
     private double dragOffsetY = 0;
 
     public LayoutEditorScreen(Screen parent, EditMode mode) {
-        super(Component.literal("Layout Editor"));
+        super(Component.translatable("config.hudified.layoutEditor.title"));
         this.parent = parent;
         this.mode = mode;
     }
@@ -33,248 +38,150 @@ public class LayoutEditorScreen extends Screen {
         }
     }
 
-    @Override
-    public void extractRenderState(@NonNull GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float delta) {
-        String elementName = switch (mode) {
-            case PIE_CHART -> "Pie Chart";
-            case BOSS_BAR -> "Boss Bar";
-            case SCOREBOARD -> "Scoreboard";
-            case ATTACK_INDICATOR -> "Attack Indicator";
+    private Component name() {
+        return Component.translatable(switch (mode) {
+            case PIE_CHART -> "config.hudified.layoutEditor.element.pieChart";
+            case BOSS_BAR -> "config.hudified.layoutEditor.element.bossBar";
+            case SCOREBOARD -> "config.hudified.layoutEditor.element.scoreboard";
+            case ATTACK_INDICATOR -> "config.hudified.layoutEditor.element.attackIndicator";
+        });
+    }
+
+    private boolean isEnabled() {
+        return switch (mode) {
+            case PIE_CHART -> ConfigInstance.PieChart.enabled;
+            case BOSS_BAR -> ConfigInstance.BossBar.enabled;
+            case SCOREBOARD -> ConfigInstance.Scoreboard.enabled;
+            case ATTACK_INDICATOR -> ConfigInstance.AttackIndicator.enabled;
         };
-        guiGraphics.centeredText(this.font, "Click and Drag to reposition the " + elementName, this.width / 2, 20, 0xFFFFFF);
-
-
-
-        if (mode == EditMode.PIE_CHART && ConfigInstance.PieChart.enabled) {
-            int px = ConfigInstance.PieChart.x;
-            int py = ConfigInstance.PieChart.y;
-            float pScale = ConfigInstance.PieChart.scale;
-
-            guiGraphics.pose().pushMatrix();
-            guiGraphics.pose().translate(px, py);
-            guiGraphics.pose().scale(pScale, pScale);
-            guiGraphics.pose().translate(-px, -py);
-
-            this.minecraft.getDebugOverlay().getProfilerPieChart().extractRenderState(guiGraphics);
-            guiGraphics.pose().popMatrix();
-        }
-
-
-        if (mode == EditMode.BOSS_BAR && ConfigInstance.BossBar.enabled) {
-            int bx = (this.width / 2) + ConfigInstance.BossBar.XOffset;
-            int by = ConfigInstance.BossBar.YOffset;
-            float bScale = ConfigInstance.BossBar.scale;
-
-            int bbW = 182;
-            int bbH = 15;
-
-            guiGraphics.pose().pushMatrix();
-            guiGraphics.pose().translate(bx, by);
-            guiGraphics.pose().scale(bScale, bScale);
-
-            guiGraphics.fill(-bbW / 2, 0, bbW / 2, bbH, 0x8800AA00);
-            guiGraphics.centeredText(this.font, "Boss Bar", 0, 4, 0xFFFFFF);
-
-            guiGraphics.pose().popMatrix();
-        }
-
-
-
-        if (mode == EditMode.SCOREBOARD && ConfigInstance.Scoreboard.enabled) {
-
-            int sx = this.width + ConfigInstance.Scoreboard.XOffset;
-            int sy = (this.height / 2) + ConfigInstance.Scoreboard.YOffset;
-            float sScale = ConfigInstance.Scoreboard.scale;
-
-            int scW = 100;
-            int scH = 60;
-
-            guiGraphics.pose().pushMatrix();
-            guiGraphics.pose().translate(sx, sy);
-            guiGraphics.pose().scale(sScale, sScale);
-
-
-            guiGraphics.fill(-scW, -scH / 2, 0, scH / 2, 0x880000AA);
-            guiGraphics.centeredText(this.font, "Scoreboard", -scW / 2, -4, 0xFFFFFF);
-
-            guiGraphics.pose().popMatrix();
-        }
-
-
-
-        if (mode == EditMode.ATTACK_INDICATOR && ConfigInstance.AttackIndicator.enabled) {
-
-            int ax = (this.width / 2) + ConfigInstance.AttackIndicator.XOffset;
-            int ay = (this.height / 2) + ConfigInstance.AttackIndicator.YOffset;
-            float aScale = ConfigInstance.AttackIndicator.scale;
-
-            int aiSize = 18;
-
-            guiGraphics.pose().pushMatrix();
-            guiGraphics.pose().translate(ax, ay);
-            guiGraphics.pose().scale(aScale, aScale);
-
-            guiGraphics.fill(-aiSize / 2, -aiSize / 2, aiSize / 2, aiSize / 2, 0x88AA0000);
-            guiGraphics.centeredText(this.font, "+", 0, -4, 0xFFFFFF);
-
-            guiGraphics.pose().popMatrix();
-        }
-
-        super.extractRenderState(guiGraphics, mouseX, mouseY, delta);
     }
 
-    @Override
-    public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean bl) {
-        if (mouseButtonEvent.button() == 0) {
-            double mx = mouseButtonEvent.x();
-            double my = mouseButtonEvent.y();
-
-            if (mode == EditMode.BOSS_BAR && ConfigInstance.BossBar.enabled) {
-                int bx = (this.width / 2) + ConfigInstance.BossBar.XOffset;
-                int by = ConfigInstance.BossBar.YOffset;
-                float bScale = ConfigInstance.BossBar.scale;
-
-                double minX = bx - ((182 / 2.0) * bScale);
-                double maxX = bx + ((182 / 2.0) * bScale);
-                double maxY = by + (15 * bScale);
-
-                if (mx >= minX && mx <= maxX && my >= (double) by && my <= maxY) {
-                    this.isDragging = true;
-                    this.dragOffsetX = mx - bx;
-                    this.dragOffsetY = my - by;
-                    return true;
-                }
-            }
-
-
-            if (mode == EditMode.PIE_CHART && ConfigInstance.PieChart.enabled) {
-                int px = ConfigInstance.PieChart.x;
-                int py = ConfigInstance.PieChart.y;
-                float pScale = ConfigInstance.PieChart.scale;
-
-                // Left: perfect (-220)
-                double minX = px - (220 * pScale);
-                // Right: Shaved off 5 pixels
-                double maxX = px - (5 * pScale);
-                // Top: Shaved off 10 pixels (250 -> 240)
-                double minY = py - (240 * pScale);
-                // Bottom: Shaved off 1 pixel (10 -> 9)
-                double maxY = py + (9 * pScale);
-
-                if (mx >= minX && mx <= maxX && my >= minY && my <= maxY) {
-                    this.isDragging = true;
-                    this.dragOffsetX = mx - px;
-                    this.dragOffsetY = my - py;
-                    return true;
-                }
-            }
-
-            if (mode == EditMode.SCOREBOARD && ConfigInstance.Scoreboard.enabled) {
-                int sx = this.width + ConfigInstance.Scoreboard.XOffset;
-                int sy = (this.height / 2) + ConfigInstance.Scoreboard.YOffset;
-                float sScale = ConfigInstance.Scoreboard.scale;
-
-                double minX = sx - (100 * sScale);
-                double minY = sy - (30 * sScale);
-                double maxY = sy + (30 * sScale);
-
-                if (mx >= minX && mx <= (double) sx && my >= minY && my <= maxY) {
-                    this.isDragging = true;
-                    this.dragOffsetX = mx - sx;
-                    this.dragOffsetY = my - sy;
-                    return true;
-                }
-            }
-
-            if (mode == EditMode.ATTACK_INDICATOR && ConfigInstance.AttackIndicator.enabled) {
-                int ax = (this.width / 2) + ConfigInstance.AttackIndicator.XOffset;
-                int ay = (this.height / 2) + ConfigInstance.AttackIndicator.YOffset;
-                float aScale = ConfigInstance.AttackIndicator.scale;
-
-                double minX = ax - (9 * aScale);
-                double maxX = ax + (9 * aScale);
-                double minY = ay - (9 * aScale);
-                double maxY = ay + (9 * aScale);
-
-                if (mx >= minX && mx <= maxX && my >= minY && my <= maxY) {
-                    this.isDragging = true;
-                    this.dragOffsetX = mx - ax;
-                    this.dragOffsetY = my - ay;
-                    return true;
-                }
-            }
-        }
-        return super.mouseClicked(mouseButtonEvent, bl);
+    private float scale() {
+        return switch (mode) {
+            case PIE_CHART -> ConfigInstance.PieChart.scale;
+            case BOSS_BAR -> ConfigInstance.BossBar.scale;
+            case SCOREBOARD -> ConfigInstance.Scoreboard.scale;
+            case ATTACK_INDICATOR -> ConfigInstance.AttackIndicator.scale;
+        };
     }
 
-    @Override
-    public boolean mouseDragged(@NonNull MouseButtonEvent mouseButtonEvent, double d, double e) {
-        if (this.isDragging) {
-            if (mode == EditMode.PIE_CHART) {
-                int targetX = (int) (mouseButtonEvent.x() - this.dragOffsetX);
-                int targetY = (int) (mouseButtonEvent.y() - this.dragOffsetY);
+    private int fillColor() {
+        return switch (mode) {
+            case PIE_CHART -> 0x5533AAFF;
+            case BOSS_BAR -> 0x8800AA00;
+            case SCOREBOARD -> 0x880000AA;
+            case ATTACK_INDICATOR -> 0x88AA0000;
+        };
+    }
 
-                ConfigInstance.PieChart.x = targetX;
-                ConfigInstance.PieChart.y = targetY;
+    private int anchorX() {
+        return switch (mode) {
+            case PIE_CHART -> ConfigInstance.PieChart.x;
+            case BOSS_BAR -> this.width / 2 + ConfigInstance.BossBar.XOffset;
+            case SCOREBOARD -> this.width + ConfigInstance.Scoreboard.XOffset;
+            case ATTACK_INDICATOR -> this.width / 2 + ConfigInstance.AttackIndicator.XOffset;
+        };
+    }
 
-            } else if (mode == EditMode.BOSS_BAR) {
-                float bScale = ConfigInstance.BossBar.scale;
-                int targetAbsoluteX = (int) (mouseButtonEvent.x() - this.dragOffsetX);
-                int targetY = (int) (mouseButtonEvent.y() - this.dragOffsetY);
+    private int anchorY() {
+        return switch (mode) {
+            case PIE_CHART -> ConfigInstance.PieChart.y;
+            case BOSS_BAR -> ConfigInstance.BossBar.YOffset;
+            case SCOREBOARD -> this.height / 2 + ConfigInstance.Scoreboard.YOffset;
+            case ATTACK_INDICATOR -> this.height / 2 + ConfigInstance.AttackIndicator.YOffset;
+        };
+    }
 
-                int minBx = (int) (91 * bScale);
-                int maxBx = (int) (this.width - (91 * bScale));
-                int clampedAbsoluteX = Mth.clamp(targetAbsoluteX, minBx, maxBx);
+    private Box box() {
+        int ax = anchorX();
+        int ay = anchorY();
+        float s = scale();
+        return switch (mode) {
+            case PIE_CHART -> new Box(ax - Math.round(PieChartBounds.left * s), ay - Math.round(PieChartBounds.top * s), ax - Math.round(PieChartBounds.RIGHT * s), ay + Math.round(PieChartBounds.BOTTOM * s));            case BOSS_BAR -> new Box(ax - Math.round(91 * s), ay, ax + Math.round(91 * s), ay + Math.round(15 * s));
+            case SCOREBOARD -> new Box(ax - Math.round(100 * s), ay - Math.round(30 * s), ax, ay + Math.round(30 * s));
+            case ATTACK_INDICATOR -> new Box(ax - Math.round(9 * s), ay - Math.round(9 * s), ax + Math.round(9 * s), ay + Math.round(9 * s));
+        };
+    }
 
-                int minY = 0;
-                int maxY = (int) (this.height - (15 * bScale));
-
-                ConfigInstance.BossBar.XOffset = clampedAbsoluteX - (this.width / 2);
-                ConfigInstance.BossBar.YOffset = Mth.clamp(targetY, minY, maxY);
-
-            } else if (mode == EditMode.SCOREBOARD) {
-                float sScale = ConfigInstance.Scoreboard.scale;
-                int targetAbsoluteX = (int) (mouseButtonEvent.x() - this.dragOffsetX);
-                int targetAbsoluteY = (int) (mouseButtonEvent.y() - this.dragOffsetY);
-
-                int minX = (int) (100 * sScale);
-                int maxX = this.width;
-                int minY = (int) (30 * sScale);
-                int maxY = (int) (this.height - (30 * sScale));
-
-                int clampedX = Mth.clamp(targetAbsoluteX, minX, maxX);
-                int clampedY = Mth.clamp(targetAbsoluteY, minY, maxY);
-
-                ConfigInstance.Scoreboard.XOffset = clampedX - this.width;
-                ConfigInstance.Scoreboard.YOffset = clampedY - (this.height / 2);
-
-            } else if (mode == EditMode.ATTACK_INDICATOR) {
-                float aScale = ConfigInstance.AttackIndicator.scale;
-                int targetAbsoluteX = (int) (mouseButtonEvent.x() - this.dragOffsetX);
-                int targetAbsoluteY = (int) (mouseButtonEvent.y() - this.dragOffsetY);
-
-                int minX = 0;
-                int maxX = (int) (this.width - (1 * aScale));
-                int minY = 0;
-                int maxY = (int) (this.height - (1 * aScale));
-
-                int clampedX = Mth.clamp(targetAbsoluteX, minX, maxX);
-                int clampedY = Mth.clamp(targetAbsoluteY, minY, maxY);
-
-                ConfigInstance.AttackIndicator.XOffset = clampedX - (this.width / 2);
-                ConfigInstance.AttackIndicator.YOffset = clampedY - (this.height / 2);
+    private void moveTo(int x, int y) {
+        float s = scale();
+        switch (mode) {
+            case PIE_CHART -> {
+                ConfigInstance.PieChart.x = Mth.clamp(x, Math.round(PieChartBounds.left * s), this.width + Math.round(PieChartBounds.RIGHT * s));
+                ConfigInstance.PieChart.y = Mth.clamp(y, Math.round(PieChartBounds.top * s), this.height - Math.round(PieChartBounds.BOTTOM * s));
             }
+            case BOSS_BAR -> {
+                int cx = Mth.clamp(x, Math.round(91 * s), this.width - Math.round(91 * s));
+                ConfigInstance.BossBar.XOffset = cx - this.width / 2;
+                ConfigInstance.BossBar.YOffset = Mth.clamp(y, 0, this.height - Math.round(15 * s));
+            }
+            case SCOREBOARD -> {
+                int cx = Mth.clamp(x, Math.round(100 * s), this.width);
+                int cy = Mth.clamp(y, Math.round(30 * s), this.height - Math.round(30 * s));
+                ConfigInstance.Scoreboard.XOffset = cx - this.width;
+                ConfigInstance.Scoreboard.YOffset = cy - this.height / 2;
+            }
+            case ATTACK_INDICATOR -> {
+                int cx = Mth.clamp(x, 0, this.width);
+                int cy = Mth.clamp(y, 0, this.height);
+                ConfigInstance.AttackIndicator.XOffset = cx - this.width / 2;
+                ConfigInstance.AttackIndicator.YOffset = cy - this.height / 2;
+            }
+        }
+    }
+
+
+    @Override
+    public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
+
+        graphics.centeredText(this.font, Component.translatable("config.hudified.layoutEditor.instruction" , name()), this.width / 2, 20, 0xFFFFFFFF);
+
+        if (!isEnabled()) {
+            graphics.centeredText(this.font, Component.translatable("config.hudified.layoutEditor.disabled", name()), this.width / 2, 34, 0xFFFF5555);
+            return;
+        }
+
+        if (mode == EditMode.PIE_CHART) this.minecraft.getDebugOverlay().getProfilerPieChart().extractRenderState(graphics, graphics.guiWidth(), graphics.guiHeight());
+
+        Box b = box();
+        graphics.fill(b.minX(), b.minY(), b.maxX(), b.maxY(), fillColor());
+
+        int border = isDragging ? 0xFFFFFF55 : 0xFFFFFFFF;
+        graphics.fill(b.minX(), b.minY(), b.maxX(), b.minY() + 1, border);
+        graphics.fill(b.minX(), b.maxY() - 1, b.maxX(), b.maxY(), border);
+
+        graphics.fill(b.minX(), b.minY(), b.minX() + 1, b.maxY(), border);
+        graphics.fill(b.maxX() - 1, b.minY(), b.maxX(), b.maxY(), border);
+
+        graphics.centeredText(this.font, name(), (b.minX() + b.maxX()) / 2, (b.minY() + b.maxY()) / 2 - 4, 0xFFFFFFFF);
+    }
+
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if ((event.button() == InputConstants.MOUSE_BUTTON_LEFT || event.button() == InputConstants.MOUSE_BUTTON_RIGHT) && isEnabled()) {
+            this.isDragging = true;
+            this.dragOffsetX = event.x() - anchorX();
+            this.dragOffsetY = event.y() - anchorY();
             return true;
         }
-        return super.mouseDragged(mouseButtonEvent, d, e);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean mouseReleased(@NonNull MouseButtonEvent mouseButtonEvent) {
-        if (mouseButtonEvent.button() == 0) {
-            this.isDragging = false;
+    public boolean mouseDragged(@NonNull MouseButtonEvent event, double dx, double dy) {
+        if (this.isDragging) {
+            moveTo((int) (event.x() - this.dragOffsetX), (int) (event.y() - this.dragOffsetY));
+            return true;
         }
-        return super.mouseReleased(mouseButtonEvent);
+        return super.mouseDragged(event, dx, dy);
+    }
+
+    @Override
+    public boolean mouseReleased(@NonNull MouseButtonEvent event) {
+        if (event.button() == 0) this.isDragging = false;
+        return super.mouseReleased(event);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.swaphat.client.hudified.mixin.patches.totem;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.particles.ParticleOptions;
@@ -25,17 +24,17 @@ public class TotemParticleMixin {
                     target = "Lnet/minecraft/client/particle/ParticleEngine;createTrackingEmitter(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/core/particles/ParticleOptions;I)V"
             )
     )
-    private void redirectTotemParticles(ParticleEngine particleEngine, Entity entity, ParticleOptions particleOptions, int lifetime) {
+    private void redirectTotemParticles(ParticleEngine particleEngine, Entity entity, ParticleOptions particle, int lifeTime) {
 
         if(!ConfigInstance.OverlayEnabled) return;
-        boolean isTotem = (particleOptions.getType() == ParticleTypes.TOTEM_OF_UNDYING);
+        boolean isTotem = (particle.getType() == ParticleTypes.TOTEM_OF_UNDYING);
 
         if (isTotem) {
             if (ConfigInstance.Totem.enabled && ConfigInstance.Totem.showParticles && ConfigInstance.OverlayEnabled) {
-                particleEngine.createTrackingEmitter(entity, particleOptions, lifetime);
+                particleEngine.createTrackingEmitter(entity, particle, lifeTime);
             }
         } else {
-            particleEngine.createTrackingEmitter(entity, particleOptions, lifetime);
+            particleEngine.createTrackingEmitter(entity, particle, lifeTime);
         }
     }
 }

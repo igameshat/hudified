@@ -34,14 +34,14 @@ public class AttackIndicatorMixin {
             float xOff = ConfigInstance.AttackIndicator.XOffset;
             float yOff = ConfigInstance.AttackIndicator.YOffset;
 
-            float centerX = graphics.guiWidth() / 2.0f;
-            float centerY = graphics.guiHeight() / 2.0f;
+            float centerX = graphics.guiWidth() / 2f;
+            float centerY = graphics.guiHeight() / 2f;
 
             graphics.pose().translate(centerX + xOff, centerY + yOff);
             graphics.pose().scale(scale, scale);
             graphics.pose().translate(-centerX, -centerY);
         } else {
-            graphics.pose().scale(0.0f, 0.0f);
+            graphics.pose().scale(0f, 0f);
         }
     }
 
@@ -70,14 +70,14 @@ public class AttackIndicatorMixin {
             float xOff = ConfigInstance.AttackIndicator.XOffset;
             float yOff = ConfigInstance.AttackIndicator.YOffset;
 
-            float centerX = (graphics.guiWidth() / 2.0f) + 91.0f;
-            float centerY = graphics.guiHeight() - 20.0f;
+            float centerX = (graphics.guiWidth() / 2f) + 91f;
+            float centerY = graphics.guiHeight() - 20f;
 
             graphics.pose().translate(centerX + xOff, centerY + yOff);
             graphics.pose().scale(scale, scale);
             graphics.pose().translate(-centerX, -centerY);
         } else {
-            graphics.pose().scale(0.0f, 0.0f);
+            graphics.pose().scale(0f, 0f);
         }
     }
 

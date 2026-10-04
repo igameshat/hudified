@@ -3,13 +3,13 @@
 	"id": "hudified",
 	"version": "${version}",
 	"name": "hudified",
-	"description": "an overlay utility mod that has most of the things you will need for a better experience in minecraft",
+	"description": "Manage the mess called Minecraft screen overlays",
 	"authors": [
 		"Infinitygames","Keszenin"
 	],
 	"contributors" : ["macagooner"],
 	"contact": {
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/igameshat/hudified"
 	},
 	"license": "MIT",
 	"icon": "assets/hudified/icon.png",
@@ -22,9 +22,11 @@
 		"hudified.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.19.3",
-		"minecraft": "~26.2",
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
 		"java": ">=25",
-		"fabric-api": "*"
+		"fabric-api": "*",
+		"cloth-config": "*",
+		"modmenu": "*"
 	}
 }

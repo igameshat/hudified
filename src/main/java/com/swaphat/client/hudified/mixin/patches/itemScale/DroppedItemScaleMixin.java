@@ -21,24 +21,21 @@ import java.util.WeakHashMap;
 @Mixin(ItemEntityRenderer.class)
 public class DroppedItemScaleMixin {
 
-    // Safely stores the custom scale for each item without needing an external interface class
     @Unique
     private static final Map<ItemEntityRenderState, Float> overlayManager$scaleCache = new WeakHashMap<>();
 
-    // Phase 1: Store the scale during extraction
     @Inject(
             method = "extractRenderState(Lnet/minecraft/world/entity/item/ItemEntity;Lnet/minecraft/client/renderer/entity/state/ItemEntityRenderState;F)V",
             at = @At("TAIL")
     )
-    private void onExtractRenderState(ItemEntity itemEntity, ItemEntityRenderState state, float partialTicks, CallbackInfo ci) {
-        // Clear old scale to prevent ghosting (Crucial for 1.21 state pooling!)
+    private void onExtractRenderState(ItemEntity entity, ItemEntityRenderState state, float partialTicks, CallbackInfo ci) {
         overlayManager$scaleCache.remove(state);
 
         if (!ConfigInstance.DroppedItems.enabled) {
             return;
         }
 
-        ItemStack itemStack = itemEntity.getItem();
+        ItemStack itemStack = entity.getItem();
         if (itemStack.isEmpty()) {
             return;
         }
@@ -51,8 +48,6 @@ public class DroppedItemScaleMixin {
         }
     }
 
-    // Phase 2: Apply the scale immediately after pushPose()
-    // Note the updated descriptor path for CameraRenderState in the method string
     @Inject(
             method = "submit(Lnet/minecraft/client/renderer/entity/state/ItemEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
             at = @At(
@@ -64,7 +59,7 @@ public class DroppedItemScaleMixin {
     private void applyCustomItemScale(ItemEntityRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
         Float scale = overlayManager$scaleCache.get(state);
 
-        if (scale != null && scale != 1.0f) {
+        if (scale != null && scale != 1f) {
             poseStack.scale(scale, scale, scale);
         }
     }

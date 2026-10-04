@@ -7,19 +7,19 @@ import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractBoat.class)
 public class UnlockBoatPovMixin {
 
     @Inject(method = "clampRotation", at = @At("HEAD"), cancellable = true)
-    private void overlayManager$unlockPov(Entity passenger, CallbackInfo ci) {
+    private void overlayManager$unlockPov(Entity passenger, CallbackInfoReturnable<Float> cir) {
         // Changed to && so it respects the user's specific toggle choices
         if (ConfigInstance.OverlayEnabled && ConfigInstance.Boat.enabled && ConfigInstance.Boat.unlockBoatPov) {
 
             // If the entity in the boat is a player, cancel the clamp completely
             if (passenger instanceof Player) {
-                ci.cancel();
+                cir.cancel();
             }
         }
     }

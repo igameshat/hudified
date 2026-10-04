@@ -21,7 +21,7 @@ public class FireOverlayMixin {
 
         float opacity = ConfigInstance.FireOverlay.opacity;
 
-        if (ConfigInstance.FireOverlay.enabled && opacity <= 0.0F) {
+        if (ConfigInstance.FireOverlay.enabled && opacity <= 0) {
             ci.cancel();
             return;
         }
@@ -37,7 +37,7 @@ public class FireOverlayMixin {
     private static void onSubmitFireReturn(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, TextureAtlasSprite sprite, CallbackInfo ci) {
         if (!ConfigInstance.OverlayEnabled) return;
 
-        if (ConfigInstance.FireOverlay.enabled && ConfigInstance.FireOverlay.opacity > 0.0F) {
+        if (ConfigInstance.FireOverlay.enabled && ConfigInstance.FireOverlay.opacity > 0f) {
             poseStack.popPose();
         }
     }
@@ -56,7 +56,7 @@ public class FireOverlayMixin {
         }
 
         float opacity = ConfigInstance.FireOverlay.opacity;
-        int alpha = (int) (opacity * 255.0F);
+        int alpha = (int) (opacity * 255f);
 
         alpha = Math.clamp(alpha, 0, 255);
 

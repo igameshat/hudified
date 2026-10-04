@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.level.block.Blocks;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,18 +18,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Hud.class)
 public abstract class PortalGuiMixin {
 
+    @Final
     @Shadow private Minecraft minecraft;
 
     @Inject(method = {"extractPortalOverlay"}, at = @At("HEAD"), cancellable = true)
-    private void bypassVanillaEasing(GuiGraphicsExtractor guiGraphics, float f, CallbackInfo ci) {
+    private void bypassVanillaEasing(GuiGraphicsExtractor graphics, float alpha, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
         if(ConfigInstance.PortalOverlay.enabled) {
             ci.cancel();
             return;
         }
 
-        int i = ARGB.white(f);
+        int i = ARGB.white(alpha);
         TextureAtlasSprite textureAtlasSprite = this.minecraft.getModelManager().getBlockStateModelSet().getParticleMaterial(Blocks.NETHER_PORTAL.defaultBlockState()).sprite();
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, textureAtlasSprite, 0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), i);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, textureAtlasSprite, 0, 0, graphics.guiWidth(), graphics.guiHeight(), i);
     }
 }

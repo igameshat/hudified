@@ -125,9 +125,16 @@
   "config.hudified.button.applySideShieldPreset": "Apply Side Shield Preset",
   "config.hudified.button.applyDefaultShieldSettings": "Apply Default Shield Settings",
 
+  "config.hudified.layoutEditor.title": "Layout Editor",
+  "config.hudified.layoutEditor.instruction": "Click and drag to reposition the %s",
+  "config.hudified.layoutEditor.disabled": "%s is disabled in the config, so there is nothing to move.",
+  "config.hudified.layoutEditor.element.pieChart": "Pie Chart",
+  "config.hudified.layoutEditor.element.bossBar": "Boss Bar",
+  "config.hudified.layoutEditor.element.scoreboard": "Scoreboard",
+  "config.hudified.layoutEditor.element.attackIndicator": "Attack Indicator",
+
   "config.hudified.generic.auto": "Auto",
   "config.hudified.generic.default": "Default",
   "config.hudified.generic.invalidEntity": "Invalid Entity ID. Example: minecraft:arrow",
   "config.hudified.generic.invalidItem": "Invalid Item ID. Example: minecraft:apple"
-
 }

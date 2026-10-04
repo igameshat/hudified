@@ -1,6 +1,7 @@
 package com.swaphat.client.hudified.mixin.patches;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
@@ -15,9 +16,13 @@ public abstract class BlindnessMovementMixin {
 
     @Inject(method = "hasEffect", at = @At("HEAD"), cancellable = true)
     private void fakeHasEffect(Holder<MobEffect> effect, CallbackInfoReturnable<Boolean> cir) {
-        if (!ConfigInstance.OverlayEnabled) {
-            if (effect.value() == MobEffects.BLINDNESS.value() && !ConfigInstance.BlindnessOverlay.enabled) {
-                cir.setReturnValue(false);
+        if (!ConfigInstance.OverlayEnabled) return;
+
+        if (!ConfigInstance.BlindnessOverlay.enabled) {
+            if ((Object) this instanceof LocalPlayer) {
+                if (effect.equals(MobEffects.BLINDNESS)) {
+                    cir.setReturnValue(false);
+                }
             }
         }
     }

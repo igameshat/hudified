@@ -1,28 +1,24 @@
 package com.swaphat.client.hudified.mixin.patches;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.swaphat.client.hudified.config.ConfigInstance;
-import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-import java.util.List;
-
-@Mixin(SubmitNodeStorage.class)
+@Mixin(ClientLevel.class)
 public class BlockBreakingOverlayMixin {
 
-    @Inject(
-            method = "submitBreakingBlockModel(Lcom/mojang/blaze3d/vertex/PoseStack;Ljava/util/List;I)V",
+    @ModifyVariable(
+            method = "destroyBlockProgress",
             at = @At("HEAD"),
-            cancellable = true
-    )
-    private void disableBlockBreakingOverlay(PoseStack poseStack, List parts, int progress, CallbackInfo ci) {
-        if (!ConfigInstance.OverlayEnabled) return;
-
-        if (ConfigInstance.Environment.blockBreakingOverlay) {
-            ci.cancel();
+            argsOnly = true,
+            name = "pos")
+    private BlockPos overlayManager$disableBlockBreakingOverlay(BlockPos pos) {
+        if (ConfigInstance.OverlayEnabled && ConfigInstance.Environment.blockBreakingOverlay) {
+            return new BlockPos(0,-66,0);
         }
+        return pos;
     }
 }

@@ -15,9 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ParticleEngineMixin {
 
     @Inject(method = "createParticle", at = @At("HEAD"), cancellable = true)
-    private void overlaymanager$filterGlobalParticles(
-            ParticleOptions options, double x, double y, double z,
-            double dx, double dy, double dz, CallbackInfoReturnable<Particle> cir) {
+    private void overlaymanager$filterGlobalParticles(ParticleOptions options, double x, double y, double z, double xa, double ya, double za, CallbackInfoReturnable<Particle> cir) {
 
         if (!ConfigInstance.Particle.enabled) return;
 
@@ -26,15 +24,14 @@ public abstract class ParticleEngineMixin {
 
         String idString = particleId.toString();
 
-        // 1. Check if this specific particle is in the config map.
-        // 2. If not, use the global default.
+
         float chance = ConfigInstance.Particle.customParticleChances.getOrDefault(
                 idString,
                 ConfigInstance.Particle.globalChance
         );
 
-        if (chance < 1.0f) {
-            if (chance <= 0.0f || Math.random() > chance) {
+        if (chance < 1f) {
+            if (chance <= 0f || Math.random() > chance) {
                 cir.setReturnValue(null);
             }
         }

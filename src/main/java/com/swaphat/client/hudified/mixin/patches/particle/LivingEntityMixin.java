@@ -21,11 +21,11 @@ public abstract class LivingEntityMixin {
             )
     )
     private void overlaymanager$filterAmbientPotions(
-            Level level, ParticleOptions options, double x, double y, double z,
-            double dx, double dy, double dz, Operation<Void> original) {
+            Level level, ParticleOptions particle, double x, double y, double z,
+            double xd, double yd, double zd, Operation<Void> original) {
 
         if (!ConfigInstance.Particle.enabled) {
-            original.call(level, options, x, y, z, dx, dy, dz);
+            original.call(level, particle, x, y, z, xd, yd, zd);
             return;
         }
 
@@ -37,8 +37,8 @@ public abstract class LivingEntityMixin {
                 ConfigInstance.Particle.selfPotionChance :
                 ConfigInstance.Particle.otherPotionChance;
 
-        if (chance >= 1.0f || (chance > 0.0f && Math.random() <= chance)) {
-            original.call(level, options, x, y, z, dx, dy, dz);
+        if (chance >= 1f || (chance > 0f && Math.random() <= chance)) {
+            original.call(level, particle, x, y, z, xd, yd, zd);
         }
     }
 }

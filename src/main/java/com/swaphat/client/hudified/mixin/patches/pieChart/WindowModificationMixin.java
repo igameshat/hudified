@@ -10,19 +10,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Window.class)
 public class WindowModificationMixin {
 
-    @Inject(method = "onResize(JII)V", at = @At("HEAD"))
-    private void handleResize(long window, int width, int height, CallbackInfo ci) {
+    @Inject(method = "onResize(II)V", at = @At("HEAD"))
+    private void handleResize(int newWidth, int newHeight, CallbackInfo ci) {
         if (!ConfigInstance.PieChart.enabled && !ConfigInstance.OverlayEnabled) {
             return;
         }
         if (ConfigInstance.PieChart.oldWindowWidth == -1) {
-            ConfigInstance.PieChart.oldWindowWidth = width;
-            ConfigInstance.PieChart.oldWindowHeight = height;
+            ConfigInstance.PieChart.oldWindowWidth = newWidth;
+            ConfigInstance.PieChart.oldWindowHeight = newHeight;
             return;
         }
 
         // Update stored size
-        ConfigInstance.PieChart.oldWindowWidth = width;
-        ConfigInstance.PieChart.oldWindowHeight = height;
+        ConfigInstance.PieChart.oldWindowWidth = newWidth;
+        ConfigInstance.PieChart.oldWindowHeight = newHeight;
     }
 }

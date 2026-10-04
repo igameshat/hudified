@@ -1,28 +1,30 @@
 package com.swaphat.client.hudified.mixin.patches;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.state.level.PlayerRenderState;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(GameRenderer.class)
 public abstract class GameRendererPortalMixin {
 
-    @Redirect(
-            method = "*",
-            at = @At(value = "FIELD", target = "Lnet/minecraft/client/player/LocalPlayer;portalEffectIntensity:F")
-    )
-    private float stopCameraShake(LocalPlayer instance) {
-        return (!ConfigInstance.PortalOverlay.allowCameraShake && !ConfigInstance.OverlayEnabled) ? 0 : instance.portalEffectIntensity;
+    @Unique
+    private boolean shouldDisableShake() {
+        return ConfigInstance.OverlayEnabled && !ConfigInstance.PortalOverlay.allowCameraShake;
     }
 
     @Redirect(
-            method = "*",
-            at = @At(value = "FIELD", target = "Lnet/minecraft/client/player/LocalPlayer;oPortalEffectIntensity:F")
+            method = "renderLevel",
+            at = @At(
+                    value = "FIELD",
+                    target = "Lnet/minecraft/client/renderer/state/level/PlayerRenderState;portalEffectIntensity:F",
+                    opcode = Opcodes.GETFIELD)
     )
-    private float stopOldCameraShake(LocalPlayer instance) {
-        return (!ConfigInstance.PortalOverlay.allowCameraShake && !ConfigInstance.OverlayEnabled) ? 0 : instance.portalEffectIntensity;
+    private float stopCameraShake(PlayerRenderState instance) {
+        return shouldDisableShake() ? 0.0F : instance.portalEffectIntensity;
     }
 }

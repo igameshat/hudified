@@ -13,7 +13,7 @@ public class VignetteOverlayMixin {
             method = "extractVignette",
             at = @At("STORE"),
             name = "borderWarningStrength")
-    private float applyVignetteOpacity(float f) {
-        return Mth.clamp(f * (ConfigInstance.Vignette.enabled && ConfigInstance.OverlayEnabled ? ConfigInstance.Vignette.opacity : 1), 0, 1);
+    private float applyVignetteOpacity(float borderWarningStrength) {
+        return Mth.clamp(borderWarningStrength * (ConfigInstance.Vignette.enabled && ConfigInstance.OverlayEnabled ? ConfigInstance.Vignette.opacity : 1), 0, 1);
     }
 }

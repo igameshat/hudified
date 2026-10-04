@@ -1,7 +1,6 @@
 package com.swaphat.client.hudified.mixin.overlay;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
 import net.minecraft.util.Mth;
@@ -14,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Hud.class)
 public class SpyglassOverlayMixin {
     @Inject(method = "extractSpyglassOverlay", at = @At("HEAD"), cancellable = true)
-    private void onRenderSpyglassOverlayHead(GuiGraphicsExtractor guiGraphics, float scopeScale, CallbackInfo ci) {
+    private void onRenderSpyglassOverlayHead(GuiGraphicsExtractor graphics, float scale, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
         if (!ConfigInstance.SpyglassOverlay.enabled) {
             ci.cancel();
@@ -26,12 +25,12 @@ public class SpyglassOverlayMixin {
             at = @At("HEAD"),
             argsOnly = true,
             name = "scale")
-    private float modifySpyglassScale(float originalScale) {
+    private float modifySpyglassScale(float scale) {
 
         if (ConfigInstance.SpyglassOverlay.enabled && ConfigInstance.OverlayEnabled) {
-            return originalScale * ConfigInstance.SpyglassOverlay.scale;
+            return scale * ConfigInstance.SpyglassOverlay.scale;
         }
-        return originalScale;
+        return scale;
     }
 
 
@@ -40,5 +39,5 @@ public class SpyglassOverlayMixin {
             at = @At("STORE"),
             name = "borderWarningStrength")
     private float applyVignetteOpacity(float f) {
-        return Mth.clamp(f * (ConfigInstance.Vignette.enabled && ConfigInstance.OverlayEnabled ? ConfigInstance.Vignette.opacity : 1.0f), 0.0f, 1.0f);        }
+        return Mth.clamp(f * (ConfigInstance.Vignette.enabled && ConfigInstance.OverlayEnabled ? ConfigInstance.Vignette.opacity : 1f), 0f, 1f);        }
 }

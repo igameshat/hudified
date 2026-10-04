@@ -15,6 +15,7 @@ public class DebugScreenOverlayMixin {
     private void renderPieOnHUD(CallbackInfoReturnable<Boolean> info) {
         if(!ConfigInstance.OverlayEnabled) return;
         Minecraft minecraft = Minecraft.getInstance();
+        if(Minecraft.getInstance().player == null) return;
 
         info.setReturnValue(ConfigInstance.PieChart.enabled && !minecraft.gui.hud.isHidden());
     }

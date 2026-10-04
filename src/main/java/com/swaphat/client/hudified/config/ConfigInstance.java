@@ -183,9 +183,9 @@ public class ConfigInstance {
 
     public static class ParticleConfig {
         public boolean enabled = true;
-        public float globalChance = 1.0f;
+        public float globalChance = 1f;
         public float selfPotionChance = 0.5f;
-        public float otherPotionChance = 1.0f;
+        public float otherPotionChance = 1f;
         public java.util.HashMap<String, Float> customParticleChances = new java.util.HashMap<>();
         public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }
@@ -206,7 +206,7 @@ public class ConfigInstance {
 
     public static class DroppedItems {
         public boolean enabled = true;
-        public float customScale = 3.0f;
+        public float customScale = 3f;
         public java.util.List<String> itemList = new java.util.ArrayList<>(java.util.List.of("minecraft:golden_apple"));
         public InputConstants.Key toggleKeybind = InputConstants.UNKNOWN;
     }

@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Hud.class)
 public class DarknessOverlayMixin {
     @Inject(method = "extractTextureOverlay", at = @At("HEAD"), cancellable = true)
-    private void stopBlackOverlays(GuiGraphicsExtractor guiGraphics, Identifier identifier, float f, CallbackInfo ci) {
+    private void stopBlackOverlays(GuiGraphicsExtractor graphics, Identifier texture, float alpha, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
-        String path = identifier.getPath();
+        String path = texture.getPath();
         if (path.contains("blindness") && !ConfigInstance.BlindnessOverlay.enabled) {
             ci.cancel();
         } else if (path.contains("darkness") && !ConfigInstance.DarknessOverlay.enabled) {

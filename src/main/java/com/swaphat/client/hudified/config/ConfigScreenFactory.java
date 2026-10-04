@@ -511,7 +511,7 @@ public class ConfigScreenFactory {
         for (net.minecraft.resources.Identifier loc : keys) {
             String id = loc.toString();
 
-            float currentVal = ConfigInstance.Particle.customParticleChances.getOrDefault(id, -1.0f);
+            float currentVal = ConfigInstance.Particle.customParticleChances.getOrDefault(id, -1f);
             int displayVal = currentVal < 0 ? -1 : Math.round(currentVal * 100);
 
             particleSliders.add(eb.startIntSlider(Component.literal(id), displayVal, -1, 100)
@@ -673,42 +673,42 @@ public class ConfigScreenFactory {
         ConfigInstance.Shields.firstPersonMain.idle.xOffset = 27.0;
         ConfigInstance.Shields.firstPersonMain.idle.yOffset = -27.0;
         ConfigInstance.Shields.firstPersonMain.idle.zOffset = 8.0;
-        ConfigInstance.Shields.firstPersonMain.idle.scaleX = 1.0f;
-        ConfigInstance.Shields.firstPersonMain.idle.scaleY = 1.0f;
-        ConfigInstance.Shields.firstPersonMain.idle.scaleZ = 1.0f;
-        ConfigInstance.Shields.firstPersonMain.idle.rotX = 5.0f;
-        ConfigInstance.Shields.firstPersonMain.idle.rotY = 90.0f;
-        ConfigInstance.Shields.firstPersonMain.idle.rotZ = -5.0f;
+        ConfigInstance.Shields.firstPersonMain.idle.scaleX = 1f;
+        ConfigInstance.Shields.firstPersonMain.idle.scaleY = 1f;
+        ConfigInstance.Shields.firstPersonMain.idle.scaleZ = 1f;
+        ConfigInstance.Shields.firstPersonMain.idle.rotX = 5f;
+        ConfigInstance.Shields.firstPersonMain.idle.rotY = 90f;
+        ConfigInstance.Shields.firstPersonMain.idle.rotZ = -5f;
 
         ConfigInstance.Shields.firstPersonMain.blocking.xOffset = -19.0;
         ConfigInstance.Shields.firstPersonMain.blocking.yOffset = -31.0;
         ConfigInstance.Shields.firstPersonMain.blocking.zOffset = 0.0;
         ConfigInstance.Shields.firstPersonMain.blocking.scaleX = 0.7750105f;
         ConfigInstance.Shields.firstPersonMain.blocking.scaleY = 0.7752809f;
-        ConfigInstance.Shields.firstPersonMain.blocking.scaleZ = 1.0f;
-        ConfigInstance.Shields.firstPersonMain.blocking.rotX = -5.0f;
-        ConfigInstance.Shields.firstPersonMain.blocking.rotY = -3.0f;
-        ConfigInstance.Shields.firstPersonMain.blocking.rotZ = 0.0f;
+        ConfigInstance.Shields.firstPersonMain.blocking.scaleZ = 1f;
+        ConfigInstance.Shields.firstPersonMain.blocking.rotX = -5f;
+        ConfigInstance.Shields.firstPersonMain.blocking.rotY = -3f;
+        ConfigInstance.Shields.firstPersonMain.blocking.rotZ = 0f;
 
         ConfigInstance.Shields.firstPersonOff.idle.xOffset = -8.0;
         ConfigInstance.Shields.firstPersonOff.idle.yOffset = -27.0;
         ConfigInstance.Shields.firstPersonOff.idle.zOffset = 8.0;
-        ConfigInstance.Shields.firstPersonOff.idle.scaleX = 1.0f;
-        ConfigInstance.Shields.firstPersonOff.idle.scaleY = 1.0f;
+        ConfigInstance.Shields.firstPersonOff.idle.scaleX = 1f;
+        ConfigInstance.Shields.firstPersonOff.idle.scaleY = 1f;
         ConfigInstance.Shields.firstPersonOff.idle.scaleZ = 0.80898875f;
-        ConfigInstance.Shields.firstPersonOff.idle.rotX = 0.0f;
-        ConfigInstance.Shields.firstPersonOff.idle.rotY = 90.0f;
-        ConfigInstance.Shields.firstPersonOff.idle.rotZ = -5.0f;
+        ConfigInstance.Shields.firstPersonOff.idle.rotX = 0f;
+        ConfigInstance.Shields.firstPersonOff.idle.rotY = 90f;
+        ConfigInstance.Shields.firstPersonOff.idle.rotZ = -5f;
 
         ConfigInstance.Shields.firstPersonOff.blocking.xOffset = -5.0;
         ConfigInstance.Shields.firstPersonOff.blocking.yOffset = -32.0;
         ConfigInstance.Shields.firstPersonOff.blocking.zOffset = 0.0;
         ConfigInstance.Shields.firstPersonOff.blocking.scaleX = 0.8876405f;
-        ConfigInstance.Shields.firstPersonOff.blocking.scaleY = 1.0f;
-        ConfigInstance.Shields.firstPersonOff.blocking.scaleZ = 1.0f;
-        ConfigInstance.Shields.firstPersonOff.blocking.rotX = -5.0f;
-        ConfigInstance.Shields.firstPersonOff.blocking.rotY = -1.0f;
-        ConfigInstance.Shields.firstPersonOff.blocking.rotZ = 3.0f;
+        ConfigInstance.Shields.firstPersonOff.blocking.scaleY = 1f;
+        ConfigInstance.Shields.firstPersonOff.blocking.scaleZ = 1f;
+        ConfigInstance.Shields.firstPersonOff.blocking.rotX = -5f;
+        ConfigInstance.Shields.firstPersonOff.blocking.rotY = -1f;
+        ConfigInstance.Shields.firstPersonOff.blocking.rotZ = 3f;
     }
 
     private static void applyVanillaOptions() {
@@ -758,7 +758,7 @@ public class ConfigScreenFactory {
 
         public ButtonEntry(Component fieldName, Component buttonText, Runnable onClick) {
             super(fieldName, false);
-            this.button = Button.builder(buttonText, btn -> onClick.run())
+            this.button = Button.builder(buttonText, _ -> onClick.run())
                     .bounds(0, 0, 150, 20)
                     .build();
         }
@@ -813,11 +813,10 @@ public class ConfigScreenFactory {
 
             final boolean[] configChanged = {false};
 
-            // 2. FIX: Using your exact mapping (client.getWindow())
             java.util.function.Predicate<InputConstants.Key> justPressed = (key) -> {
                 if (key == null || key == InputConstants.UNKNOWN) return false;
 
-                boolean isDown = InputConstants.isKeyDown(client.getWindow(), key.getValue());
+                boolean isDown = InputConstants.isKeyDown(key.getValue());
                 boolean wasDown = previousKeys.contains(key);
 
                 if (isDown) currentKeys.add(key);
@@ -825,7 +824,6 @@ public class ConfigScreenFactory {
                 return isDown && !wasDown;
             };
 
-            // 3. FIX: Main Keybind now toggles the Master Boolean instead of opening the menu
             if (justPressed.test(ConfigInstance.menuKeybind)) {
                 ConfigInstance.OverlayEnabled = !ConfigInstance.OverlayEnabled;
                 configChanged[0] = true;
