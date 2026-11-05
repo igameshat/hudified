@@ -1,4 +1,4 @@
-package com.swaphat.client.hudified.mixin.Gui;
+package com.swaphat.client.hudified.mixin.gui;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -18,7 +18,7 @@ public class BossBarMixin {
     private boolean overlayManager$matrixPushed = false;
 
     @Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
-    private void overlayManager$onRenderHead(GuiGraphicsExtractor guiGraphics, CallbackInfo ci) {
+    private void overlayManager$onRenderHead(GuiGraphicsExtractor graphics, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
         this.overlayManager$matrixPushed = false;
         if (!ConfigInstance.BossBar.enabled) {
@@ -26,7 +26,7 @@ public class BossBarMixin {
             return;
         }
 
-        Matrix3x2fStack poseStack = guiGraphics.pose();
+        Matrix3x2fStack poseStack = graphics.pose();
         poseStack.pushMatrix();
 
         // Flag that we successfully pushed to the stack
@@ -35,7 +35,7 @@ public class BossBarMixin {
         float scale = ConfigInstance.BossBar.scale;
 
         // Vanilla rendering origin points
-        float centerX = guiGraphics.guiWidth() / 2f;
+        float centerX = graphics.guiWidth() / 2f;
         float vanillaY = 12f;
 
         // Offsets
@@ -51,10 +51,10 @@ public class BossBarMixin {
     }
 
     @Inject(method = "extractRenderState", at = @At("RETURN"))
-    private void overlayManager$onRenderReturn(GuiGraphicsExtractor guiGraphics, CallbackInfo ci) {
+    private void overlayManager$onRenderReturn(GuiGraphicsExtractor graphics, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
         if (this.overlayManager$matrixPushed) {
-            guiGraphics.pose().popMatrix();
+            graphics.pose().popMatrix();
             this.overlayManager$matrixPushed = false;
         }
     }

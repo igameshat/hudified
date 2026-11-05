@@ -3,8 +3,8 @@ package com.swaphat.client.hudified.mixin.patches;
 import com.swaphat.client.hudified.config.ConfigInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.Hud;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.level.block.Blocks;
@@ -31,6 +31,6 @@ public abstract class PortalGuiMixin {
 
         int i = ARGB.white(alpha);
         TextureAtlasSprite textureAtlasSprite = this.minecraft.getModelManager().getBlockStateModelSet().getParticleMaterial(Blocks.NETHER_PORTAL.defaultBlockState()).sprite();
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, textureAtlasSprite, 0, 0, graphics.guiWidth(), graphics.guiHeight(), i);
+        graphics.blitSprite(GuiPipeline.TEXTURED, textureAtlasSprite, 0, 0, graphics.guiWidth(), graphics.guiHeight(), i);
     }
 }

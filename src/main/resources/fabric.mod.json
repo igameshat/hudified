@@ -22,8 +22,8 @@
 		"hudified.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.19.5",
-		"minecraft": "~26.3",
+		"fabricloader": ">=${loader_version}",
+		"minecraft": "~26.4-alpha.7",
 		"java": ">=25",
 		"fabric-api": "*",
 		"cloth-config": "*",

@@ -1,4 +1,4 @@
-package com.swaphat.client.hudified.mixin.Gui;
+package com.swaphat.client.hudified.mixin.gui;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
 import net.minecraft.client.Minecraft;

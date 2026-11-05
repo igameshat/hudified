@@ -1,7 +1,6 @@
-package com.swaphat.client.hudified.mixin.Gui;
+package com.swaphat.client.hudified.mixin.gui;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ScoreboardMixin {
 
     @Inject(method = "extractScoreboardSidebar", at = @At("HEAD"), cancellable = true)
-    private void overlayManager$onRenderHead(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void overlayManager$onRenderHead(GuiGraphicsExtractor graphics, CallbackInfo ci) {
         if (!ConfigInstance.OverlayEnabled) {
             return;
         }
@@ -39,9 +38,9 @@ public class ScoreboardMixin {
     }
 
     @Inject(method = "extractScoreboardSidebar", at = @At("RETURN"))
-    private void overlayManager$onRenderReturn(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void overlayManager$onRenderReturn(GuiGraphicsExtractor graphics, CallbackInfo ci) {
         if (ConfigInstance.OverlayEnabled && ConfigInstance.Scoreboard.enabled) {
-            guiGraphics.pose().popMatrix();
+            graphics.pose().popMatrix();
         }
     }
 }

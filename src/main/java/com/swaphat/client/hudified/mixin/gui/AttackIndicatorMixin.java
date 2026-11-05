@@ -1,7 +1,6 @@
-package com.swaphat.client.hudified.mixin.Gui;
+package com.swaphat.client.hudified.mixin.gui;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +22,7 @@ public class AttackIndicatorMixin {
             method = "extractCrosshair",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getAttackStrengthScale(F)F")
     )
-    private void modifyCrosshairStart(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void modifyCrosshairStart(GuiGraphicsExtractor graphics, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
 
         graphics.pose().pushMatrix();
@@ -46,7 +45,7 @@ public class AttackIndicatorMixin {
     }
 
     @Inject(method = "extractCrosshair", at = @At("RETURN"))
-    private void modifyCrosshairEnd(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void modifyCrosshairEnd(GuiGraphicsExtractor graphics, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
         if (this.overlayManager$appliedCrosshair) {
             graphics.pose().popMatrix();
@@ -59,7 +58,7 @@ public class AttackIndicatorMixin {
             method = "extractItemHotbar",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getAttackStrengthScale(F)F")
     )
-    private void modifyHotbarStart(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void modifyHotbarStart(GuiGraphicsExtractor graphics, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
 
         graphics.pose().pushMatrix();
@@ -82,7 +81,7 @@ public class AttackIndicatorMixin {
     }
 
     @Inject(method = "extractItemHotbar", at = @At("RETURN"))
-    private void modifyHotbarEnd(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void modifyHotbarEnd(GuiGraphicsExtractor graphics, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
         if (this.overlayManager$appliedHotbar) {
             graphics.pose().popMatrix();

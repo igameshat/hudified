@@ -781,7 +781,7 @@ public class ConfigScreenFactory {
         public void extractRenderState(GuiGraphicsExtractor guiGraphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
             this.button.setX(x + entryWidth / 2 - this.button.getWidth() / 2);
             this.button.setY(y);
-            this.button.extractRenderState(guiGraphics, mouseX, mouseY, delta);
+            this.button.extractRenderState(guiGraphics);
         }
 
         @Override

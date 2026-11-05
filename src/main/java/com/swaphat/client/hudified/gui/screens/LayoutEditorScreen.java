@@ -8,7 +8,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 import org.jspecify.annotations.NonNull;
 
 public class LayoutEditorScreen extends Screen {
@@ -107,23 +106,23 @@ public class LayoutEditorScreen extends Screen {
         float s = scale();
         switch (mode) {
             case PIE_CHART -> {
-                ConfigInstance.PieChart.x = Mth.clamp(x, Math.round(PieChartBounds.left * s), this.width + Math.round(PieChartBounds.RIGHT * s));
-                ConfigInstance.PieChart.y = Mth.clamp(y, Math.round(PieChartBounds.top * s), this.height - Math.round(PieChartBounds.BOTTOM * s));
+                ConfigInstance.PieChart.x = Math.clamp(x, Math.round(PieChartBounds.left * s), this.width + Math.round(PieChartBounds.RIGHT * s));
+                ConfigInstance.PieChart.y = Math.clamp(y, Math.round(PieChartBounds.top * s), this.height - Math.round(PieChartBounds.BOTTOM * s));
             }
             case BOSS_BAR -> {
-                int cx = Mth.clamp(x, Math.round(91 * s), this.width - Math.round(91 * s));
+                int cx = Math.clamp(x, Math.round(91 * s), this.width - Math.round(91 * s));
                 ConfigInstance.BossBar.XOffset = cx - this.width / 2;
-                ConfigInstance.BossBar.YOffset = Mth.clamp(y, 0, this.height - Math.round(15 * s));
+                ConfigInstance.BossBar.YOffset = Math.clamp(y, 0, this.height - Math.round(15 * s));
             }
             case SCOREBOARD -> {
-                int cx = Mth.clamp(x, Math.round(100 * s), this.width);
-                int cy = Mth.clamp(y, Math.round(30 * s), this.height - Math.round(30 * s));
+                int cx = Math.clamp(x, Math.round(100 * s), this.width);
+                int cy = Math.clamp(y, Math.round(30 * s), this.height - Math.round(30 * s));
                 ConfigInstance.Scoreboard.XOffset = cx - this.width;
                 ConfigInstance.Scoreboard.YOffset = cy - this.height / 2;
             }
             case ATTACK_INDICATOR -> {
-                int cx = Mth.clamp(x, 0, this.width);
-                int cy = Mth.clamp(y, 0, this.height);
+                int cx = Math.clamp(x, 0, this.width);
+                int cy = Math.clamp(y, 0, this.height);
                 ConfigInstance.AttackIndicator.XOffset = cx - this.width / 2;
                 ConfigInstance.AttackIndicator.YOffset = cy - this.height / 2;
             }
@@ -132,8 +131,8 @@ public class LayoutEditorScreen extends Screen {
 
 
     @Override
-    public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-        super.extractRenderState(graphics, mouseX, mouseY, delta);
+    public void extractRenderState(@NonNull GuiGraphicsExtractor graphics) {
+        super.extractRenderState(graphics);
 
         graphics.centeredText(this.font, Component.translatable("config.hudified.layoutEditor.instruction" , name()), this.width / 2, 20, 0xFFFFFFFF);
 

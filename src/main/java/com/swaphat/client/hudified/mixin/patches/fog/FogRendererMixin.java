@@ -20,12 +20,12 @@ public class FogRendererMixin {
             method = "setupFog",
             at = @At("RETURN")
     )
-    private void onSetupFogReturn(Camera camera, int renderDistanceInChunks, DeltaTracker deltaTracker, float darkenWorldAmount, ClientLevel level, CallbackInfoReturnable<FogData> cir) {
+    private void onSetupFogReturn(Camera camera, int renderDistanceInChunks, DeltaTracker deltaTracker, float darkenWorldAmount, ClientLevel level, boolean shouldCreateBossFog, CallbackInfoReturnable<FogData> cir) {
         if (!ConfigInstance.OverlayEnabled) return;
 
         FogData fogData = cir.getReturnValue();
 
-        FogType fogType = camera.getFluidInCamera();
+        FogType fogType = camera.getFogType();
         if (fogType == FogType.NONE) {
             fogType = FogType.ATMOSPHERIC;
         }

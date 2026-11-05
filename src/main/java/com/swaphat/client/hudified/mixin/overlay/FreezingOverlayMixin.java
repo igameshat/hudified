@@ -2,8 +2,8 @@ package com.swaphat.client.hudified.mixin.overlay;
 
 import com.swaphat.client.hudified.config.ConfigInstance;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.Hud;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,22 +38,22 @@ public abstract class FreezingOverlayMixin {
             float halfTex = 128;
 
             // TOP-LEFT: Samples (0,0) to (128,128)
-            graphics.blit(RenderPipelines.GUI_TEXTURED, texture,
+            graphics.blit(GuiPipeline.TEXTURED, texture,
                     0, 0,
                     0, 0, drawSizeX, drawSizeY, 128, 128, totalTex, totalTex, color);
 
             // TOP-RIGHT: Samples (128,0) to (256,128)
-            graphics.blit(RenderPipelines.GUI_TEXTURED, texture,
+            graphics.blit(GuiPipeline.TEXTURED, texture,
                     screenWidth - drawSizeX, 0,
                     halfTex, 0, drawSizeX, drawSizeY, 128, 128, totalTex, totalTex, color);
 
             // BOTTOM-LEFT: Samples (0,128) to (128,256)
-            graphics.blit(RenderPipelines.GUI_TEXTURED, texture,
+            graphics.blit(GuiPipeline.TEXTURED, texture,
                     0, screenHeight - drawSizeY,
                     0, halfTex, drawSizeX, drawSizeY, 128, 128, totalTex, totalTex, color);
 
             // BOTTOM-RIGHT: Samples (128,128) to (256,256)
-            graphics.blit(RenderPipelines.GUI_TEXTURED, texture,
+            graphics.blit(GuiPipeline.TEXTURED, texture,
                     screenWidth - drawSizeX, screenHeight - drawSizeY,
                     halfTex, halfTex, drawSizeX, drawSizeY, 128, 128, totalTex, totalTex, color);
         }
