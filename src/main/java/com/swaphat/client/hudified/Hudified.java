@@ -3,7 +3,6 @@ package com.swaphat.client.hudified;
 import com.swaphat.client.hudified.config.ConfigManager;
 import com.swaphat.client.hudified.config.ConfigScreenFactory;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

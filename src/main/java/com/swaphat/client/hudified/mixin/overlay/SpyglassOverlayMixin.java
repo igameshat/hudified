@@ -37,6 +37,6 @@ public class SpyglassOverlayMixin {
             method = "extractVignette",
             at = @At("STORE"),
             name = "borderWarningStrength")
-    private float applyVignetteOpacity(float f) {
-        return Math.clamp(f * (ConfigInstance.Vignette.enabled && ConfigInstance.OverlayEnabled ? ConfigInstance.Vignette.opacity : 1f), 0f, 1f);        }
+    private float applyVignetteOpacity(float borderWarningStrength) {
+        return Math.clamp(borderWarningStrength * (ConfigInstance.Vignette.enabled && ConfigInstance.OverlayEnabled ? ConfigInstance.Vignette.opacity : 1f), 0f, 1f);        }
 }

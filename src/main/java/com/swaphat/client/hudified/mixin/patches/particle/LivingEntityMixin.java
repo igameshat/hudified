@@ -32,7 +32,7 @@ public abstract class LivingEntityMixin {
         LivingEntity self = (LivingEntity) (Object) this;
         boolean isLocalPlayer = self == Minecraft.getInstance().player;
 
-        // Fetch the specific chance based on who the entity is
+        // Fetch the specific chance based on whom the entity is
         float chance = isLocalPlayer ?
                 ConfigInstance.Particle.selfPotionChance :
                 ConfigInstance.Particle.otherPotionChance;

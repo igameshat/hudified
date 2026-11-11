@@ -56,7 +56,7 @@ public class DroppedItemScaleMixin {
                     shift = At.Shift.AFTER
             )
     )
-    private void applyCustomItemScale(ItemEntityRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
+    private void applyCustomItemScale(ItemEntityRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera, CallbackInfo ci) {
         Float scale = overlayManager$scaleCache.get(state);
 
         if (scale != null && scale != 1f) {

@@ -26,11 +26,11 @@ public class ItemInHandLayerMixin {
     private boolean overlayManager$didPush = false;
 
     @Inject(method = "submitArmWithItem", at = @At("HEAD"))
-    private void overlayManager$thirdPersonBefore(ArmedEntityRenderState state, ItemStackRenderState itemState, ItemStack stack, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
+    private void overlayManager$thirdPersonBefore(ArmedEntityRenderState state, ItemStackRenderState item, ItemStack itemStack, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
         overlayManager$didPush = false;
 
-        if (!ConfigInstance.Shields.enabled || stack == null || !(stack.getItem() instanceof ShieldItem)) return;
+        if (!ConfigInstance.Shields.enabled || itemStack == null || !(itemStack.getItem() instanceof ShieldItem)) return;
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || state == null || mc.level == null) return;
@@ -44,7 +44,7 @@ public class ItemInHandLayerMixin {
 
             Entity entity = mc.level.getEntity(entityId);
             if (entity instanceof LivingEntity living) {
-                if (living.isUsingItem() && living.getUseItem() == stack) {
+                if (living.isUsingItem() && living.getUseItem() == itemStack) {
                     isBlocking = true;
                 }
             }
@@ -74,7 +74,7 @@ public class ItemInHandLayerMixin {
     }
 
     @Inject(method = "submitArmWithItem", at = @At("RETURN"))
-    private void overlayManager$thirdPersonAfter(ArmedEntityRenderState state, ItemStackRenderState item, ItemStack itemStack, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
+    private void overlayManager$thirdPersonAfter(ArmedEntityRenderState state, ItemStackRenderState item, ItemStack itemStack, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, CallbackInfo ci) {
         if(!ConfigInstance.OverlayEnabled) return;
         if (overlayManager$didPush) {
             overlayManager$didPush = false;

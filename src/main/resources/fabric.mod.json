@@ -5,9 +5,9 @@
 	"name": "hudified",
 	"description": "Manage the mess called Minecraft screen overlays",
 	"authors": [
-		"Infinitygames","Keszenin"
+		"Infinitygames"
 	],
-	"contributors" : ["macagooner"],
+	"contributors" : ["macagooner", "Keszenin"],
 	"contact": {
 		"sources": "https://github.com/igameshat/hudified"
 	},
@@ -23,7 +23,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=${loader_version}",
-		"minecraft": "~26.4-alpha.7",
+		"minecraft": "~26.4-alpha.8",
 		"java": ">=25",
 		"fabric-api": "*",
 		"cloth-config": "*",

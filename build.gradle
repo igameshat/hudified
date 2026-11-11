@@ -85,5 +85,5 @@ modrinth {
 		required.version "cloth-config", "${project.cloth_version}+fabric"
 	}
 	changelog =
-			"""ported to 26.4-snapshot-7"""
+			"""ported to 26.4-snapshot-8"""
 }
